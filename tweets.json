@@ -1,0 +1,2557 @@
+{
+    "tweets": {
+        "1606877985956843521": {
+            "created_at": "Sun Dec 25 05:02:20 +0000 2022",
+            "id": 1606877985956843500,
+            "id_str": "1606877985956843521",
+            "full_text": "🎄 Merry Christmas y'all! 🎁\n\nHope you're all having a wonderful holiday and an amazing weekend! https://t.co/Szx7KuCc4B",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [],
+                "urls": [],
+                "media": [
+                    {
+                        "id": 1606877983649763300,
+                        "id_str": "1606877983649763328",
+                        "media_url_https": "https://pbs.twimg.com/media/FkzHAzTXEAASLmF.jpg",
+                        "url": "https://t.co/Szx7KuCc4B",
+                        "display_url": "pic.twitter.com/Szx7KuCc4B",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1606877985956843521/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 1463,
+                            "height": 1170
+                        },
+                        "features": {
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id": 1606877983649763300,
+                        "id_str": "1606877983649763328",
+                        "media_url_https": "https://pbs.twimg.com/media/FkzHAzTXEAASLmF.jpg",
+                        "url": "https://t.co/Szx7KuCc4B",
+                        "display_url": "pic.twitter.com/Szx7KuCc4B",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1606877985956843521/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 1463,
+                            "height": 1170
+                        },
+                        "features": {
+                        },
+                        "media_key": "3_1606877983649763328",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": null,
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 72,
+                                        "green": 42,
+                                        "blue": 21
+                                    },
+                                    "percentage": 32.87
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 250,
+                                        "green": 239,
+                                        "blue": 220
+                                    },
+                                    "percentage": 27.99
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 158,
+                                        "green": 104,
+                                        "blue": 65
+                                    },
+                                    "percentage": 14.58
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 174,
+                                        "green": 154,
+                                        "blue": 94
+                                    },
+                                    "percentage": 6.65
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 180,
+                                        "green": 81,
+                                        "blue": 60
+                                    },
+                                    "percentage": 4.14
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 8,
+            "favorite_count": 20,
+            "reply_count": 1,
+            "quote_count": 0,
+            "conversation_id_str": "1606877985956843521",
+            "favorited": true,
+            "lang": "en"
+        },
+        "1610504079582658567": {
+            "created_at": "Wed Jan 04 05:11:08 +0000 2023",
+            "id": 1610504079582658600,
+            "id_str": "1610504079582658567",
+            "full_text": "Another thumbnail for another banger @MeatyMarley video! I hope I managed to capture a bit of the chaos, what do y'all think?\n\n🧵 Check out the link to the video below, as well as the source screenshots for this thumbnail! https://t.co/OMUGhte3Dm",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [
+                    {
+                        "screen_name": "MeatyMarley",
+                        "name": "Marley",
+                        "id": 726865346846691300,
+                        "id_str": "726865346846691329"
+                    }
+                ],
+                "urls": [],
+                "media": [
+                    {
+                        "id": 1610494916605395000,
+                        "id_str": "1610494916605394947",
+                        "media_url_https": "https://pbs.twimg.com/media/FlmgmAjWQAMWSm0.jpg",
+                        "url": "https://t.co/OMUGhte3Dm",
+                        "display_url": "pic.twitter.com/OMUGhte3Dm",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1610504079582658567/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 1920,
+                            "height": 1080
+                        },
+                        "features": {
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id": 1610494916605395000,
+                        "id_str": "1610494916605394947",
+                        "media_url_https": "https://pbs.twimg.com/media/FlmgmAjWQAMWSm0.jpg",
+                        "url": "https://t.co/OMUGhte3Dm",
+                        "display_url": "pic.twitter.com/OMUGhte3Dm",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1610504079582658567/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 1920,
+                            "height": 1080
+                        },
+                        "features": {
+                        },
+                        "media_key": "3_1610494916605394947",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "A yellow car skids down a narrow bridge as the driver slams on the brakes. \nAn orange car falls from the sky with great velocity, narrowly missing the yellow car as it is about to smash into the bridge. \nStraight ahead of the yellow car, a vibrant red truck with its empty trailer still attached, also comes down from the sky.\nFar off into the distance, a fourth vehicle is experiencing a temporary feeling of weightlessness before it will soon come to an abrupt halt.\nBeyond all of these vehicles, beyond the visible end of the bridge, an ominous translucent red circle hovers in the sky, containing within its inner boundaries a blue icon of a sportscar.",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 160,
+                                        "green": 224,
+                                        "blue": 241
+                                    },
+                                    "percentage": 33.03
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 43,
+                                        "green": 101,
+                                        "blue": 203
+                                    },
+                                    "percentage": 11.62
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 68,
+                                        "green": 198,
+                                        "blue": 236
+                                    },
+                                    "percentage": 8.67
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 51,
+                                        "green": 49,
+                                        "blue": 52
+                                    },
+                                    "percentage": 6.89
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 239,
+                                        "green": 225,
+                                        "blue": 27
+                                    },
+                                    "percentage": 3.78
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 4,
+            "favorite_count": 46,
+            "reply_count": 2,
+            "quote_count": 0,
+            "conversation_id_str": "1610504079582658567",
+            "favorited": false,
+            "lang": "en"
+        },
+        "1562458194420846595": {
+            "created_at": "Wed Aug 24 15:13:57 +0000 2022",
+            "id_str": "1562458194420846595",
+            "full_text": "\"Ready to bug someone\" - @AlfieBanks14 \n\nHonestly, out of all my Berlin Six Major photos this is a strong contender for my favorite shot!\n\nI just had to post it as soon as I finished the edits, but there's still a few more of these to come! https://t.co/FrxwZSrw0A",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [
+                    {
+                        "screen_name": "AlfieBanks14",
+                        "name": "HAWX BYE Copenhagen Major",
+                        "id": 1097658310185177100,
+                        "id_str": "1097658310185177088"
+                    }
+                ],
+                "urls": [],
+                "media": [
+                    {
+                        "id_str": "1562455620133027840",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa71G7dXgAApZIy.jpg",
+                        "url": "https://t.co/FrxwZSrw0A",
+                        "display_url": "pic.twitter.com/FrxwZSrw0A",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562458194420846595/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 3024
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1097658310185177088",
+                                        "screen_name": "AlfieBanks14",
+                                        "name": "HAWX"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4860273459",
+                                        "screen_name": "R6esports",
+                                        "name": "Rainbow Six Esports"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1161282159090524162",
+                                        "screen_name": "R6esportsEU",
+                                        "name": "Rainbow Six Esports Europe"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1035462188662759424",
+                                        "screen_name": "Rainbow6_UK",
+                                        "name": "Rainbow 6 Siege UK"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id_str": "1562455620133027840",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa71G7dXgAApZIy.jpg",
+                        "url": "https://t.co/FrxwZSrw0A",
+                        "display_url": "pic.twitter.com/FrxwZSrw0A",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562458194420846595/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 3024
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1097658310185177088",
+                                        "screen_name": "AlfieBanks14",
+                                        "name": "HAWX"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4860273459",
+                                        "screen_name": "R6esports",
+                                        "name": "Rainbow Six Esports"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1161282159090524162",
+                                        "screen_name": "R6esportsEU",
+                                        "name": "Rainbow Six Esports Europe"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1035462188662759424",
+                                        "screen_name": "Rainbow6_UK",
+                                        "name": "Rainbow 6 Siege UK"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1562455620133027840",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "AlfieBanks14 as himself",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 13,
+                                        "green": 12,
+                                        "blue": 10
+                                    },
+                                    "percentage": 65.34
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 89,
+                                        "green": 47,
+                                        "blue": 16
+                                    },
+                                    "percentage": 7.94
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 8,
+                                        "green": 29,
+                                        "blue": 50
+                                    },
+                                    "percentage": 4.43
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 78,
+                                        "green": 64,
+                                        "blue": 18
+                                    },
+                                    "percentage": 3.18
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 208,
+                                        "green": 149,
+                                        "blue": 27
+                                    },
+                                    "percentage": 2.57
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 7,
+            "favorite_count": 37,
+            "reply_count": 1,
+            "quote_count": 0,
+            "conversation_id_str": "1562458194420846595",
+            "favorited": false,
+            "lang": "en"
+        },
+        "1562190091853803520": {
+            "created_at": "Tue Aug 23 21:28:36 +0000 2022",
+            "id_str": "1562190091853803520",
+            "full_text": "I've finished editing a few of these photos so far from the final day of the Berlin Siege Major, and I physically can't wait to post them so here they are!\n\nReally glad I brought the ring lights because I really like how these turned out! 📸 https://t.co/Hgyuk8lRGs",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [],
+                "urls": [],
+                "media": [
+                    {
+                        "id_str": "1562189172055556096",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa4CxnBVQAAl_LP.jpg",
+                        "url": "https://t.co/Hgyuk8lRGs",
+                        "display_url": "pic.twitter.com/Hgyuk8lRGs",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562190091853803520/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 4032
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1165840736711008256",
+                                        "screen_name": "lexinyan123",
+                                        "name": "LexiNyan123"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1336269427",
+                                        "screen_name": "kuroninji",
+                                        "name": "kuro"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1164911474785079297",
+                                        "screen_name": "MuffledBerri",
+                                        "name": "Muffled🫐Berri"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "917434877498281984",
+                                        "screen_name": "ArtifexWarden",
+                                        "name": "ArtifexWarden"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "id_str": "1562189177004838913",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa4Cx5dVUAEDEvb.jpg",
+                        "url": "https://t.co/Hgyuk8lRGs",
+                        "display_url": "pic.twitter.com/Hgyuk8lRGs",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562190091853803520/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 4032
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1165840736711008256",
+                                        "screen_name": "lexinyan123",
+                                        "name": "LexiNyan123"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1336269427",
+                                        "screen_name": "kuroninji",
+                                        "name": "kuro"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1164911474785079297",
+                                        "screen_name": "MuffledBerri",
+                                        "name": "Muffled🫐Berri"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "917434877498281984",
+                                        "screen_name": "ArtifexWarden",
+                                        "name": "ArtifexWarden"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "id_str": "1562189183799554049",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa4CySxUcAEOuNi.jpg",
+                        "url": "https://t.co/Hgyuk8lRGs",
+                        "display_url": "pic.twitter.com/Hgyuk8lRGs",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562190091853803520/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 2927,
+                            "height": 3902
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1165840736711008256",
+                                        "screen_name": "lexinyan123",
+                                        "name": "LexiNyan123"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1336269427",
+                                        "screen_name": "kuroninji",
+                                        "name": "kuro"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1164911474785079297",
+                                        "screen_name": "MuffledBerri",
+                                        "name": "Muffled🫐Berri"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "917434877498281984",
+                                        "screen_name": "ArtifexWarden",
+                                        "name": "ArtifexWarden"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "id_str": "1562189194595749888",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa4Cy6_VUAANm0x.jpg",
+                        "url": "https://t.co/Hgyuk8lRGs",
+                        "display_url": "pic.twitter.com/Hgyuk8lRGs",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562190091853803520/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 3780
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1165840736711008256",
+                                        "screen_name": "lexinyan123",
+                                        "name": "LexiNyan123"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1336269427",
+                                        "screen_name": "kuroninji",
+                                        "name": "kuro"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1164911474785079297",
+                                        "screen_name": "MuffledBerri",
+                                        "name": "Muffled🫐Berri"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "917434877498281984",
+                                        "screen_name": "ArtifexWarden",
+                                        "name": "ArtifexWarden"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id_str": "1562189172055556096",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa4CxnBVQAAl_LP.jpg",
+                        "url": "https://t.co/Hgyuk8lRGs",
+                        "display_url": "pic.twitter.com/Hgyuk8lRGs",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562190091853803520/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 4032
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1165840736711008256",
+                                        "screen_name": "lexinyan123",
+                                        "name": "LexiNyan123"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1336269427",
+                                        "screen_name": "kuroninji",
+                                        "name": "kuro"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1164911474785079297",
+                                        "screen_name": "MuffledBerri",
+                                        "name": "Muffled🫐Berri"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "917434877498281984",
+                                        "screen_name": "ArtifexWarden",
+                                        "name": "ArtifexWarden"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1562189172055556096",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "LexiNyan123 as Dokkaebi\nKuroninji as Echo",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 12,
+                                        "green": 1,
+                                        "blue": 2
+                                    },
+                                    "percentage": 42.67
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 18,
+                                        "green": 3,
+                                        "blue": 69
+                                    },
+                                    "percentage": 8.95
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 69,
+                                        "green": 16,
+                                        "blue": 13
+                                    },
+                                    "percentage": 8.68
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 4,
+                                        "green": 6,
+                                        "blue": 180
+                                    },
+                                    "percentage": 6.29
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 78,
+                                        "green": 19,
+                                        "blue": 56
+                                    },
+                                    "percentage": 5.5
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    },
+                    {
+                        "id_str": "1562189177004838913",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa4Cx5dVUAEDEvb.jpg",
+                        "url": "https://t.co/Hgyuk8lRGs",
+                        "display_url": "pic.twitter.com/Hgyuk8lRGs",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562190091853803520/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 4032
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1165840736711008256",
+                                        "screen_name": "lexinyan123",
+                                        "name": "LexiNyan123"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1336269427",
+                                        "screen_name": "kuroninji",
+                                        "name": "kuro"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1164911474785079297",
+                                        "screen_name": "MuffledBerri",
+                                        "name": "Muffled🫐Berri"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "917434877498281984",
+                                        "screen_name": "ArtifexWarden",
+                                        "name": "ArtifexWarden"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1562189177004838913",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "MuffledBerri as Frost",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 4,
+                                        "green": 0,
+                                        "blue": 1
+                                    },
+                                    "percentage": 75.48
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 67,
+                                        "green": 0,
+                                        "blue": 11
+                                    },
+                                    "percentage": 4.83
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 0,
+                                        "green": 33,
+                                        "blue": 61
+                                    },
+                                    "percentage": 3.72
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 182,
+                                        "green": 1,
+                                        "blue": 64
+                                    },
+                                    "percentage": 2.12
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 245,
+                                        "green": 37,
+                                        "blue": 181
+                                    },
+                                    "percentage": 1.46
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    },
+                    {
+                        "id_str": "1562189183799554049",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa4CySxUcAEOuNi.jpg",
+                        "url": "https://t.co/Hgyuk8lRGs",
+                        "display_url": "pic.twitter.com/Hgyuk8lRGs",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562190091853803520/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 2927,
+                            "height": 3902
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1165840736711008256",
+                                        "screen_name": "lexinyan123",
+                                        "name": "LexiNyan123"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1336269427",
+                                        "screen_name": "kuroninji",
+                                        "name": "kuro"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1164911474785079297",
+                                        "screen_name": "MuffledBerri",
+                                        "name": "Muffled🫐Berri"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "917434877498281984",
+                                        "screen_name": "ArtifexWarden",
+                                        "name": "ArtifexWarden"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1562189183799554049",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "ArtifexWarden as himself",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 1,
+                                        "green": 0,
+                                        "blue": 1
+                                    },
+                                    "percentage": 76.6
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 2,
+                                        "green": 7,
+                                        "blue": 49
+                                    },
+                                    "percentage": 6.27
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 75,
+                                        "green": 0,
+                                        "blue": 15
+                                    },
+                                    "percentage": 4.36
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 190,
+                                        "green": 1,
+                                        "blue": 24
+                                    },
+                                    "percentage": 2.67
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 1,
+                                        "green": 17,
+                                        "blue": 90
+                                    },
+                                    "percentage": 2.25
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    },
+                    {
+                        "id_str": "1562189194595749888",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa4Cy6_VUAANm0x.jpg",
+                        "url": "https://t.co/Hgyuk8lRGs",
+                        "display_url": "pic.twitter.com/Hgyuk8lRGs",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562190091853803520/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 3780
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1165840736711008256",
+                                        "screen_name": "lexinyan123",
+                                        "name": "LexiNyan123"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1336269427",
+                                        "screen_name": "kuroninji",
+                                        "name": "kuro"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1164911474785079297",
+                                        "screen_name": "MuffledBerri",
+                                        "name": "Muffled🫐Berri"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "917434877498281984",
+                                        "screen_name": "ArtifexWarden",
+                                        "name": "ArtifexWarden"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1562189194595749888",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "DawnOfShadow as Caveira",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 1,
+                                        "green": 0,
+                                        "blue": 1
+                                    },
+                                    "percentage": 69.73
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 3,
+                                        "green": 6,
+                                        "blue": 56
+                                    },
+                                    "percentage": 5.59
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 66,
+                                        "green": 0,
+                                        "blue": 41
+                                    },
+                                    "percentage": 5.39
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 0,
+                                        "green": 15,
+                                        "blue": 99
+                                    },
+                                    "percentage": 2.67
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 244,
+                                        "green": 1,
+                                        "blue": 237
+                                    },
+                                    "percentage": 2.24
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 19,
+            "favorite_count": 68,
+            "reply_count": 6,
+            "quote_count": 2,
+            "conversation_id_str": "1562190091853803520",
+            "favorited": false,
+            "lang": "en"
+        },
+        "1619056333386575872": {
+            "created_at": "Fri Jan 27 19:34:45 +0000 2023",
+            "id": 1619056333386576000,
+            "id_str": "1619056333386575872",
+            "full_text": "Nothing but good vibes in here! https://t.co/j63zSqU1C1",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [],
+                "urls": [],
+                "media": [
+                    {
+                        "id": 1619056329217216500,
+                        "id_str": "1619056329217216525",
+                        "media_url_https": "https://pbs.twimg.com/media/FngLJz5XEA0ISz3.jpg",
+                        "url": "https://t.co/j63zSqU1C1",
+                        "display_url": "pic.twitter.com/j63zSqU1C1",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1619056333386575872/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 1000,
+                            "height": 1000
+                        },
+                        "features": {
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id": 1619056329217216500,
+                        "id_str": "1619056329217216525",
+                        "media_url_https": "https://pbs.twimg.com/media/FngLJz5XEA0ISz3.jpg",
+                        "url": "https://t.co/j63zSqU1C1",
+                        "display_url": "pic.twitter.com/j63zSqU1C1",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1619056333386575872/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 1000,
+                            "height": 1000
+                        },
+                        "features": {
+                        },
+                        "media_key": "3_1619056329217216525",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": null,
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 0,
+                                        "green": 209,
+                                        "blue": 112
+                                    },
+                                    "percentage": 56.45
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 37,
+                                        "green": 35,
+                                        "blue": 38
+                                    },
+                                    "percentage": 9.38
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 208,
+                                        "green": 203,
+                                        "blue": 203
+                                    },
+                                    "percentage": 7.08
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 88,
+                                        "green": 181,
+                                        "blue": 138
+                                    },
+                                    "percentage": 3.59
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 39,
+                                        "green": 82,
+                                        "blue": 68
+                                    },
+                                    "percentage": 2.1
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 0,
+            "favorite_count": 29,
+            "reply_count": 9,
+            "quote_count": 0,
+            "conversation_id_str": "1619056333386575872",
+            "favorited": false,
+            "lang": "en"
+        },
+        "1579578476998586368": {
+            "created_at": "Mon Oct 10 21:03:50 +0000 2022",
+            "id": 1579578476998586400,
+            "id_str": "1579578476998586368",
+            "full_text": "If you play Siege tomorrow and get a match on Presidential Plane, consider taking a moment with the other team to remember KiXSTAR at his plaque by the back stairs. https://t.co/hpQcVVHnvm",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [],
+                "urls": [],
+                "media": [
+                    {
+                        "id": 1579578474636927000,
+                        "id_str": "1579578474636926982",
+                        "media_url_https": "https://pbs.twimg.com/media/FevKQPOWYAYeqXT.jpg",
+                        "url": "https://t.co/hpQcVVHnvm",
+                        "display_url": "pic.twitter.com/hpQcVVHnvm",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1579578476998586368/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 1173,
+                            "height": 677
+                        },
+                        "features": {
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id": 1579578474636927000,
+                        "id_str": "1579578474636926982",
+                        "media_url_https": "https://pbs.twimg.com/media/FevKQPOWYAYeqXT.jpg",
+                        "url": "https://t.co/hpQcVVHnvm",
+                        "display_url": "pic.twitter.com/hpQcVVHnvm",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1579578476998586368/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 1173,
+                            "height": 677
+                        },
+                        "features": {
+                        },
+                        "media_key": "3_1579578474636926982",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": null,
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 145,
+                                        "green": 139,
+                                        "blue": 127
+                                    },
+                                    "percentage": 71.88
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 45,
+                                        "green": 44,
+                                        "blue": 42
+                                    },
+                                    "percentage": 23.93
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 119,
+                                        "green": 104,
+                                        "blue": 59
+                                    },
+                                    "percentage": 1.55
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 196,
+                                        "green": 201,
+                                        "blue": 204
+                                    },
+                                    "percentage": 1.02
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 87,
+                                        "green": 88,
+                                        "blue": 104
+                                    },
+                                    "percentage": 0.67
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 69,
+            "favorite_count": 1304,
+            "reply_count": 3,
+            "quote_count": 3,
+            "conversation_id_str": "1579578476998586368",
+            "favorited": false,
+            "lang": "en"
+        },
+        "1605700360630198272": {
+            "created_at": "Wed Dec 21 23:02:53 +0000 2022",
+            "id": 1605700360630198300,
+            "id_str": "1605700360630198272",
+            "full_text": "Siege Chickinvitational 2023 https://t.co/cUOR5wiGGJ",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [],
+                "urls": [],
+                "media": [
+                    {
+                        "id": 1605700060301463600,
+                        "id_str": "1605700060301463552",
+                        "media_url_https": "https://pbs.twimg.com/media/FkiXso4XkAAnMBm.jpg",
+                        "url": "https://t.co/cUOR5wiGGJ",
+                        "display_url": "pic.twitter.com/cUOR5wiGGJ",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1605700360630198272/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 960,
+                            "height": 540
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "399404516",
+                                        "screen_name": "Rainbow6Game",
+                                        "name": "Rainbow Six Siege"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4860273459",
+                                        "screen_name": "R6esports",
+                                        "name": "Rainbow Six Esports"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "959421695470850048",
+                                        "screen_name": "Rainbow6Benelux",
+                                        "name": "Rainbow Six Benelux"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1161282159090524162",
+                                        "screen_name": "R6esportsEU",
+                                        "name": "Rainbow Six Esports Europe"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id": 1605700060301463600,
+                        "id_str": "1605700060301463552",
+                        "media_url_https": "https://pbs.twimg.com/media/FkiXso4XkAAnMBm.jpg",
+                        "url": "https://t.co/cUOR5wiGGJ",
+                        "display_url": "pic.twitter.com/cUOR5wiGGJ",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1605700360630198272/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 960,
+                            "height": 540
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "399404516",
+                                        "screen_name": "Rainbow6Game",
+                                        "name": "Rainbow Six Siege"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4860273459",
+                                        "screen_name": "R6esports",
+                                        "name": "Rainbow Six Esports"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "959421695470850048",
+                                        "screen_name": "Rainbow6Benelux",
+                                        "name": "Rainbow Six Benelux"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1161282159090524162",
+                                        "screen_name": "R6esportsEU",
+                                        "name": "Rainbow Six Esports Europe"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1605700060301463552",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "chicken siege logo, idk?",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 18,
+                                        "green": 20,
+                                        "blue": 21
+                                    },
+                                    "percentage": 86.65
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 63,
+                                        "green": 33,
+                                        "blue": 32
+                                    },
+                                    "percentage": 4.93
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 241,
+                                        "green": 242,
+                                        "blue": 242
+                                    },
+                                    "percentage": 3.57
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 32,
+                                        "green": 52,
+                                        "blue": 33
+                                    },
+                                    "percentage": 2.91
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 13,
+                                        "green": 64,
+                                        "blue": 86
+                                    },
+                                    "percentage": 0.54
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 64,
+            "favorite_count": 927,
+            "reply_count": 6,
+            "quote_count": 4,
+            "conversation_id_str": "1605700360630198272",
+            "favorited": true,
+            "lang": "en"
+        },
+        "1627402896030461952": {
+            "created_at": "Sun Feb 19 20:21:00 +0000 2023",
+            "id": 1627402896030462000,
+            "id_str": "1627402896030461952",
+            "full_text": "AYOOO I MADE IT ONTO THE BIG SCREEN AT #SI2023  \n\nLETS GOOOOOOOOOOOO https://t.co/LPYCIwlsp9",
+            "entities": {
+                "hashtags": [
+                    {
+                        "text": "SI2023"
+                    }
+                ],
+                "symbols": [],
+                "user_mentions": [],
+                "urls": [],
+                "media": [
+                    {
+                        "id": 1627402618388508700,
+                        "id_str": "1627402618388508672",
+                        "media_url_https": "https://pbs.twimg.com/media/FpWyDx-WcAAPZBD.jpg",
+                        "url": "https://t.co/LPYCIwlsp9",
+                        "display_url": "pic.twitter.com/LPYCIwlsp9",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1627402896030461952/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 2560,
+                            "height": 1440
+                        },
+                        "features": {
+                        }
+                    },
+                    {
+                        "id": 1627402800953979000,
+                        "id_str": "1627402800953978880",
+                        "media_url_https": "https://pbs.twimg.com/media/FpWyOaFWcAAX3LO.jpg",
+                        "url": "https://t.co/LPYCIwlsp9",
+                        "display_url": "pic.twitter.com/LPYCIwlsp9",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1627402896030461952/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 966,
+                            "height": 1351
+                        },
+                        "features": {
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id": 1627402618388508700,
+                        "id_str": "1627402618388508672",
+                        "media_url_https": "https://pbs.twimg.com/media/FpWyDx-WcAAPZBD.jpg",
+                        "url": "https://t.co/LPYCIwlsp9",
+                        "display_url": "pic.twitter.com/LPYCIwlsp9",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1627402896030461952/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 2560,
+                            "height": 1440
+                        },
+                        "features": {
+                        },
+                        "media_key": "3_1627402618388508672",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": null,
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 11,
+                                        "green": 11,
+                                        "blue": 9
+                                    },
+                                    "percentage": 45.07
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 165,
+                                        "green": 147,
+                                        "blue": 132
+                                    },
+                                    "percentage": 23.13
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 115,
+                                        "green": 121,
+                                        "blue": 141
+                                    },
+                                    "percentage": 18.9
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 95,
+                                        "green": 72,
+                                        "blue": 46
+                                    },
+                                    "percentage": 5.23
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 41,
+                                        "green": 46,
+                                        "blue": 60
+                                    },
+                                    "percentage": 1.8
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    },
+                    {
+                        "id": 1627402800953979000,
+                        "id_str": "1627402800953978880",
+                        "media_url_https": "https://pbs.twimg.com/media/FpWyOaFWcAAX3LO.jpg",
+                        "url": "https://t.co/LPYCIwlsp9",
+                        "display_url": "pic.twitter.com/LPYCIwlsp9",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1627402896030461952/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 966,
+                            "height": 1351
+                        },
+                        "features": {
+                        },
+                        "media_key": "3_1627402800953978880",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": null,
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 170,
+                                        "green": 161,
+                                        "blue": 159
+                                    },
+                                    "percentage": 57.42
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 99,
+                                        "green": 96,
+                                        "blue": 101
+                                    },
+                                    "percentage": 14.85
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 180,
+                                        "green": 112,
+                                        "blue": 119
+                                    },
+                                    "percentage": 9.07
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 136,
+                                        "green": 143,
+                                        "blue": 172
+                                    },
+                                    "percentage": 8.44
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 141,
+                                        "green": 116,
+                                        "blue": 86
+                                    },
+                                    "percentage": 2.4
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 2,
+            "favorite_count": 39,
+            "reply_count": 4,
+            "quote_count": 0,
+            "conversation_id_str": "1627402896030461952",
+            "favorited": false,
+            "lang": "en"
+        },
+        "1561313312159170560": {
+            "created_at": "Sun Aug 21 11:24:36 +0000 2022",
+            "id_str": "1561313312159170560",
+            "full_text": "POV: @DawnOfShadow in your walls https://t.co/dJIoamEoiL",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [
+                    {
+                        "screen_name": "DawnOfShadow",
+                        "name": "Dawn",
+                        "id": 2257551379,
+                        "id_str": "2257551379"
+                    }
+                ],
+                "urls": [],
+                "media": [
+                    {
+                        "id_str": "1561313198569132032",
+                        "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/1561313198569132032/pu/img/aA8kuFWClIStRekp.jpg",
+                        "url": "https://t.co/dJIoamEoiL",
+                        "display_url": "pic.twitter.com/dJIoamEoiL",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1561313312159170560/video/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 720,
+                            "height": 1280
+                        },
+                        "features": {}
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id_str": "1561313198569132032",
+                        "media_url_https": "https://pbs.twimg.com/ext_tw_video_thumb/1561313198569132032/pu/img/aA8kuFWClIStRekp.jpg",
+                        "url": "https://t.co/dJIoamEoiL",
+                        "display_url": "pic.twitter.com/dJIoamEoiL",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1561313312159170560/video/1",
+                        "type": "video",
+                        "original_info": {
+                            "width": 720,
+                            "height": 1280
+                        },
+                        "video_info": {
+                            "aspect_ratio": [
+                                9,
+                                16
+                            ],
+                            "duration_millis": 3304,
+                            "variants": [
+                                {
+                                    "bitrate": 950000,
+                                    "content_type": "video/mp4",
+                                    "url": "https://video.twimg.com/ext_tw_video/1561313198569132032/pu/vid/480x852/UERWdwVFoar5QK-6.mp4?tag=12"
+                                },
+                                {
+                                    "bitrate": 632000,
+                                    "content_type": "video/mp4",
+                                    "url": "https://video.twimg.com/ext_tw_video/1561313198569132032/pu/vid/320x568/jvwfId8zZzjDXRvR.mp4?tag=12"
+                                },
+                                {
+                                    "bitrate": 2176000,
+                                    "content_type": "video/mp4",
+                                    "url": "https://video.twimg.com/ext_tw_video/1561313198569132032/pu/vid/720x1280/AGHTGVpJFpMiKfhR.mp4?tag=12"
+                                },
+                                {
+                                    "content_type": "application/x-mpegURL",
+                                    "url": "https://video.twimg.com/ext_tw_video/1561313198569132032/pu/pl/iXrI5suotlZi7ZQ3.m3u8?tag=12&container=fmp4"
+                                }
+                            ]
+                        },
+                        "features": {},
+                        "media_key": "7_1561313198569132032",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": null,
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 221,
+                                        "green": 212,
+                                        "blue": 206
+                                    },
+                                    "percentage": 43.17
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 23,
+                                        "green": 22,
+                                        "blue": 32
+                                    },
+                                    "percentage": 38.55
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 71,
+                                        "green": 96,
+                                        "blue": 142
+                                    },
+                                    "percentage": 11.32
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 148,
+                                        "green": 158,
+                                        "blue": 177
+                                    },
+                                    "percentage": 1.13
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 100,
+                                        "green": 131,
+                                        "blue": 194
+                                    },
+                                    "percentage": 0.29
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": {
+                                    "ok": {
+                                        "viewCount": "2166"
+                                    }
+                                },
+                                "ttl": -1
+                            }
+                        },
+                        "additional_media_info": {
+                            "monetizable": false
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 10,
+            "favorite_count": 92,
+            "reply_count": 1,
+            "quote_count": 1,
+            "conversation_id_str": "1561313312159170560",
+            "favorited": false,
+            "lang": "en"
+        },
+        "1562529362834239488": {
+            "created_at": "Wed Aug 24 19:56:45 +0000 2022",
+            "id_str": "1562529362834239488",
+            "full_text": "\"I've got you, you'll be alright\" - @AgentCivi\n\nGotta give this guy credit for cosplaying an outfit that only came out this season, at the Rainbow Six Major in Berlin! That's some real dedication! https://t.co/VBI7YNEAdZ",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [
+                    {
+                        "screen_name": "AgentCivi",
+                        "name": "Civi ⚕️🤫",
+                        "id": 4883007748,
+                        "id_str": "4883007748"
+                    }
+                ],
+                "urls": [],
+                "media": [
+                    {
+                        "id_str": "1562488651061272576",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa8TJlQWIAAUAyT.jpg",
+                        "url": "https://t.co/VBI7YNEAdZ",
+                        "display_url": "pic.twitter.com/VBI7YNEAdZ",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562529362834239488/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 2206,
+                            "height": 2757
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "4883007748",
+                                        "screen_name": "AgentCivi",
+                                        "name": "Civi ⚕️🤫"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "399404516",
+                                        "screen_name": "Rainbow6Game",
+                                        "name": "Rainbow Six Siege"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4860273459",
+                                        "screen_name": "R6esports",
+                                        "name": "Rainbow Six Esports"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1161282159090524162",
+                                        "screen_name": "R6esportsEU",
+                                        "name": "Rainbow Six Esports Europe"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1035462188662759424",
+                                        "screen_name": "Rainbow6_UK",
+                                        "name": "Rainbow 6 Siege UK"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "id_str": "1562489128352202752",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa8TlXTXwAAmgQh.jpg",
+                        "url": "https://t.co/VBI7YNEAdZ",
+                        "display_url": "pic.twitter.com/VBI7YNEAdZ",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562529362834239488/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 4032
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "4883007748",
+                                        "screen_name": "AgentCivi",
+                                        "name": "Civi ⚕️🤫"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "399404516",
+                                        "screen_name": "Rainbow6Game",
+                                        "name": "Rainbow Six Siege"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4860273459",
+                                        "screen_name": "R6esports",
+                                        "name": "Rainbow Six Esports"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1161282159090524162",
+                                        "screen_name": "R6esportsEU",
+                                        "name": "Rainbow Six Esports Europe"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1035462188662759424",
+                                        "screen_name": "Rainbow6_UK",
+                                        "name": "Rainbow 6 Siege UK"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id_str": "1562488651061272576",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa8TJlQWIAAUAyT.jpg",
+                        "url": "https://t.co/VBI7YNEAdZ",
+                        "display_url": "pic.twitter.com/VBI7YNEAdZ",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562529362834239488/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 2206,
+                            "height": 2757
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "4883007748",
+                                        "screen_name": "AgentCivi",
+                                        "name": "Civi ⚕️🤫"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "399404516",
+                                        "screen_name": "Rainbow6Game",
+                                        "name": "Rainbow Six Siege"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4860273459",
+                                        "screen_name": "R6esports",
+                                        "name": "Rainbow Six Esports"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1161282159090524162",
+                                        "screen_name": "R6esportsEU",
+                                        "name": "Rainbow Six Esports Europe"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1035462188662759424",
+                                        "screen_name": "Rainbow6_UK",
+                                        "name": "Rainbow 6 Siege UK"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1562488651061272576",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "AgentCivi as Doc",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 5,
+                                        "green": 4,
+                                        "blue": 6
+                                    },
+                                    "percentage": 81.95
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 90,
+                                        "green": 33,
+                                        "blue": 52
+                                    },
+                                    "percentage": 2.79
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 64,
+                                        "green": 193,
+                                        "blue": 230
+                                    },
+                                    "percentage": 2.66
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 252,
+                                        "green": 47,
+                                        "blue": 77
+                                    },
+                                    "percentage": 1.5
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 11,
+                                        "green": 44,
+                                        "blue": 73
+                                    },
+                                    "percentage": 1.33
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    },
+                    {
+                        "id_str": "1562489128352202752",
+                        "media_url_https": "https://pbs.twimg.com/media/Fa8TlXTXwAAmgQh.jpg",
+                        "url": "https://t.co/VBI7YNEAdZ",
+                        "display_url": "pic.twitter.com/VBI7YNEAdZ",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1562529362834239488/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 3024,
+                            "height": 4032
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "4883007748",
+                                        "screen_name": "AgentCivi",
+                                        "name": "Civi ⚕️🤫"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "399404516",
+                                        "screen_name": "Rainbow6Game",
+                                        "name": "Rainbow Six Siege"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4860273459",
+                                        "screen_name": "R6esports",
+                                        "name": "Rainbow Six Esports"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1161282159090524162",
+                                        "screen_name": "R6esportsEU",
+                                        "name": "Rainbow Six Esports Europe"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "1035462188662759424",
+                                        "screen_name": "Rainbow6_UK",
+                                        "name": "Rainbow 6 Siege UK"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1562489128352202752",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "AgentCivi as Doc",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 7,
+                                        "green": 0,
+                                        "blue": 1
+                                    },
+                                    "percentage": 47.12
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 75,
+                                        "green": 0,
+                                        "blue": 10
+                                    },
+                                    "percentage": 9.02
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 226,
+                                        "green": 6,
+                                        "blue": 39
+                                    },
+                                    "percentage": 5.38
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 141,
+                                        "green": 0,
+                                        "blue": 15
+                                    },
+                                    "percentage": 4.52
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 250,
+                                        "green": 252,
+                                        "blue": 239
+                                    },
+                                    "percentage": 2.51
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 8,
+            "favorite_count": 43,
+            "reply_count": 2,
+            "quote_count": 3,
+            "conversation_id_str": "1562529362834239488",
+            "favorited": false,
+            "lang": "en"
+        },
+        "1605110947466526720": {
+            "created_at": "Tue Dec 20 08:00:46 +0000 2022",
+            "id": 1605110947466526700,
+            "id_str": "1605110947466526720",
+            "full_text": "#RainbowSixSiege PSA:\n\nTURN OFF THE BAN TICKER IN THE HUD SETTINGS RIGHT NOW, cheaters are exploiting it to show arbitrary images, including NSFW.\n\nThis can get you banned if you're streaming, but you can disable it and you shouldn't see it after.",
+            "entities": {
+                "hashtags": [
+                    {
+                        "text": "RainbowSixSiege"
+                    }
+                ],
+                "symbols": [],
+                "user_mentions": [],
+                "urls": []
+            },
+            "source": "<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 85,
+            "favorite_count": 613,
+            "reply_count": 12,
+            "quote_count": 20,
+            "conversation_id_str": "1605110947466526720",
+            "favorited": false
+        },
+        "1561304450526068739": {
+            "created_at": "Sun Aug 21 10:49:23 +0000 2022",
+            "id_str": "1561304450526068739",
+            "full_text": "SpiderNøkk.jpg https://t.co/ikovcRaXXu",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [],
+                "urls": [],
+                "media": [
+                    {
+                        "id_str": "1561304446826602498",
+                        "media_url_https": "https://pbs.twimg.com/media/FareH0tWYAIEpgL.jpg",
+                        "url": "https://t.co/ikovcRaXXu",
+                        "display_url": "pic.twitter.com/ikovcRaXXu",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1561304450526068739/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 2048,
+                            "height": 1240
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1097658310185177088",
+                                        "screen_name": "AlfieBanks14",
+                                        "name": "HAWX"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4883007748",
+                                        "screen_name": "AgentCivi",
+                                        "name": "Civi ⚕️🤫"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id_str": "1561304446826602498",
+                        "media_url_https": "https://pbs.twimg.com/media/FareH0tWYAIEpgL.jpg",
+                        "url": "https://t.co/ikovcRaXXu",
+                        "display_url": "pic.twitter.com/ikovcRaXXu",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1561304450526068739/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 2048,
+                            "height": 1240
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "1097658310185177088",
+                                        "screen_name": "AlfieBanks14",
+                                        "name": "HAWX"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "2257551379",
+                                        "screen_name": "DawnOfShadow",
+                                        "name": "Dawn"
+                                    },
+                                    {
+                                        "type": "user",
+                                        "user_id": "4883007748",
+                                        "screen_name": "AgentCivi",
+                                        "name": "Civi ⚕️🤫"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1561304446826602498",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "3 Nøkks pointing at eachother",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 35,
+                                        "green": 35,
+                                        "blue": 35
+                                    },
+                                    "percentage": 60.64
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 207,
+                                        "green": 137,
+                                        "blue": 66
+                                    },
+                                    "percentage": 29.06
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 100,
+                                        "green": 77,
+                                        "blue": 42
+                                    },
+                                    "percentage": 5.17
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 72,
+                                        "green": 91,
+                                        "blue": 72
+                                    },
+                                    "percentage": 3.22
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 31,
+                                        "green": 34,
+                                        "blue": 42
+                                    },
+                                    "percentage": 0.79
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"http://twitter.com/download/android\" rel=\"nofollow\">Twitter for Android</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 38,
+            "favorite_count": 253,
+            "reply_count": 3,
+            "quote_count": 1,
+            "conversation_id_str": "1561304450526068739",
+            "favorited": false,
+            "lang": "no"
+        },
+        "1577798179713589248": {
+            "created_at": "Wed Oct 05 23:09:34 +0000 2022",
+            "id": 1577798179713589200,
+            "id_str": "1577798179713589248",
+            "full_text": "THE RAINBOW 6 RAINBOW BUNDLE IS BACK!\nTHIS IS NOT A DRILL! IT'S A BUNDLE!\n\nGO BUY IT! https://t.co/jACUeAfpEz",
+            "entities": {
+                "hashtags": [],
+                "symbols": [],
+                "user_mentions": [],
+                "urls": [],
+                "media": [
+                    {
+                        "id": 1577797528774480000,
+                        "id_str": "1577797528774479880",
+                        "media_url_https": "https://pbs.twimg.com/media/FeV2fi4XkAgNXTi.png",
+                        "url": "https://t.co/jACUeAfpEz",
+                        "display_url": "pic.twitter.com/jACUeAfpEz",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1577798179713589248/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 844,
+                            "height": 413
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "399404516",
+                                        "screen_name": "Rainbow6Game",
+                                        "name": "Rainbow Six Siege"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "extended_entities": {
+                "media": [
+                    {
+                        "id": 1577797528774480000,
+                        "id_str": "1577797528774479880",
+                        "media_url_https": "https://pbs.twimg.com/media/FeV2fi4XkAgNXTi.png",
+                        "url": "https://t.co/jACUeAfpEz",
+                        "display_url": "pic.twitter.com/jACUeAfpEz",
+                        "expanded_url": "https://twitter.com/upLYNXed/status/1577798179713589248/photo/1",
+                        "type": "photo",
+                        "original_info": {
+                            "width": 844,
+                            "height": 413
+                        },
+                        "features": {
+                            "all": {
+                                "tags": [
+                                    {
+                                        "type": "user",
+                                        "user_id": "399404516",
+                                        "screen_name": "Rainbow6Game",
+                                        "name": "Rainbow Six Siege"
+                                    }
+                                ]
+                            }
+                        },
+                        "media_key": "3_1577797528774479880",
+                        "ext_sensitive_media_warning": null,
+                        "ext_media_availability": {
+                            "status": "available"
+                        },
+                        "ext_alt_text": "Osa Sixth Guardian Bundle has returned to the game (Rainbow Six Siege) and brings back the rainbow LGBTQIA+ pride backgrounds for operator cards in the game.",
+                        "ext_media_color": {
+                            "palette": [
+                                {
+                                    "rgb": {
+                                        "red": 192,
+                                        "green": 198,
+                                        "blue": 188
+                                    },
+                                    "percentage": 46.96
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 39,
+                                        "green": 201,
+                                        "blue": 224
+                                    },
+                                    "percentage": 16.23
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 63,
+                                        "green": 60,
+                                        "blue": 49
+                                    },
+                                    "percentage": 6.87
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 199,
+                                        "green": 155,
+                                        "blue": 120
+                                    },
+                                    "percentage": 5.52
+                                },
+                                {
+                                    "rgb": {
+                                        "red": 13,
+                                        "green": 230,
+                                        "blue": 231
+                                    },
+                                    "percentage": 5.28
+                                }
+                            ]
+                        },
+                        "ext": {
+                            "mediaStats": {
+                                "r": "Missing",
+                                "ttl": -1
+                            }
+                        }
+                    }
+                ]
+            },
+            "source": "<a href=\"https://mobile.twitter.com\" rel=\"nofollow\">Twitter Web App</a>",
+            "in_reply_to_status_id_str": null,
+            "in_reply_to_user_id_str": null,
+            "in_reply_to_screen_name": null,
+            "user_id": 1303103885159129000,
+            "user_id_str": "1303103885159129090",
+            "is_quote_status": false,
+            "retweet_count": 11,
+            "favorite_count": 43,
+            "reply_count": 5,
+            "quote_count": 0,
+            "conversation_id_str": "1577798179713589248",
+            "favorited": false,
+            "lang": "en"
+        }
+    },
+    "users": {
+        "1303103885159129090": {
+            "id_str": "1303103885159129090",
+            "name": "UPLYNXED",
+            "screen_name": "upLYNXed",
+            "description": "GFX Designer - Web Dev - @ElDewritoTeam & @ProjContingency Game Dev - They/Any 🏳️‍🌈\n\n📺 https://t.co/FpNJMPl5Yn\n📹 https://t.co/4UYfJyM2Jk\n💬 https://t.co/1iiCtDIO7T",
+            "created_at": "Mon Sep 07 22:53:31 +0000 2020",
+            "location": "🇳🇱 Netherlands",
+            "url": "https://t.co/FpNJMPl5Yn",
+            "entities": {
+                "description": {
+                    "urls": [
+                        {
+                            "display_url": "twitch.tv/UPLYNXED",
+                            "expanded_url": "http://twitch.tv/UPLYNXED",
+                            "url": "https://t.co/FpNJMPl5Yn"
+                        },
+                        {
+                            "display_url": "youtube.com/UPLYNXED",
+                            "expanded_url": "http://youtube.com/UPLYNXED",
+                            "url": "https://t.co/4UYfJyM2Jk"
+                        },
+                        {
+                            "display_url": "discord.gg/rbgrvXctjT",
+                            "expanded_url": "http://discord.gg/rbgrvXctjT",
+                            "url": "https://t.co/1iiCtDIO7T"
+                        }
+                    ]
+                },
+                "url": {
+                    "urls": [
+                        {
+                            "display_url": "twitch.tv/UPLYNXED",
+                            "expanded_url": "http://twitch.tv/UPLYNXED",
+                            "url": "https://t.co/FpNJMPl5Yn"
+                        }
+                    ]
+                }
+            },
+            "followers_count": 453,
+            "friends_count": 640,
+            "statuses_count": 10546,
+            "media_count": 1282,
+            "favourites_count": 66750,
+            "pinned_tweet_ids_str": [
+                "1593713098015510528"
+            ],
+            "profile_banner_url": "https://pbs.twimg.com/profile_banners/1303103885159129090/1620521907",
+            "profile_image_url_https": "https://pbs.twimg.com/profile_images/1567905577879085057/lSd0jML9_normal.jpg",
+            "verified": false
+        }
+    }
+}
