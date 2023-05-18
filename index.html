@@ -134,14 +134,14 @@
 		<footer class="container-fluid text-bg-dark bg-dark-subtle py-4">
 			<div class="container">
 				<div class="row">
-					<div class="col-12 col-md-11">
+					<div class="col-10">
 						<p class="text-muted">
 							Made with ♥ by <a href="https://twitter.com/uplynxed" target="_blank" class="text-decoration-none link-body-emphasis">
 								@upLYNXed
 							</a>
 						</p>
 					</div>
-					<div class="col-12 col-md-1">
+					<div class="col-2">
 						<p class="text-muted text-end">
 							<a href="https://github.com/uplynxed" target="_blank" class="text-decoration-none link-body-emphasis" title="GitHub">
 								<i class="fa-brands fa-github me-1"></i>
@@ -225,46 +225,75 @@
 										<option value="oldest">Oldest First</option>
 									</select>
 								</div>
+								{^{if ~root["current_loop"].name != "favorites"}}
+									<div class="mb-3">
+										<label for="filter-favorites" class="form-label" title="Filter tweets that you have favorited">
+											Favorites
+										</label>
+										<select class="form-select" id="filter-favorites" data-link="{:~favorites:}" title="Tweets that you have favorited">
+											<option value="all" title="Show all tweets, including favorites">
+												All Tweets
+											</option>
+											<option value="favorites" title="Only show tweets that you have favorited">
+												Only Favorites
+											</option>
+										</select>
+									</div>
+								{{/if}}
 								<div class="mb-3">
-									<label for="filter-favorites" class="form-label">Starred</label>
-									<select class="form-select" id="filter-favorites" data-link="{:~favorites:}">
-										<option value="all">All Tweets</option>
-										<option value="favorites">Only Starred</option>
+									<label for="filter-replies" class="form-label" title="Filter tweets that are replies to other tweets">
+										Replies
+									</label>
+									<select class="form-select" id="filter-replies" data-link="{:~replies:}" title="Tweets that are replies to other tweets">
+										<option value="all" title="Show all tweets, including replies">
+											All Tweets
+										</option>
+										<option value="replies" title="Only show tweets that are replies to other tweets">
+											Only Replies
+										</option>
+										<option value="no_replies" title="Hide tweets that are replies to other tweets">
+											No Replies
+										</option>
 									</select>
 								</div>
 								<div class="mb-3">
-									<label for="filter-replies" class="form-label">Replies</label>
-									<select class="form-select" id="filter-replies" data-link="{:~replies:}">
-										<option value="all">All Tweets</option>
-										<option value="replies">Only Replies</option>
-										<option value="no_replies">No Replies</option>
-									</select>
-								</div>
-								<div class="mb-3">
-									<label for="filter-retweets" class="form-label">Retweets</label>
+									<label for="filter-retweets" class="form-label" title="Filter retweets">
+										Retweets
+									</label>
 									<select class="form-select" id="filter-retweets" data-link="{:~retweets:}">
-										<option value="all">All Tweets</option>
-										<option value="retweets">Only Retweets</option>
-										<option value="no_retweets">No Retweets</option>
+										<option value="all" title="Show all tweets, including retweets">
+											All Tweets
+										</option>
+										<option value="retweets" title="Only show retweets">
+											Only Retweets
+										</option>
+										<option value="no_retweets" title="Hide retweets">
+											No Retweets
+										</option>
 									</select>
 								</div>
-								<!-- <div class="mb-3">
-									<label for="filter-username" class="form-label">Username</label>
-									<input disabled type="text" class="form-control" id="filter-username">
-								</div>
-								<div class="mb-3">
-									<label for="filter-text" class="form-label">Text</label>
-									<input disabled type="text" class="form-control" id="filter-text">
-								</div>
-								<div class="mb-3">
-									<label for="filter-media" class="form-label">Media</label>
-									<input disabled type="text" class="form-control" id="filter-media">
-								</div>
-								<div class="mb-3">
-									<label for="filter-quoted" class="form-label">Quoted</label>
-									<input disabled type="text" class="form-control" id="filter-quoted">
-								</div> -->
 							</div>
+							{^{if ~root["current_loop"].name == "favorites"}}
+								<div class="card-body border-top border-bottom bg-body-tertiary py-2">
+									<h5>More</h5>
+								</div>
+								<div class="card-body">
+									<div class="mb-3">
+										<label for="export-favorites" class="form-label">Export Favorites</label>
+										<button class="btn btn-primary w-100" id="export-favorites" onclick="exportFavorites();">
+											<i class="fa-solid fa-download"></i>
+											Export Favorites
+										</button>
+									</div>
+									<div class="mb-3">
+										<label for="import-favorites" class="form-label">Import Favorites</label>
+										<button class="btn btn-primary w-100" id="import-favorites" onclick="importFavorites();">
+											<i class="fa-solid fa-upload"></i>
+											Import Favorites
+										</button>
+									</div>
+								</div>
+							{{/if}}
 						</div>
 					{{else}}
 						<div class="card mb-3 sticky-top" style="top: 8.5em;">
@@ -596,7 +625,7 @@
 		<script class="d-none template" id="tweet-media" type="text/x-jsrender">
 			<!-- Tweet Media Templates -->
 			{{if extended_entities}}
-				<div class="card-body p-0 fs-6 d-flex flex-nowrap" style="min-height:16em;max-height:60vh">
+				<div class="card-body p-0 fs-6 d-flex flex-nowrap bg-dark-subtle" style="min-height:16em;max-height:60vh">
 					{{if extended_entities.media}}
 						{{for extended_entities.media ~id=id_str ~media_entities=extended_entities.media}}
 

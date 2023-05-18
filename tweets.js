@@ -2,14 +2,14 @@
  * tweets.js
  * Loads and displays tweets from a tweets.json file
  * 
+ * @author Caspar "UPLYNXED" Neervoort <twitter.com/upLYNXed>
+ * @version 1.0.0
+ * @license MIT
+ * 
  * @uses config.json    - The file containing the config
  * @uses tweets.json    - The file containing the tweets to display
  * @uses JSRender       - The templating engine used to display the tweets
  * @uses JSViews		- The templating engine used to display the tweets
- * 
- * @version 1.0.0
- * @license MIT
- * 
  * 
  * Author:  UPLYNXED (@uplynxed)
  */
@@ -188,13 +188,14 @@ let tweets_object = {
 	 */
 	"current_loop": {
 		"name": "tweets_array",
+		"title": "Archived Tweets", // TODO: Implement this
 		"offset": 0,
 		"limit": 30,
 		"sort": "newest",
 	},
 	/**
 	 * The favorites array, this contains the favorited tweets as an array so they can be looped through
-	 * This value is stored locally in localStorage and can be exported and imported as a JSON file using downloadFavorites() and importFavorites()
+	 * This value is stored locally in localStorage and can be exported and imported as a JSON file using exportFavorites() and importFavorites()
 	 * @type {Array}
 	 * @value {string} tweet_id_str - The ID of the tweet
 	 */
@@ -1608,8 +1609,12 @@ function registerCustomTags() {
 function searchTweets( query, initial = false ) {
 	let results = [];
 
+	// Search tweets_array or tweets object?
+	// let search_tweets = tweets_object['tweets_array'];
+	let search_tweets = Object.values(tweets_object['tweets']);
+
 	// Search the tweets_array for the query
-	tweets_object['tweets_array'].forEach(function(tweet) {
+	search_tweets.forEach(function(tweet) {
 		// Check if the tweet text contains the query
 		if (tweet.full_text.toLowerCase().includes(query.toLowerCase())) {
 			if (!results.includes(tweet)) results.push(tweet);
@@ -1618,6 +1623,15 @@ function searchTweets( query, initial = false ) {
 		// Check if the quoted tweet text contains the query
 		if (tweet.is_quote_status && tweet.quoted_tweet !== undefined && tweet.quoted_tweet.full_text.toLowerCase().includes(query.toLowerCase())) {
 			if (!results.includes(tweet)) results.push(tweet);
+		}
+
+		// If user is undefined, define it
+		if (tweet.user === undefined) {
+			tweet['user'] = tweets_object['users'][tweet.user_id_str];
+
+			if (tweet['user'] === undefined) {
+				return false;
+			}
 		}
 
 		// Check if the tweet's user's name contains the query
@@ -1692,6 +1706,10 @@ function setMainUser(user = tweets_object['users'][config.id]) {
 
 	// Set the page title
 	document.title = `${main_user.name} (@${main_user.screen_name}) / Twitter Archive`;
+
+	// Set the page description
+	let description = "Twitter Archive of " + main_user.name + " (@" + main_user.screen_name + ")";
+	document.querySelector("meta[property='og:description']").setAttribute("content", description);
 
 	// Display the user's bio using JSRender
 	let user_banner = $.templates("#user-banner");
@@ -1820,19 +1838,32 @@ function loadFavorites() {
  * 
  * @returns {boolean} - Whether the download was successful
  */
-function downloadFavorites() {
-	if (tweets_object['favorites'].length === 0) {
+function exportFavorites() {
+	// Check if the favorites array exists
+	if (tweets_object['favorites'] === undefined) {
 		return false;
 	}
 
-	let blob = new Blob([JSON.stringify(tweets_object['favorites'])], {type: "application/json"});
-	let url = window.URL.createObjectURL(blob);
-	let a = document.createElement("a");
-	a.href = url;
-	a.download = "favorites.json";
-	a.click();
+	// Check if the favorites array is empty
+	if (tweets_object['favorites'].length === 0) {
+		return false;
+	}
+	
+	// Create a JSON file from the favorites array
+	try {
+		let blob = new Blob([JSON.stringify(tweets_object['favorites'])], {type: "application/json"});
+		let url = window.URL.createObjectURL(blob);
+		let a = document.createElement("a");
+		a.href = url;
+		a.download = "favorites.json";
+		a.click();
 
-	window.URL.revokeObjectURL(url);
+		// Revoke the object URL to free up memory
+		window.URL.revokeObjectURL(url);
+	} catch (e) {
+		console.error("Error exporting favorites: ", e);
+		return false;
+	}
 
 	return true;
 }
@@ -1843,6 +1874,11 @@ function downloadFavorites() {
  * @returns {boolean} - Whether the import was successful
  */
 function importFavorites() {
+	let confirm_overwrite = confirm("Importing favorites will overwrite your current favorites. Are you sure you want to continue?");
+	if (!confirm_overwrite) {
+		return false;
+	}
+
 	try {
 		let input = document.createElement("input");
 		input.type = "file";
@@ -1859,7 +1895,7 @@ function importFavorites() {
 				});
 
 				try {
-					localStorage.setItem( "favorites", favorites );
+					localStorage.setItem( "favorites", JSON.stringify( favorites ) );
 
 					// Use loadFavorites() to update the favorites array from localStorage
 					loadFavorites();
