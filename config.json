@@ -40,5 +40,12 @@
         "Specify a date to only show tweets up to that point (set to false for no cutoff date).",
         
     "date_cutoff": false,
-    "date_cutoff_toggle": false
+    "date_cutoff_toggle": false,
+    
+
+
+
+
+    "-- version (do not edit) --":
+        "1.0.0"
 }

@@ -2,8 +2,14 @@
  * tweets.js
  * Loads and displays tweets from a tweets.json file
  * 
+ * @uses config.json    - The file containing the config
  * @uses tweets.json    - The file containing the tweets to display
  * @uses JSRender       - The templating engine used to display the tweets
+ * @uses JSViews		- The templating engine used to display the tweets
+ * 
+ * @version 1.0.0
+ * @license MIT
+ * 
  * 
  * Author:  UPLYNXED (@uplynxed)
  */
@@ -776,16 +782,16 @@ function switchTweetLoop( loop = "tweets_array", args = { "offset": 0, "limit": 
 		return tweets_object[ 'current_tweets' ];
 	}
 
-	// Update the current loop
-	$.observable( tweets_object['current_loop'] ).setProperty( "name", loop );
-	tweets_object['current_loop'].offset = offset;
-	tweets_object['current_loop'].limit = limit;
-
 	//Swap the current_tweets array with the new loop
 	let new_tweets = tweets_object[ loop ].slice( offset, offset + limit );
 
 	// Refresh the current_tweets array with $.observable()
 	$.observable( tweets_object['current_tweets'] ).refresh( new_tweets );
+
+	// Update the current loop
+	$.observable( tweets_object['current_loop'] ).setProperty( "name", loop );
+	tweets_object['current_loop'].offset = offset;
+	tweets_object['current_loop'].limit = limit;
 
 	hideLoadingAnimation(attachVideoPlayHandler);
 
@@ -2073,13 +2079,13 @@ function handleNavHashChange( e = null ) {
 		let tweet_id = hash.split("/")[2];
 
 		// Make a temporary object with only the tweet we want to display
-		$.observable(tweets_object).setProperty("current_tweets", [ tweets_object['tweets'][tweet_id] ]);
+		tweets_object['tweet_single'] = [ tweets_object['tweets'][tweet_id] ];
 
 		// Render the tweet
 		if ( initial ) {
-			displayTweets(tweets_object, {"loop": "current_tweets"});
+			displayTweets(tweets_object, {"loop": "tweet_single"});
 		} else {
-			switchTweetLoop("current_tweets", {"force": true});
+			switchTweetLoop("tweet_single", {"force": true});
 		}
 
 		// If there is a page to go back to, show the back button
