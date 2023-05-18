@@ -383,6 +383,21 @@ function loadConfig(file = "config.json") {
 
 			// Merge the config_file object with the config object, overwriting any existing values
 			Object.assign(config, config_file);
+
+			// Copy the date_cutoff related properties to the tweets_object.current_loop object
+			try {
+				config.date_cutoff = new Date(config.date_cutoff);
+				tweets_object['current_loop'].date_cutoff = config.date_cutoff.getTime();
+				if (config.date_cutoff_toggle !== undefined && config.date_cutoff != false) {
+					tweets_object['current_loop'].date_cutoff_toggle = (config.date_cutoff_toggle === undefined) ? false : config.date_cutoff_toggle;
+					tweets_object['current_loop'].date_cutoff_toggle_option = (config.date_cutoff_toggle_option === undefined) ? true : config.date_cutoff_toggle_option;
+				} else {
+					tweets_object['current_loop'].date_cutoff_toggle = false;
+					tweets_object['current_loop'].date_cutoff_toggle_option = false;
+				}
+			} catch (e) {
+				console.error( 'Error: Invalid date_cutoff value in config.json', e );
+			}
 		}
 	};
 
@@ -418,6 +433,9 @@ function loadTweets(file = "tweets.json", callback = function() {}) {
 				if ( tweets_object['tweets'][key].retweeted_status_result !== undefined ) {
 					Object.setPrototypeOf( tweets_object['tweets'][key].retweeted_status_result.result.legacy, tweets_object );
 				}
+
+				// Change the date format of the tweets
+				tweets_object['tweets'][key].created_at = new Date(tweets_object['tweets'][key].created_at).getTime();
 			});
 
 			Object.entries(tweets_object['users']).forEach(function([key, value]) {
@@ -687,7 +705,7 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 	let list_views = [ "tweets_array", "user_media", "favorites", "search_results", "all_in_archive" ];
 
 	// Render the tweets using JSViews
-	tweetsTemplate.link(tweetContainer, tweets, { replies: "no_replies", retweets: "no_retweets", favorites: "all", sort_order: "newest", list_views: list_views });
+	tweetsTemplate.link(tweetContainer, tweets, { replies: "no_replies", retweets: "no_retweets", favorites: "all", media: "all", sort_order: "newest", date_cutoff_toggle: config.date_cutoff_toggle, list_views: list_views });
 
 	hideLoadingAnimation(attachVideoPlayHandler);
 

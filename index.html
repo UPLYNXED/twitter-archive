@@ -240,6 +240,24 @@
 										</select>
 									</div>
 								{{/if}}
+								{^{if ~root["current_loop"].name != "user_media"}}
+									<div class="mb-3">
+										<label for="filter-media" class="form-label" title="Filter tweets that contain media (images, videos, etc.)">
+											Media
+										</label>
+										<select class="form-select" id="filter-media" data-link="{:~media:}" title="Tweets that contain media (images, videos, etc.)">
+											<option value="all" title="Show all tweets, including media">
+												All Tweets
+											</option>
+											<option value="media" title="Only show tweets that contain media">
+												Only Media
+											</option>
+											<option value="no_media" title="Hide tweets that contain media">
+												No Media
+											</option>
+										</select>
+									</div>
+								{{/if}}
 								<div class="mb-3">
 									<label for="filter-replies" class="form-label" title="Filter tweets that are replies to other tweets">
 										Replies
@@ -272,6 +290,18 @@
 										</option>
 									</select>
 								</div>
+								{{if ~root["current_loop"].date_cutoff_toggle_option != false}}
+									<div class="mb-3">
+										<input type="checkbox" class="form-check-input" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
+										<label class="form-check-label" for="date-cutoff">
+											{^{if ~date_cutoff_toggle}}
+												Excluding tweets after {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+											{{else}}
+												Including tweets after {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+											{{/if}}
+										</label>
+									</div>
+								{{/if}}
 							</div>
 							{^{if ~root["current_loop"].name == "favorites"}}
 								<div class="card-body border-top border-bottom bg-body-tertiary py-2">
@@ -354,11 +384,15 @@
 						{^{if #data}}
 							{^{if ~retweets == "all" || (~retweets == "retweets" && retweeting_user != undefined) || (~retweets == "no_retweets" && retweeting_user == undefined) || ~root["current_loop"].name == "tweet_single"}}
 								{^{if ~replies == "all" || (~replies == "replies" && in_reply_to_status_id_str != null) || (~replies == "no_replies" && in_reply_to_status_id_str == null) || ~root["current_loop"].name == "tweet_single"}}
-									{^{if ~favorites == "all" || (~favorites == "favorites" && favorited == true)}}
-										{{if user}}
-											{^{include #data ^tmpl="#tweet" /}}
-										{{else}}
-											{^{include #data ^tmpl="#404" ~message="Could not load this tweet" /}}
+									{^{if ~media == "all" || (~media == "media" && extended_entities) || (~media == "no_media" && !extended_entities) || ~root["current_loop"].name == "tweet_single"}}
+										{^{if ~favorites == "all" || (~favorites == "favorites" && favorited == true)}}
+											{^{if ~date_cutoff_toggle == false  || (~date_cutoff_toggle == true && created_at < ~root["current_loop"].date_cutoff)}}
+												{{if user}}
+													{^{include #data ^tmpl="#tweet" /}}
+												{{else}}
+													{^{include #data ^tmpl="#404" ~message="Could not load this tweet" /}}
+												{{/if}}
+											{{/if}}
 										{{/if}}
 									{{/if}}
 								{{/if}}
@@ -625,7 +659,7 @@
 		<script class="d-none template" id="tweet-media" type="text/x-jsrender">
 			<!-- Tweet Media Templates -->
 			{{if extended_entities}}
-				<div class="card-body p-0 fs-6 d-flex flex-nowrap bg-dark-subtle" style="min-height:16em;max-height:60vh">
+				<div class="card-body p-0 fs-6 d-flex flex-nowrap bg-dark-subtle {{:~classes}}" style="min-height:16em;max-height:60vh">
 					{{if extended_entities.media}}
 						{{for extended_entities.media ~id=id_str ~media_entities=extended_entities.media}}
 

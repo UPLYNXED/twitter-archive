@@ -9,7 +9,7 @@
         "Below are some options you can use to customize the appearance of the page.",
         
     "theme": "dark",
-    "theme_toggle": false,
+    "theme_toggle_option": false,
     "banner_pos_y": 50,
     
     
@@ -41,6 +41,7 @@
         
     "date_cutoff": false,
     "date_cutoff_toggle": false,
+    "date_cutoff_toggle_option": false,
     
 
 
