@@ -2,9 +2,33 @@
 <!-- 
 	A page to display archived tweets from a tweets.json file.
 
-	Author: UPLYNXED (@uplynxed)
--->
+	Author: 	Caspar "UPLYNXED" Neervoort (twitter.com/upLYNXed)
+	Version: 	1.0.0
+	License: 	MIT
 
+	Files: 
+		- index.html 	(this file)
+		- tweets.js 	(javaScript for the page)
+		- config.json 	(configuration file)
+		- tweets.json 	(the tweets archive file)
+
+	Uses: 
+		- Bootstrap 5.3.0 		(https://getbootstrap.com/)
+		- Font Awesome 6.4.0 	(https://fontawesome.com/)
+		- Twemoji 14.0.2 		(https://twemoji.twitter.com/)
+		- jQuery 3.6.0 			(https://jquery.com/)
+		- JSRender 1.0.13 		(https://www.jsviews.com/)
+		- JSViews 1.0.13 		(https://www.jsviews.com/)
+
+	Demo: https://uplynxed.github.io/twitter-archive/
+
+	Usage: 
+		1. Scrape your tweets using the scraper userscript or bookmarklet. (scraper is currently not publicly available)
+		2. Download the resulting tweets.json file and place it in the same directory as this file.
+		3. Find the user ID of the account you want to view (you can use https://tweeterid.com/ to find it) and set it in the config.json file.
+		4. Open this file in a web browser (tested in Firefox and Chrome).
+		4. You're done! You can now view your archived tweets in a web browser.
+-->
 <html lang="en" class="min-vh-100" data-bs-theme="dark">
 	<head>
 		<meta charset="utf-8">
@@ -299,8 +323,8 @@
 					<!-- This is where the tweets will be rendered -->
 					{^{for ~root["current_tweets"] ~replies ~retweets}}
 						{^{if #data}}
-							{^{if ~retweets == "all" || (~retweets == "retweets" && retweeting_user != undefined) || (~retweets == "no_retweets" && retweeting_user == undefined)}}
-								{^{if ~replies == "all" || (~replies == "replies" && in_reply_to_status_id_str != null) || (~replies == "no_replies" && in_reply_to_status_id_str == null)}}
+							{^{if ~retweets == "all" || (~retweets == "retweets" && retweeting_user != undefined) || (~retweets == "no_retweets" && retweeting_user == undefined) || ~root["current_loop"].name == "tweet_single"}}
+								{^{if ~replies == "all" || (~replies == "replies" && in_reply_to_status_id_str != null) || (~replies == "no_replies" && in_reply_to_status_id_str == null) || ~root["current_loop"].name == "tweet_single"}}
 									{^{if ~favorites == "all" || (~favorites == "favorites" && favorited == true)}}
 										{{if user}}
 											{^{include #data ^tmpl="#tweet" /}}
