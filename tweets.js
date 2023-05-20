@@ -192,6 +192,7 @@ let tweets_object = {
 		"offset": 0,
 		"limit": 30,
 		"sort": "newest",
+		"users_relevant": [],
 	},
 	/**
 	 * The favorites array, this contains the favorited tweets as an array so they can be looped through
@@ -207,7 +208,7 @@ let tweets_object = {
 	 * @value {Array} replies - The replies themselves
 	 * @value {object} replies.tweet - The tweet itself
 	 */
-	"replies": {},
+	"conversations": {},
 	/**
 	 * The retweets object, this contains the retweets as an array so they can be looped through
 	 * @type {Array}
@@ -267,12 +268,12 @@ let tweets_object = {
 				return undefined;
 			}
 
-			if ( tweets_object['replies'][this.conversation_id_str] === undefined ) { // If the conversation doesn't exist in the replies object
+			if ( tweets_object['conversations'][this.conversation_id_str] === undefined ) { // If the conversation doesn't exist in the replies object
 				return undefined;
 			}
 			
 			let conversation = {
-				"tweets": tweets_object['replies'][this.conversation_id_str],
+				"tweets": tweets_object['conversations'][this.conversation_id_str],
 				"index": 0,
 			};
 
@@ -281,6 +282,29 @@ let tweets_object = {
 
 			return conversation;
 		},
+		// /**
+		//  * Get a tweet's replies
+		//  * @returns {Array} - The replies
+		//  */
+		// get replies() {
+		// 	delete this.replies; 										// Delete the getter so it can be redefined
+		// 	if ( this.user_id_str === undefined ) {						// If there is no user associated with the given object
+		// 		return undefined;
+		// 	}
+
+		// 	// If the tweet's id_str exists as a key in the replies object, return that property
+		// 	if ( tweets_object['conversations'][this.id_str] !== undefined ) {
+		// 		this.replies = tweets_object['conversations'][this.id_str];
+		// 		return this.replies;
+		// 	}
+
+		// 	// Get any tweet with it's in_reply_to_status_id_str set to the current tweet's id_str
+		// 	this.replies = Object.values(tweets_object['tweets']).filter(function(tweet) {
+		// 		return tweet.in_reply_to_status_id_str === this.id_str;
+		// 	}, this);
+
+		// 	return this.replies;
+		// },
 		/**
 		 * Get tweet's or a user's url
 		 * @returns {string} - The url
@@ -401,7 +425,19 @@ function loadConfig(file = "config.json") {
 		}
 	};
 
-	xhttp.open("GET", file, false);
+	// Build the request URL
+	let request_url = "";
+	if (window.location.pathname.endsWith("/") || window.location.pathname == "/") {
+		request_url = window.location.href.split("#");
+		request_url = request_url[0] + file;
+	} else {
+		request_url = window.location.href.split("#");
+		request_url = request_url[0].split("/");
+		request_url.pop();
+		request_url = request_url.join("/") + "/" + file;
+	}
+
+	xhttp.open("GET", request_url, false);
 	xhttp.send();
 
 	return config;
@@ -446,7 +482,19 @@ function loadTweets(file = "tweets.json", callback = function() {}) {
 		callback;
 	};
 
-	xhttp.open("GET", file, false);
+	// Build the request URL
+	let request_url = "";
+	if (window.location.pathname.endsWith("/") || window.location.pathname == "/") {
+		request_url = window.location.href.split("#");
+		request_url = request_url[0] + file;
+	} else {
+		request_url = window.location.href.split("#");
+		request_url = request_url[0].split("/");
+		request_url.pop();
+		request_url = request_url.join("/") + "/" + file;
+	}
+
+	xhttp.open("GET", request_url, false);
 	xhttp.send();
 
 	return tweets_object;
@@ -555,20 +603,31 @@ function processTweets(callback = function() {}) {
 			tweets_quoted.push(quoted_tweet); 
 		}
 
-		// Copy any reply tweets to a "replies" object inside the tweets_object
-		if (tweet.in_reply_to_status_id_str !== undefined) {
-			if (tweets_object['replies'][tweet.conversation_id_str] === undefined) {
-				tweets_object['replies'][tweet.conversation_id_str] = [];
+		// Copy any conversation tweets to a "conversations" object inside the tweets_object
+		if (tweet.conversation_id_str !== undefined) {
+			if (tweets_object['conversations'][tweet.conversation_id_str] === undefined) { // If the conversation doesn't exist in the replies object
+				tweets_object['conversations'][tweet.conversation_id_str] = []; // Create the conversation in the replies object
 			}
-			tweets_object['replies'][tweet.conversation_id_str].push(tweet);
+			tweets_object['conversations'][tweet.conversation_id_str].push(tweet);
+		}
+
+		// Copy any tweets that are replies to a "replies" object inside the tweet object it is replying to
+		if (tweet.in_reply_to_status_id_str !== undefined && tweet.in_reply_to_status_id_str !== null) {
+			let tweet_replied_to = tweets_object['tweets'][tweet.in_reply_to_status_id_str]; // Get the tweet this tweet is replying to
+			if (tweet_replied_to !== undefined) { // If the tweet this tweet is replying to exists
+				if (tweet_replied_to.replies === undefined) { // If the tweet this tweet is replying to doesn't have a replies object
+					tweet_replied_to.replies = []; // Create the replies object
+				}
+				tweet_replied_to.replies.push( tweet ); // Add the tweet to the replies object
+			}
 		}
 	});
 
 	// Remove any conversations from the replies object that only have one tweet in them
-	Object.entries(tweets_object['replies']).filter(function([key, value]) {
+	Object.entries(tweets_object['conversations']).filter(function([key, value]) {
 		return value.length <= 1;
 	}).forEach(function([key, value]) {
-		delete tweets_object['replies'][key];
+		delete tweets_object['conversations'][key];
 	});
 
 	// Remove any:
@@ -636,7 +695,7 @@ function processTweets(callback = function() {}) {
 
 		// // Check if the tweet is a reply to the main user and add it to the replies object if it is, using the conversation_id_str as the key
 		// if (tweet.in_reply_to_user_id_str === main_user.id_str) {
-		// 	tweets_object['replies'][tweet.conversation_id_str].push(tweet);
+		// 	tweets_object['conversations'][tweet.conversation_id_str].push(tweet);
 			
 		// 	if (tweet.user_id_str !== main_user.id_str) { // Remove the tweet from the tweets array if it's not by the main user
 		// 		return false;
@@ -645,7 +704,7 @@ function processTweets(callback = function() {}) {
 
 		// // Check if the tweet is a reply by the main user to another user and add it to the replies object if it is, using the conversation_id_str as the key
 		// if (tweet.user_id_str === main_user.id_str && tweet.in_reply_to_user_id_str !== main_user.id_str) {
-		// 	tweets_object['replies'][tweet.conversation_id_str].push(tweet); // TODO rewrite this stuff when I'm less tired... it's a mess
+		// 	tweets_object['conversations'][tweet.conversation_id_str].push(tweet); // TODO rewrite this stuff when I'm less tired... it's a mess
 		// }
 
 		// // Check if the tweet is a retweet of the main user and add it to the retweets object if it is, using the conversation_id_str as the key
@@ -676,27 +735,29 @@ function processTweets(callback = function() {}) {
  * 
  * @returns {void}
  */
-function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "limit": 30 }) {
+function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "limit": 30, "tweet_offset": 0 }) {
 	showLoadingAnimation();
 
 	// Start counting execution time
 	console.time(`Displaying tweets: ${args.loop}, offset: ${args.offset}, limit: ${args.limit}. Execution Time:`);
 
-	let loop = (args.loop === undefined) ? "tweets_array" : args.loop;
-	let offset = (args.offset === undefined) ? undefined : args.offset;
-	let limit = (args.limit === undefined) ? undefined : args.limit;
+	let loop 			= (args.loop === undefined) 		? "tweets_array" 	: args.loop;
+	let offset 			= (args.offset === undefined) 		? undefined 		: args.offset;
+	let limit 			= (args.limit === undefined) 		? undefined 		: args.limit;
+	let tweet_offset 	= (args.tweet_offset === undefined) ? 0 				: args.tweet_offset;
 
 	let tweetContainer 	= document.getElementsByClassName("tweets")[0];
 	let tweetsTemplate	= $.templates("#tweet-list");
 
 	// Set the loop to the current loop
-	tweets_object['current_loop'].name = loop;
-	tweets_object['current_loop'].offset = offset;
-	tweets_object['current_loop'].limit = limit;
+	tweets_object['current_loop'].name 			= loop;
+	tweets_object['current_loop'].offset 		= offset;
+	tweets_object['current_loop'].limit 		= limit;
+	tweets_object['current_loop'].tweet_offset 	= tweet_offset;
 
 	// Set the current tweets to the right loop. If an offset and limit are specified, slice the array
 	if (offset !== undefined && limit !== undefined) {
-		tweets_object['current_tweets'] = tweets_object[loop].slice(offset, offset + limit);
+		tweets_object['current_tweets'] = tweets_object[loop].slice(offset, offset + tweet_offset + limit);
 	} else {
 		tweets_object['current_tweets'] = tweets_object[loop];
 	}
@@ -726,6 +787,7 @@ function displayMoreTweets( e ) {
 	let current_loop 	= tweets_object['current_loop'].name;
 	let offset 			= tweets_object['current_loop'].offset;
 	let limit 			= tweets_object['current_loop'].limit;
+	let tweet_offset 	= tweets_object['current_loop'].tweet_offset;
 
 	let scroll_distance = 100; // The distance from the bottom of the page to start loading more tweets
 	let scroll_position = window.innerHeight + window.scrollY; // The current scroll position
@@ -752,7 +814,10 @@ function displayMoreTweets( e ) {
 			}
 
 			// Define the new offset
-			offset += limit;
+			offset += tweet_offset + limit;
+
+			// Reset the tweet offset
+			tweets_object['current_loop'].tweet_offset = 0;
 
 			// Get the next tweets
 			let next_tweets = tweets_object[current_loop].slice(offset, offset + limit);
@@ -791,10 +856,11 @@ function displayMoreTweets( e ) {
  * 
  * @returns {object} - The current tweets object
  */
-function switchTweetLoop( loop = "tweets_array", args = { "offset": 0, "limit": 30, "force": false } ) {
-	let offset = (args.offset === undefined) ? 0 : args.offset;
-	let limit = (args.limit === undefined) ? 30 : args.limit;
-	let force = (args.force === undefined) ? false : args.force;
+function switchTweetLoop( loop = "tweets_array", args = { "offset": 0, "limit": 30, "tweet_offset": 0, "force": false } ) {
+	let offset 			= (args.offset === undefined) 		? 0 	: args.offset;
+	let limit 			= (args.limit === undefined) 		? 30 	: args.limit;
+	let force 			= (args.force === undefined) 		? false : args.force;
+	let tweet_offset 	= (args.tweet_offset === undefined) ? 0 : args.tweet_offset;
 
 	// If the loop is the same as the current loop and force is false, don't switch
 	if ( loop === tweets_object['current_loop'].name && force === false ) {
@@ -802,15 +868,16 @@ function switchTweetLoop( loop = "tweets_array", args = { "offset": 0, "limit": 
 	}
 
 	//Swap the current_tweets array with the new loop
-	let new_tweets = tweets_object[ loop ].slice( offset, offset + limit );
+	let new_tweets = tweets_object[ loop ].slice( offset, offset + tweet_offset + limit );
 
 	// Refresh the current_tweets array with $.observable()
 	$.observable( tweets_object['current_tweets'] ).refresh( new_tweets );
 
 	// Update the current loop
 	$.observable( tweets_object['current_loop'] ).setProperty( "name", loop );
-	tweets_object['current_loop'].offset = offset;
-	tweets_object['current_loop'].limit = limit;
+	tweets_object['current_loop'].offset 		= offset;
+	tweets_object['current_loop'].limit 		= limit;
+	tweets_object['current_loop'].tweet_offset 	= tweet_offset;
 
 	hideLoadingAnimation(attachVideoPlayHandler);
 
@@ -2130,16 +2197,91 @@ function handleNavHashChange( e = null ) {
 	 */
 	function navToTweet( hash, initial = false ) { // TODO: Fix this function - it doesn't work on a navchange event anymore, only the sidebar changes while the main content doesn't
 		// Get the tweet ID from the hash (formatted as "#username/status/tweet_id")
-		let tweet_id = hash.split("/")[2];
+		let tweet_id 		= hash.split("/")[2];
+		let linked_tweet 	= tweets_object['tweets'][tweet_id];
+		let conversation 	= [ linked_tweet ];
+		let loop 			= "tweet_single";
 
-		// Make a temporary object with only the tweet we want to display
-		tweets_object['tweet_single'] = [ tweets_object['tweets'][tweet_id] ];
+		// Check if the conversation_id_str property exists
+		if ( linked_tweet.conversation_id_str !== undefined && linked_tweet.conversation_id_str !== null ) {
+			if ( linked_tweet.conversation_id_str === tweet_id ) { // Check if the linked tweet is the first tweet in the conversation
+				if ( linked_tweet.replies !== undefined && linked_tweet.replies !== null ) { // Check if the linked tweet has a "replies" property
+					// Get the conversation
+					conversation = linked_tweet.replies;
+					// Add the linked tweet to the conversation if it's not already in the conversation
+					if ( !conversation.includes( linked_tweet ) ) {
+						conversation.unshift( linked_tweet );
+					}
+				} 
+			} else if ( tweets_object['tweets'][linked_tweet.conversation_id_str] !== undefined ) { // Check if the conversation exists in the tweets object
+				let original_tweet = tweets_object['tweets'][linked_tweet.conversation_id_str];
+				if ( original_tweet.replies !== undefined && original_tweet.replies !== null ) { // Check if the conversation has a "replies" property
+					// Get the conversation
+					conversation = original_tweet.replies;
+				}
+
+				// Remove the original and linked tweet from the conversation
+				conversation = conversation.filter( function(tweet) {
+					return tweet.id_str !== tweet_id && tweet.id_str !== original_tweet.id_str;
+				});
+
+				conversation = [ original_tweet, linked_tweet ].concat( conversation );
+			}
+
+			// Check if the conversation is empty
+			if ( conversation.length > 0 ) {
+				// If the conversation is empty, set the loop to "tweet_single"
+				loop = "tweet_thread";
+			}
+		 }
+
+		// Put the conversation in the tweets_object
+		$.observable(tweets_object).setProperty( loop, conversation);
+
+		// Get the relevant users for the tweet(s)
+		let users_relevant = {};
+		let users_order = 0;
+		tweets_object[loop].forEach(function(linked_tweet) {
+			if ( users_relevant[linked_tweet.user_id_str] === undefined ) {	// If the user is already in the users_relevant object
+				users_relevant[linked_tweet.user_id_str] = tweets_object['users'][linked_tweet.user_id_str];
+				users_relevant[linked_tweet.user_id_str]['order'] = users_order;
+				users_order++;
+			}
+
+			// If the tweet is a quote tweet, add the quoted tweet's user to the users_relevant object
+			if (linked_tweet.is_quote_status && linked_tweet.quoted_tweet !== undefined) {
+				if ( users_relevant[linked_tweet.quoted_tweet.user_id_str] === undefined ) {	// If the user is already in the users_relevant object
+					users_relevant[linked_tweet.quoted_tweet.user_id_str] = tweets_object['users'][linked_tweet.quoted_tweet.user_id_str];
+					users_relevant[linked_tweet.quoted_tweet.user_id_str]['order'] = users_order;
+					users_order++;
+				}
+			}
+
+			// If the tweet mentions any users, add them to the users_relevant object
+			if (linked_tweet.entities.user_mentions !== undefined) {
+				linked_tweet.entities.user_mentions.forEach(function(user_mention) {
+					if ( users_relevant[user_mention.id_str] !== undefined ) return;	// If the user is already in the users_relevant object, return
+					if ( tweets_object['users'][user_mention.id_str] === undefined ) return;	// If the user is not in the users object, return
+					users_relevant[user_mention.id_str] = tweets_object['users'][user_mention.id_str];
+					users_relevant[user_mention.id_str]['order'] = users_order;
+					users_order++;
+				});
+			}
+		});
+
+		// Change the relevant users object to an array and sort them by the users_order property.
+		users_relevant = Object.values(users_relevant).sort(function(a, b) {
+			return a.order - b.order;
+		});
+
+		// Replace the users_relevant object on the tweets_object.current_loop object
+		$.observable(tweets_object['current_loop']).setProperty("users_relevant", users_relevant);
 
 		// Render the tweet
 		if ( initial ) {
-			displayTweets(tweets_object, {"loop": "tweet_single"});
+			displayTweets(tweets_object, {"loop": loop, "offset": 0, "limit": 5/*, "tweet_offset": tweet_offset*/});
 		} else {
-			switchTweetLoop("tweet_single", {"force": true});
+			switchTweetLoop(loop, {"force": true, "offset": 0, "limit": 5/*, "tweet_offset": tweet_offset*/});
 		}
 
 		// If there is a page to go back to, show the back button
@@ -2147,6 +2289,11 @@ function handleNavHashChange( e = null ) {
 			back_button.classList.remove("d-none");
 		} else {
 			back_button.classList.add("d-none");
+		}
+
+		// If the linked tweet is not the first tweet in the conversation, scroll to the tweet
+		if (tweets_object[loop][0].id_str !== tweet_id) {
+			scrollToHash();
 		}
 	}
 
@@ -2212,7 +2359,8 @@ function handleNavHashChange( e = null ) {
 
 	// If the hash matches a tweet's ID property, scroll to the tweet
 	if ( hash.includes("status") ) {
-		scrollToHash();
+		// scrollToHash();
+		navToTweet( hash );		// Testing with more paginated navigation
 	}
 
 	// If there are no other matches for the hashes, return

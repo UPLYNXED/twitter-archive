@@ -326,54 +326,45 @@
 							{{/if}}
 						</div>
 					{{else}}
-						<div class="card mb-3 sticky-top" style="top: 8.5em;">
-							<div class="card-header">
-								<h5>Relevant Users</h5>
-							</div>
-							<div class="card-body">
-								{{for ~root["current_tweets"]}}
-									{{if user}}
+						<div class="sticky-top" style="top: 8.5em;">
+							{{if ~root["current_loop"].date_cutoff_toggle_option != false}}
+								<div class="card mb-3">
+									<div class="card-header">
+										<h5>Filters</h5>
+									</div>
+									<div class="card-body">
 										<div class="mb-3">
-											<a href="{{user.url_path}}" target="_blank" class="text-decoration-none">
-												{{tweet_image user.profile_image_url_https user.name ~classes="me-3 rounded-circle float-start" ~style="height:48px;" /}}
-												<h6 class="fs-5 mb-0">
-													{{tweet_emoji user.name /}}
-												</h6>
-												@{{:user.screen_name}}
-											</a>
+											<input type="checkbox" class="form-check-input" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
+											<label class="form-check-label" for="date-cutoff">
+												{^{if ~date_cutoff_toggle}}
+													Excluding tweets after {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+												{{else}}
+													Including tweets after {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+												{{/if}}
+											</label>
 										</div>
-									{{/if}}
-									{{if quoted_tweet}}
-										{{if quoted_tweet.user && quoted_tweet.user.id_str != user_id_str}}
+									</div>
+								</div>
+							{{/if}}
+							<div class="card mb-3">
+								<div class="card-header">
+									<h5>Relevant Users</h5>
+								</div>
+								<div class="card-body" style="max-height:calc(60vh - 180px);overflow-y:auto;">
+									{{if ~root['current_loop'].users_relevant}}
+										{^{for ~root['current_loop'].users_relevant}}
 											<div class="mb-3">
-												<a href="{{quoted_tweet.user.url_path}}" target="_blank" class="text-decoration-none">
-													{{tweet_image quoted_tweet.user.profile_image_url_https quoted_tweet.user.name ~classes="me-3 rounded-circle float-start" ~style="height:48px;" /}}
+												<a href="{{:url_path}}" target="_blank" class="text-decoration-none">
+													{{tweet_image profile_image_url_https name ~classes="me-3 rounded-circle bg-body float-start" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
 													<h6 class="fs-5 mb-0">
-														{{tweet_emoji quoted_tweet.user.name /}}
+														{{tweet_emoji name /}}
 													</h6>
-													@{{:quoted_tweet.user.screen_name}}
+													@{{:screen_name}}
 												</a>
 											</div>
-										{{/if}}
+										{{/for}}
 									{{/if}}
-									{{if entities}}
-										{{if entities.user_mentions}}
-											{{for entities.user_mentions ~id=user_id_str}}
-												{{if id_str !=  ~id}}
-													<div class="mb-3">
-														<a href="{{userlink id /}}" target="_blank" class="text-decoration-none">
-															{{useravatar_img id_str ~classes="me-3 rounded-circle float-start" ~style="height:48px;" /}}
-															<h6 class="fs-5 mb-0">
-																{{tweet_emoji name /}}
-															</h6>
-															@{{:screen_name}}
-														</a>
-													</div>
-												{{/if}}
-											{{/for}}
-										{{/if}}
-									{{/if}}
-								{{/for}}
+								</div>
 							</div>
 						</div>
 					{{/if}}
@@ -382,9 +373,9 @@
 					<!-- This is where the tweets will be rendered -->
 					{^{for ~root["current_tweets"] ~replies ~retweets}}
 						{^{if #data}}
-							{^{if ~retweets == "all" || (~retweets == "retweets" && retweeting_user != undefined) || (~retweets == "no_retweets" && retweeting_user == undefined) || ~root["current_loop"].name == "tweet_single"}}
-								{^{if ~replies == "all" || (~replies == "replies" && in_reply_to_status_id_str != null) || (~replies == "no_replies" && in_reply_to_status_id_str == null) || ~root["current_loop"].name == "tweet_single"}}
-									{^{if ~media == "all" || (~media == "media" && extended_entities) || (~media == "no_media" && !extended_entities) || ~root["current_loop"].name == "tweet_single"}}
+							{^{if ~retweets == "all" || (~retweets == "retweets" && retweeting_user != undefined) || (~retweets == "no_retweets" && retweeting_user == undefined) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
+								{^{if ~replies == "all" || (~replies == "replies" && in_reply_to_status_id_str != null) || (~replies == "no_replies" && in_reply_to_status_id_str == null) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
+									{^{if ~media == "all" || (~media == "media" && extended_entities) || (~media == "no_media" && !extended_entities) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
 										{^{if ~favorites == "all" || (~favorites == "favorites" && favorited == true)}}
 											{^{if ~date_cutoff_toggle == false  || (~date_cutoff_toggle == true && created_at < ~root["current_loop"].date_cutoff)}}
 												{{if user}}
@@ -571,8 +562,7 @@
 				</div>
 				<div class="tweet-profile-name">
 					<a href="{{:user.url_path}}" target="_blank" class="text-decoration-none text-dark float-start ">
-						{{!--<img class="me-3 rounded-circle" src="{{useravatar user_id_str /}}" alt="{{username user_id_str /}}" style="height:48px;" loading="lazy" />--}}
-						{{tweet_image user.profile_image_url_https user.name ~classes="me-3 rounded-circle" ~style="height:48px;" /}}
+						{{tweet_image user.profile_image_url_https user.name ~classes="me-3 rounded-circle bg-body" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
 					</a>
 					<span class="fw-bold">
 						{{tweet_emoji user.name /}}
@@ -583,7 +573,7 @@
 				</div>
 				<div class="tweet-profile-timestamp fs-6">
 					<small class="text-muted">
-						<a href="#{{:user.screen_name}}/status/{{:id_str}}" class="text-decoration-none" title="Link to this tweet in this archive">
+						<a href="#{{:user.screen_name}}/status/{{:id_str}}" class="text-decoration-none" target="_blank" title="Link to this tweet in this archive (new tab)">
 							<i class="fa-solid fa-link small me-1"></i>
 						</a>
 						• 
@@ -594,7 +584,9 @@
 							<i class="fa-solid fa-cube small me-1"></i>
 						</a>
 						• 
-						<span class="tweet-timestamp small ms-1">{{format_date created_at ~format="long" /}}</span>
+						<a href="#{{:user.screen_name}}/status/{{:id_str}}" class="text-decoration-none" title="Link to this tweet in this archive">
+							<span class="tweet-timestamp small ms-1">{{format_date created_at ~format="long" /}}</span>
+						</a>
 					</small>
 					
 					{{if in_reply_to_status_id_str != null}}
