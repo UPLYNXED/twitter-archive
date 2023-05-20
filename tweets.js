@@ -765,8 +765,22 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 	// Define the list views
 	let list_views = [ "tweets_array", "user_media", "favorites", "search_results", "all_in_archive" ];
 
+	// Define the args
+	let helpers = {
+		// Context:
+		"main_user": main_user,
+		"list_views": list_views,
+		// Filters:
+		"replies": "no_replies",
+		"retweets": "no_retweets",
+		"favorites": "all",
+		"media": "all",
+		"sort_order": "newest",
+		"date_cutoff_toggle": config.date_cutoff_toggle,
+	};
+
 	// Render the tweets using JSViews
-	tweetsTemplate.link(tweetContainer, tweets, { replies: "no_replies", retweets: "no_retweets", favorites: "all", media: "all", sort_order: "newest", date_cutoff_toggle: config.date_cutoff_toggle, list_views: list_views });
+	tweetsTemplate.link(tweetContainer, tweets, helpers);
 
 	hideLoadingAnimation(attachVideoPlayHandler);
 
@@ -1250,6 +1264,7 @@ function downloadMedia(type, media) {
  * @param {object} args - The arguments
  * @param {string} args.classes - The classes to add to the image
  * @param {string} args.style - The styles to add to the image
+ * @param {string} args.backup - URL to use as a backup if the image fails to load
  * 
  * @returns {string} - The formatted picture element
  */
@@ -1259,12 +1274,13 @@ function formatPicture( url, alt = "", args = { "classes": "", "style": ""} ) {
 
 	if (args.classes === undefined) args.classes 	= "";
 	if (args.style === undefined) args.style 		= "";
+	if (args.backup === undefined) args.backup 		= "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512' fill='%239995' style='scale:0.75'%3E%3C!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --%3E%3Cpath d='M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm96 256a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm69.2 46.9c-3-4.3-7.9-6.9-13.2-6.9s-10.2 2.6-13.2 6.9l-41.3 59.7-11.9-19.1c-2.9-4.7-8.1-7.5-13.6-7.5s-10.6 2.8-13.6 7.5l-40 64c-3.1 4.9-3.2 11.1-.4 16.2s8.2 8.2 14 8.2h48 32 40 72c6 0 11.4-3.3 14.2-8.6s2.4-11.6-1-16.5l-72-104z'/%3E%3C/svg%3E";
 	
 	let image = `
 		<picture class="embed-responsive-item">
 			<source srcset="${media.orig_url}" type="image/${media.type}">
 			<source srcset="${media.url}" type="image/${media.type}">
-			<img 	src="${media.url}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy" 
+			<img 	src="${args.backup}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy" 
 					onerror="handlePictureError(this);">
 		</picture>`;
 
@@ -1355,6 +1371,7 @@ function registerCustomTags() {
 			let args = {
 				classes:	this.ctxPrm("classes"),
 				style:		this.ctxPrm("style"),
+				backup:		`https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png`,
 			}
 
 			if (tweets_object['users'][id] === undefined) { // check if the user exists in the users object
@@ -2291,10 +2308,7 @@ function handleNavHashChange( e = null ) {
 			back_button.classList.add("d-none");
 		}
 
-		// If the linked tweet is not the first tweet in the conversation, scroll to the tweet
-		if (tweets_object[loop][0].id_str !== tweet_id) {
-			scrollToHash();
-		}
+		scrollToHash();
 	}
 
 	// If the function is not called from the hashchange event, it's on a page load, so we need to check if the hash is a tweet ID

@@ -292,14 +292,16 @@
 								</div>
 								{{if ~root["current_loop"].date_cutoff_toggle_option != false}}
 									<div class="mb-3">
-										<input type="checkbox" class="form-check-input" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
-										<label class="form-check-label" for="date-cutoff">
-											{^{if ~date_cutoff_toggle}}
-												Excluding tweets after {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-											{{else}}
-												Including tweets after {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-											{{/if}}
-										</label>
+										<div class="form-check form-switch">
+											<input class="form-check-input" type="checkbox" role="switch" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
+											<label class="form-check-label" for="date-cutoff">
+												{^{if ~date_cutoff_toggle}}
+													Excluding past {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+												{{else}}
+													Including past {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+												{{/if}}
+											</label>
+										</div>
 									</div>
 								{{/if}}
 							</div>
@@ -327,21 +329,23 @@
 						</div>
 					{{else}}
 						<div class="sticky-top" style="top: 8.5em;">
-							{{if ~root["current_loop"].date_cutoff_toggle_option != false}}
+							{{if ~root["current_loop"].date_cutoff_toggle_option != false && ~root["current_tweets"][0].created_at <= ~root["current_loop"].date_cutoff}}
 								<div class="card mb-3">
 									<div class="card-header">
 										<h5>Filters</h5>
 									</div>
 									<div class="card-body">
 										<div class="mb-3">
-											<input type="checkbox" class="form-check-input" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
-											<label class="form-check-label" for="date-cutoff">
-												{^{if ~date_cutoff_toggle}}
-													Excluding tweets after {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-												{{else}}
-													Including tweets after {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-												{{/if}}
-											</label>
+											<div class="form-check form-switch">
+												<input class="form-check-input" type="checkbox" role="switch" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
+												<label class="form-check-label" for="date-cutoff">
+													{^{if ~date_cutoff_toggle}}
+														Excluding past {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+													{{else}}
+														Including past {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+													{{/if}}
+												</label>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -355,7 +359,7 @@
 										{^{for ~root['current_loop'].users_relevant}}
 											<div class="mb-3">
 												<a href="{{:url_path}}" target="_blank" class="text-decoration-none">
-													{{tweet_image profile_image_url_https name ~classes="me-3 rounded-circle bg-body float-start" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
+													{{useravatar_img id_str ~classes="me-3 rounded-circle bg-body float-start" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
 													<h6 class="fs-5 mb-0">
 														{{tweet_emoji name /}}
 													</h6>
@@ -562,7 +566,7 @@
 				</div>
 				<div class="tweet-profile-name">
 					<a href="{{:user.url_path}}" target="_blank" class="text-decoration-none text-dark float-start ">
-						{{tweet_image user.profile_image_url_https user.name ~classes="me-3 rounded-circle bg-body" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
+						{{useravatar_img user_id_str ~classes="me-3 rounded-circle bg-body" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
 					</a>
 					<span class="fw-bold">
 						{{tweet_emoji user.name /}}
@@ -590,18 +594,30 @@
 					</small>
 					
 					{{if in_reply_to_status_id_str != null}}
-						{{if in_reply_to_user_id_str == user_id_str}}
-							<a href="{{orig_url /}}#{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle"><i class="fas fa-reply"></i> Reply to {{:in_reply_to_screen_name}}</a>
+						{{if in_reply_to_user_id_str == ~main_user.id_str}}
+							<a href="{{orig_url /}}#{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle">
+								<i class="fas fa-reply me-1"></i> 
+								{{:in_reply_to_screen_name}}
+							</a>
 						{{else}}
-							<a href="https://twitter.com/{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" target="_blank" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle"><i class="fas fa-reply"></i> Reply to {{:in_reply_to_screen_name}}</a>
+							<a href="https://twitter.com/{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" target="_blank" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle">
+								<i class="fas fa-reply me-1"></i> 
+								{{:in_reply_to_screen_name}}
+							</a>
 						{{/if}}
 					{{/if}}
 
 					{{if is_quote_status == true}}
 						{{if quoted_status_permalink}}
-							<a href="{{:quoted_status_permalink.expanded}}" target="_blank" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle"><i class="fas fa-retweet"></i> Quoted Tweet</a>
+							<a href="{{:quoted_status_permalink.expanded}}" target="_blank" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle">
+								<i class="fas fa-retweet me-1"></i>
+								Quoted Tweet
+							</a>
 						{{else}}
-							<a href="https://twitter.com/placeholder/status/{{:quoted_status_id_str}}" target="_blank" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle"><i class="fas fa-retweet"></i> Quoted Tweet</a>
+							<a href="https://twitter.com/placeholder/status/{{:quoted_status_id_str}}" target="_blank" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle">
+								<i class="fas fa-retweet me-1"></i>
+								Quoted Tweet
+							</a>
 						{{/if}}
 					{{/if}}
 				</div>
@@ -710,21 +726,19 @@
 							{{/for}}
 						{{else}}
 							{{if entities.urls}}
-								{{if card}}
-									{{for entities.urls ~id=id_str ~card=card.binding_values}}
+								{{if card ~id=id_str}}
 										<div class="card m-3 mt-0">
 											<div class="row g-0 flex-nowrap">
-												{{if ~card.thumbnail_image}}
+												{{if card.binding_values.thumbnail_image}}
 													<div class="border-end" style="width: fit-content;height: fit-content;min-height: 8em;min-width:110px;max-height: 12em;max-width: 16em;">
-														{{tweet_image ~card.thumbnail_image.image_value.url display_url ~classes="img-fluid rounded-start w-100" /}}
+														{{tweet_image card.binding_values.thumbnail_image.image_value.url display_url ~classes="img-fluid rounded-start object-fit-cover" /}}
 													</div>
 													<div class="position-relative flex-fill overflow-hidden ">
 														<div class="card-body position-absolute lh-1">
 												{{else}}
-													{{if ~card.player_image_large}}
-														<div class="position-relative border-end" style="width: fit-content;height: fit-content;min-height: 8em;min-width:110px;max-height: 12em;max-width: 16em;">
-															{{!--<img class="img-fluid rounded-start w-100" src="{{:~card.player_image_large.image_value.url}}" alt="{{:display_url}}" loading="lazy" />--}}
-															{{tweet_image ~card.player_image_large.image_value.url display_url ~classes="img-fluid rounded-start w-100" /}}
+													{{if card.binding_values.player_image_large}}
+														<div class="position-relative border-end" style="width: fit-content;min-height: 8em;min-width:110px;max-height: 12em;max-width:min(16em, 25%);">
+															{{tweet_image card.binding_values.player_image_large.image_value.url display_url ~classes="img-fluid rounded-start h-100 object-fit-cover" /}}
 															<i class="fa-circle-play fa-regular fs-1 position-absolute start-50 text-white top-50 translate-middle"></i>
 														</div>
 														<div class="position-relative flex-fill overflow-hidden ">
@@ -735,31 +749,30 @@
 													{{/if}}
 												{{/if}}
 														<h5 class="card-title">
-															{{if ~card.title}}
-																{{:~card.title.string_value}}
+															{{if card.binding_values.title}}
+																{{:card.binding_values.title.string_value}}
 															{{else}}
 																{{:display_url}}
 															{{/if}}
 														</h5>
 														<p class="card-text">
-															{{if ~card.description}}
+															{{if card.binding_values.description}}
 																<small>
-																	{{:~card.description.string_value}}
+																	{{:card.binding_values.description.string_value}}
 																</small>
 															{{/if}}
 														</p>
 													</div>
 
-													{{if ~card.vanity_url}}
+													{{if card.binding_values.vanity_url}}
 														<p class="card-text position-absolute z-1 bottom-0 mb-0 px-3 py-1 w-100 bg-body-secondary">
-															<small class="text-muted">{{:~card.vanity_url.string_value}}</small>
+															<small class="text-muted">{{:card.binding_values.vanity_url.string_value}}</small>
 														</p>
 													{{/if}}
 												</div>
 											</div>
-											<a href="{{:expanded_url}}" target="_blank" class="stretched-link"></a>
+											<a href="{{:entities.urls[entities.urls.length - 1].expanded_url}}" target="_blank" class="stretched-link"></a>
 										</div>
-									{{/for}}
 								{{else}}
 									{{for entities.urls ~id=id_str}}
 										{{if display_url.indexOf("i.imgur.com") != -1}}
