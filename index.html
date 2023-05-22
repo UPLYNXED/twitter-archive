@@ -8,6 +8,7 @@
 
 	Files: 
 		- index.html 	(this file)
+		- templates.js 	(templates for the page)
 		- tweets.js 	(javaScript for the page)
 		- config.json 	(configuration file)
 		- tweets.json 	(the tweets archive file)
@@ -33,8 +34,19 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta property="og:title" content="Archived Tweets" />
-		<meta property="og:description" content="A page to display archived tweets from a tweets.json file." />
+
+		<!-- 🔽 EDIT ONLY THESE TAGS TO CUSTOMIZE THE APPEARANCE OF LINKS WHEN SHARED ON SOCIAL MEDIA 🔽 -->
+			<title>User Name (@username) - Twitter Archive</title>
+			<meta name="twitter:card" 		content="summary_large_image" />
+			<meta name="twitter:site" 		content="@username" />
+			<meta name="twitter:creator" 	content="@upLYNXed" />
+
+			<meta property="og:url" 		content="https://kixstar.valk.cam/" />
+			<meta property="og:title" 		content="User Name (@username) - Twitter Archive" />
+			<meta property="og:description" content="An archive of the majority of @username's tweets" />
+			<meta property="og:image"		content="" />
+			<meta property="og:type" 		content="website" />
+		<!-- 🔼 EDIT ONLY THESE TAGS TO CUSTOMIZE THE APPEARANCE OF LINKS WHEN SHARED ON SOCIAL MEDIA 🔼 -->
 
 		<!-- Use bootstrap for styling -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
@@ -46,66 +58,81 @@
 		<!-- Use Twemoji for emojis -->
 		<script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
 
-		<!-- Use jQuery -->
+		<!-- Use jQuery for JSViews -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
-		<!-- Use JSRender for templating -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.13/jsrender.min.js"></script>
+		<!-- Use JSRender/JSViews for templating -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jsviews/1.0.13/jsviews.min.js"></script>
 
 		<!-- JavaScript for the page -->
 		<script src="tweets.js"></script>
 
-		<title>Archived Tweets</title>
+		<!-- JavaScript for the templates -->
+		<script src="templates.js"></script>
 	</head>
 	<body class="d-flex flex-column min-vh-100">
 		<div class="container-fluid user-banner z-2 p-0 top-0" style="font-size: 0;top:-480px;">
 			<!-- Banner goes here -->
 		</div>
 		<div class="navbar navbar-expand-lg sticky-top text-bg-secondary bg-body-secondary shadow controls">
-			<div class="container justify-content-between align-baseline">
-				<a class="navbar-brand position-relative user-head py-0" href="#">
-					<img class="position-absolute rounded-circle translate-middle-y border border-5 border-dark-subtle me-3 bg-body-secondary" style="display:none;max-height:min(170px, 22vw);aspect-ratio:1;" src="https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png" alt="User Name" />
-					<h1 class="col-3 position-relative mb-0 ps-0 fs-2 pb-1">
+			<div class="container d-flex flex-row flex-nowrap gap-2 gap-sm-3 align-baseline justify-content-start">
+				<button class="navbar-toggler px-3 py-3 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-expanded="true" aria-label="Toggle navigation">
+					<i class="fa-solid fa-bars"></i>
+				</button>
+				<a href="#"class="d-flex flex-shrink-1 g-2 navbar-brand user-head position-relative py-0" style="min-width:0;">
+					<div class="d-none d-sm-inline embed-responsive-item me-3">
+						<div 	class="align-content-center bg-body-secondary border border-5 border-dark-subtle d-grid justify-content-center rounded-circle translate-middle-y"
+								style="height: min(170px, 12vw);aspect-ratio: 1 / 1;transition: height 0.15s ease-in-out 0s;margin-bottom:max(-140px, -14vw);margin-top: clamp(0px, 1vw, 0.2em);">
+							<i 	class="fa-3x fa-solid fa-spin-pulse fa-spinner"></i>
+						</div>
+					</div>
+					<h1 class="col-3 position-relative fs-2 mb-0 pb-1 overflow-hidden" style="text-overflow: ellipsis;flex: 1;">
 						Loading Profile...
-						<span class="d-block fs-5 text-muted">
+						<span class="d-block fs-5 text-muted" style="max-width:calc(100% - 30px);text-overflow:ellipsis;overflow:hidden; ">
 							Please stand by...
 						</span>
 					</h1>
 				</a>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse pt-3 pt-sm-4 pt-md-5 pt-lg-0 pb-2 pb-lg-0" id="navbarToggler">
-					<ul class="navbar-nav nav-pills nav-fill mb-3 mb-lg-0 me-lg-2 me-xl-4 ms-auto">
-						<li class="nav-item px-1" id="tweets">
-							<a class="nav-link px-4 active" aria-current="page" href="#tweets" title="Tweets">
-								<i class="fa-regular fa-comment fa-flip-horizontal"></i>
-								<span class="d-inline d-lg-none">Tweets</span>
-							</a>
-						</li>
-						<li class="nav-item px-1" id="media">
-							<a class="nav-link px-4" href="#media" title="Media Tweets (images, videos, etc.)">
-								<i class="fa-solid fa-photo-film"></i>
-								<span class="d-inline d-lg-none">Media</span>
-							</a>
-						</li>
-						<li class="nav-item px-1" id="favorites">
-							<a class="nav-link px-4" href="#favorites" title="Favorite Tweets (stored locally)">
-								<i class="far fa-star"></i>
-								<span class="d-inline d-lg-none">Favorites</span>
-							</a>
-						</li>
-					</ul>
-					<form class="btn-toolbar d-flex" role="toolbar" aria-label="Search Bar" onsubmit="handleSearch(event); return false;" autocomplete="off">
-						<div class="input-group w-100">
-							<input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search" id="search">
-							<button class="btn btn-primary" type="button" title="Search this archive (this feature is still a work in progress)" onclick="handleSearch(event);">
-								<i class="fas fa-search"></i>
-							</button>
-						</div>
-					</form>
+				<div class="offcanvas-lg border-0 ms-lg-auto h-100 start-0" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+					<div class="offcanvas-header bg-body-tertiary border-bottom shadow" style="height:84px;">
+						<h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+						<button type="button" class="btn-close h-100 px-4" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="Close"></button>
+					</div>
+					<div class="offcanvas-body pt-3 pt-sm-4 pt-md-5 pt-lg-0 pb-2 pb-lg-0" id="navbarToggler">
+						<ul class="navbar-nav nav-pills nav-fill mb-3 mb-lg-0 me-lg-2 me-xl-4">
+							<li class="nav-item px-0 px-lg-1" id="tweets">
+								<a class="nav-link border border-secondary border-opacity-10 px-4 py-3 mb-3 py-lg-2 mb-lg-0 active" aria-current="page" href="#tweets" title="Tweets">
+									<i class="fa-regular fa-comment fa-flip-horizontal"></i>
+									<span class="d-inline d-lg-none">Tweets</span>
+								</a>
+							</li>
+							<li class="nav-item px-0 px-lg-1" id="media">
+								<a class="nav-link border border-secondary border-opacity-10 px-4 py-3 mb-3 py-lg-2 mb-lg-0" href="#media" title="Media Tweets (images, videos, etc.)">
+									<i class="fa-solid fa-photo-film"></i>
+									<span class="d-inline d-lg-none">Media</span>
+								</a>
+							</li>
+							<li class="nav-item px-0 px-lg-1" id="favorites">
+								<a class="nav-link border border-secondary border-opacity-10 px-4 py-3 mb-3 py-lg-2 mb-lg-0" href="#favorites" title="Favorite Tweets (stored locally)">
+									<i class="far fa-star"></i>
+									<span class="d-inline d-lg-none">Favorites</span>
+								</a>
+							</li>
+						</ul>
+						<form class="btn-toolbar d-flex" role="toolbar" aria-label="Search Bar" onsubmit="handleSearch(event); return false;" autocomplete="off">
+							<div class="input-group w-100">
+								<input class="form-control py-2 py-lg-0" type="search" placeholder="Search" aria-label="Search" name="search" id="search">
+								<button class="btn btn-primary" type="button" title="Search this archive (this feature is still a work in progress)" onclick="handleSearch(event);">
+									<i class="fas fa-search"></i>
+								</button>
+							</div>
+						</form>
+					</div>
 				</div>
+				<button class="navbar-toggler ms-auto px-3 py-3 border-0 bg-body-tertiary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters" aria-controls="offcanvasFilters" aria-label="Toggle Sidebar" title="Toggle Sidebar">
+					<i id="sidebar-filter-toggle" class="fa-solid fa-sliders"></i>
+					<i id="sidebar-thread-toggle" class="fa-solid fa-list-ul" style="display:none;"></i>
+				</button>
 			</div>
 		</div>
 		<main class="container-fluid position-relative flex-grow-1">
@@ -151,691 +178,5 @@
 				</div>
 			</div>
 		</footer>
-		<script class="d-none template" id="user-banner" type="text/x-jsrender">
-			{{!--<img class="img-fluid w-100" style="min-height:20px;max-height: 500px;transition:max-height 0.5s ease-out;object-fit: cover;object-position: 50% 80%;" src="{{media_url profile_banner_url /}}" alt="Banner" />--}}
-			{{tweet_image profile_banner_url "Banner" ~classes="img-fluid w-100" ~style="min-height:20px;max-height: 500px;transition:max-height 0.5s ease-out;object-fit: cover;object-position: 50% 80%;" /}}
-		</script>
-		<script class="d-none template" id="user-head" type="text/x-jsrender">
-			{{!--<img class="position-absolute rounded-circle translate-middle-y border border-5 border-dark-subtle bg-body-secondary" style="height:min(170px, 22vw);aspect-ratio:1;transition:height 0.15s ease-in-out" src="{{media_url profile_image_url_https /}}" alt="{{:name}} ({{:screen_name}})" />--}}
-			{{tweet_image profile_image_url_https name + " " + screen_name ~classes="position-absolute rounded-circle translate-middle-y border border-5 border-dark-subtle bg-body-secondary" ~style="height:min(170px, 22vw);aspect-ratio:1;transition:height 0.15s ease-in-out" /}}
-			<h1 class="col-3 position-relative mb-0 fs-2 pb-1" style="margin-left:min(190px, calc(22vw + 15px));transition:margin 0.25s ease-in-out">
-				{{:name}}
-				<span class="d-block fs-5 text-muted">
-					@{{:screen_name}}
-				</span>
-			</h1>
-		</script>
-		<script class="d-none template" id="user-bio" type="text/x-jsrender">
-			<!-- Bio Template -->
-			<div class="row">
-				<div class="col-sm-12 col-lg-8">
-					<p class="bio-text">
-						{{bio_content description /}}
-					</p>
-					<div class="bio-details row row-cols-auto text-muted">
-						<div>
-							<p class="mb-2 mb-md-3" title="Location">
-								<i class="fas fa-map-marker-alt me-1"></i> {{:location}}
-							</p>
-						</div>
-						<div>
-							<p class="mb-2 mb-md-3" title="Website">
-								<i class="fas fa-link me-1"></i> <a href="{{:entities.url.urls[0].expanded_url}}" target="_blank" class="text-decoration-none">{{:entities.url.urls[0].display_url}}</a>
-							</p>
-						</div>
-						<div>
-							<p class="mb-2 mb-md-3" title="The date the account was created">
-								<i class="fa fa-calendar me-1" aria-hidden="true"></i> Joined {{format_date created_at ~format="short" /}}
-							</p>
-						</div>
-					</div>
-					<div class="bio-stats row row-cols-auto text-muted">
-						<div>
-							<p class="mb-2 mb-md-3" title="The number of followers of this account (as of the time of archiving)">
-								<span class="fw-bold">
-									{{format_number friends_count /}}
-								</span> <span class="text-muted">Following</span>
-							</p>
-						</div>
-						<div>
-							<p class="mb-2 mb-md-3" title="The number of accounts this account is following (as of the time of archiving)">
-								<span class="fw-bold">
-									{{format_number followers_count /}}
-								</span> <span class="text-muted">Followers</span>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</script>
-		<script class="d-none template" id="tweet-list" type="text/x-jsrender">
-			<!-- Tweet List Template -->
-			{{if ~root["current_tweets"]}}
-				<div class="d-none d-lg-block col-lg-4 sidebar order-last">
-					{^{if ~list_views.includes(~root["current_loop"].name)}}
-						<div class="card mb-3 sticky-top" style="top: 8.5em;">
-							<div class="card-header">
-								<h5>Filters</h5>
-							</div>
-							<div class="card-body">
-								<div class="mb-3">
-									<label for="sort-order" class="form-label">Sort Order</label>
-									<select class="form-select" id="sort-order" data-link="{:~sort_order:}" disabled>
-										<option value="newest">Newest First</option>
-										<option value="oldest">Oldest First</option>
-									</select>
-								</div>
-								{^{if ~root["current_loop"].name != "favorites"}}
-									<div class="mb-3">
-										<label for="filter-favorites" class="form-label" title="Filter tweets that you have favorited">
-											Favorites
-										</label>
-										<select class="form-select" id="filter-favorites" data-link="{:~favorites:}" title="Tweets that you have favorited">
-											<option value="all" title="Show all tweets, including favorites">
-												All Tweets
-											</option>
-											<option value="favorites" title="Only show tweets that you have favorited">
-												Only Favorites
-											</option>
-										</select>
-									</div>
-								{{/if}}
-								{^{if ~root["current_loop"].name != "user_media"}}
-									<div class="mb-3">
-										<label for="filter-media" class="form-label" title="Filter tweets that contain media (images, videos, etc.)">
-											Media
-										</label>
-										<select class="form-select" id="filter-media" data-link="{:~media:}" title="Tweets that contain media (images, videos, etc.)">
-											<option value="all" title="Show all tweets, including media">
-												All Tweets
-											</option>
-											<option value="media" title="Only show tweets that contain media">
-												Only Media
-											</option>
-											<option value="no_media" title="Hide tweets that contain media">
-												No Media
-											</option>
-										</select>
-									</div>
-								{{/if}}
-								<div class="mb-3">
-									<label for="filter-replies" class="form-label" title="Filter tweets that are replies to other tweets">
-										Replies
-									</label>
-									<select class="form-select" id="filter-replies" data-link="{:~replies:}" title="Tweets that are replies to other tweets">
-										<option value="all" title="Show all tweets, including replies">
-											All Tweets
-										</option>
-										<option value="replies" title="Only show tweets that are replies to other tweets">
-											Only Replies
-										</option>
-										<option value="no_replies" title="Hide tweets that are replies to other tweets">
-											No Replies
-										</option>
-									</select>
-								</div>
-								<div class="mb-3">
-									<label for="filter-retweets" class="form-label" title="Filter retweets">
-										Retweets
-									</label>
-									<select class="form-select" id="filter-retweets" data-link="{:~retweets:}">
-										<option value="all" title="Show all tweets, including retweets">
-											All Tweets
-										</option>
-										<option value="retweets" title="Only show retweets">
-											Only Retweets
-										</option>
-										<option value="no_retweets" title="Hide retweets">
-											No Retweets
-										</option>
-									</select>
-								</div>
-								{{if ~root["current_loop"].date_cutoff_toggle_option != false}}
-									<div class="mb-3">
-										<div class="form-check form-switch">
-											<input class="form-check-input" type="checkbox" role="switch" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
-											<label class="form-check-label" for="date-cutoff">
-												{^{if ~date_cutoff_toggle}}
-													Excluding past {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-												{{else}}
-													Including past {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-												{{/if}}
-											</label>
-										</div>
-									</div>
-								{{/if}}
-							</div>
-							{^{if ~root["current_loop"].name == "favorites"}}
-								<div class="card-body border-top border-bottom bg-body-tertiary py-2">
-									<h5>More</h5>
-								</div>
-								<div class="card-body">
-									<div class="mb-3">
-										<label for="export-favorites" class="form-label">Export Favorites</label>
-										<button class="btn btn-primary w-100" id="export-favorites" onclick="exportFavorites();">
-											<i class="fa-solid fa-download"></i>
-											Export Favorites
-										</button>
-									</div>
-									<div class="mb-3">
-										<label for="import-favorites" class="form-label">Import Favorites</label>
-										<button class="btn btn-primary w-100" id="import-favorites" onclick="importFavorites();">
-											<i class="fa-solid fa-upload"></i>
-											Import Favorites
-										</button>
-									</div>
-								</div>
-							{{/if}}
-						</div>
-					{{else}}
-						<div class="sticky-top" style="top: 8.5em;">
-							{{if ~root["current_loop"].date_cutoff_toggle_option != false && ~root["current_tweets"][0].created_at <= ~root["current_loop"].date_cutoff}}
-								<div class="card mb-3">
-									<div class="card-header">
-										<h5>Filters</h5>
-									</div>
-									<div class="card-body">
-										<div class="mb-3">
-											<div class="form-check form-switch">
-												<input class="form-check-input" type="checkbox" role="switch" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
-												<label class="form-check-label" for="date-cutoff">
-													{^{if ~date_cutoff_toggle}}
-														Excluding past {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-													{{else}}
-														Including past {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-													{{/if}}
-												</label>
-											</div>
-										</div>
-									</div>
-								</div>
-							{{/if}}
-							<div class="card mb-3">
-								<div class="card-header">
-									<h5>Relevant Users</h5>
-								</div>
-								<div class="card-body" style="max-height:calc(60vh - 180px);overflow-y:auto;">
-									{{if ~root['current_loop'].users_relevant}}
-										{^{for ~root['current_loop'].users_relevant}}
-											<div class="mb-3">
-												<a href="{{:url_path}}" target="_blank" class="text-decoration-none">
-													{{useravatar_img id_str ~classes="me-3 rounded-circle bg-body float-start" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
-													<h6 class="fs-5 mb-0">
-														{{tweet_emoji name /}}
-													</h6>
-													@{{:screen_name}}
-												</a>
-											</div>
-										{{/for}}
-									{{/if}}
-								</div>
-							</div>
-						</div>
-					{{/if}}
-				</div>
-				<div class="col-sm-12 col-lg-8 tweets-list">
-					<!-- This is where the tweets will be rendered -->
-					{^{for ~root["current_tweets"] ~replies ~retweets}}
-						{^{if #data}}
-							{^{if ~retweets == "all" || (~retweets == "retweets" && retweeting_user != undefined) || (~retweets == "no_retweets" && retweeting_user == undefined) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
-								{^{if ~replies == "all" || (~replies == "replies" && in_reply_to_status_id_str != null) || (~replies == "no_replies" && in_reply_to_status_id_str == null) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
-									{^{if ~media == "all" || (~media == "media" && extended_entities) || (~media == "no_media" && !extended_entities) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
-										{^{if ~favorites == "all" || (~favorites == "favorites" && favorited == true)}}
-											{^{if ~date_cutoff_toggle == false  || (~date_cutoff_toggle == true && created_at < ~root["current_loop"].date_cutoff)}}
-												{{if user}}
-													{^{include #data ^tmpl="#tweet" /}}
-												{{else}}
-													{^{include #data ^tmpl="#404" ~message="Could not load this tweet" /}}
-												{{/if}}
-											{{/if}}
-										{{/if}}
-									{{/if}}
-								{{/if}}
-							{{/if}}
-						{{/if}}
-					{{/for}}
-					{^{if ~root["current_tweets"].length == 0}}
-						{^{include tmpl="#404" /}}
-					{{/if}}
-					{^{if ~root["current_tweets"].length > 1}}
-						{^{include tmpl="#tweet-list-end" /}}
-					{{/if}}
-				</div>
-			{{else}}
-				<div class="col-sm-12 col-lg-8 tweets-list">
-					{{include tmpl="#404" /}}
-				</div>
-			{{/if}}
-		</script>
-		<script class="d-none template" id="media-gallery-list" type="text/x-jsrender">
-			<!-- Media Gallery View Template -->
-			{{for ~root["current_tweets"] reverse=true}}
-				{{if !retweeted_status_result}}
-					{{include tmpl="#media-item" /}}
-				{{/if}}
-			{{/for}}
-		</script>
-		<script class="d-none template" id="404" type="text/x-jsrender">
-			<div class="col-12 mb-3">
-				<div class="card">
-					<div class="card-body">
-						<p class="card-text text-muted">
-							<i class="fa-solid fa-circle-exclamation fa-flip-vertical"></i>
-							{{if message}}
-								{{:message}} <!-- {{:~root["current_loop"].name}} - {{:id_str}} -->
-							{{else}}
-								No tweets found.
-							{{/if}}
-						</p>
-					</div>
-				</div>
-			</div>
-		</script>
-		<script class="d-none template" id="tweet-list-more" type="text/x-jsrender">
-			<div class="col-12 mb-3">
-				<button class="btn btn-primary w-100" id="load-more" onclick="load_more();">
-					<i class="fa-solid fa-circle-arrow-down"></i>
-					Load More
-				</button>
-			</div>
-		</script>
-		<script class="d-none template" id="tweet-list-end" type="text/x-jsrender">
-			<div class="col-12 mb-3">
-				<div class="card tweet-list-loading">
-					<div class="card-body">
-						<p class="card-text text-muted">
-							<i class="fa-solid fa-spinner fa-spin"></i>
-							Loading more tweets...
-						</p>
-					</div>
-				</div>
-				<div class="card tweet-list-end d-none">
-					<div class="card-body">
-						<p class="card-text text-muted">
-							<i class="fa-solid fa-circle-exclamation fa-flip-vertical"></i>
-							No more tweets to load.
-						</p>
-					</div>
-				</div>
-			</div>
-		</script>
-		<script class="d-none template" id="tweet" type="text/x-jsrender">
-			<!-- Tweet Template -->
-				{{if retweeting_user != undefined}}
-					<div class="col-12 mb-3 pt-4" data-id="{{:id_str}}" id="{{:user.screen_name}}/status/{{:id_str}}" style="scroll-margin-top: 120px">
-				{{else}}
-					<div class="col-12 mb-3" data-id="{{:id_str}}" id="{{:user.screen_name}}/status/{{:id_str}}" style="scroll-margin-top: 120px">
-				{{/if}}
-					<div class="card tweet" id="tweet-{{:id_str}}">
-
-						{^{include #data tmpl="#tweet-header" /}}
-
-						<div class="card-body py-0">
-							<div class="card-text tweet-content">
-								{{tweet_content id_str full_text /}}
-							</div>
-						</div>
-
-						{{if card}}
-							{{if card.name}}
-								{{if card.name.indexOf("poll") != -1}}
-									{{include tmpl="#tweet-poll" /}}
-								{{/if}}
-							{{/if}}
-						{{/if}}
-
-						{{if entities.urls[0] || extended_entities}}
-							{{include tmpl="#tweet-media" /}}
-						{{/if}}
-
-						{{if quoted_tweet}}
-							<div class="card-body tweet-quoted">
-								<div class="card tweet" id="tweet-{{:quoted_tweet.id_str}}">
-									{{include tmpl="#tweet-header" quoted_tweet /}}
-									<div class="card-body tweet-content py-0">
-										{{tweet_content quoted_status_id_str quoted_tweet.full_text /}}
-									</div>
-									{{if quoted_tweet.entities.urls[0] || quoted_tweet.extended_entities}}
-										{{include tmpl="#tweet-media" quoted_tweet ~classes="rounded-bottom" /}}
-									{{/if}}
-								</div>
-							</div>
-						{{else}}
-							{{if is_quote_status == true}} {{!-- Quoted Tweet is deleted or missing so we show a placeholder --}}
-								<div class="card-body tweet-quoted">
-									<div class="card tweet" id="tweet-{{:quoted_status_id_str}}">
-										<div class="card-body tweet-content">
-											<p class="text-muted m-0">
-												<i class="fas fa-exclamation-triangle me-2"></i>
-												Quoted Tweet is missing or deleted.
-											</p>
-										</div>
-									</div>
-								</div>
-							{{/if}}
-						{{/if}}
-
-						<div class="card-footer tweet-stats d-flex">
-							<span class="tweet-stat me-3 me-sm-4" style="line-height: 1.8em;">
-								<i class="fa-solid fa-comment fa-flip-horizontal"></i> 
-								{{format_number reply_count /}}
-							</span>
-							<span class="tweet-stat me-3 me-sm-4" style="line-height: 1.8em;">
-								<i class="fa-solid fa-retweet"></i>
-								{{format_number retweet_count /}} 
-								{{if quote_count != 0}}
-									<span class="text-muted ms-1">
-										(<i class="fa-solid fa-quote-left"></i>
-										{{format_number quote_count /}})
-									</span>
-								{{/if}}
-							</span>
-							<span class="tweet-stat me-3 me-sm-4" style="line-height: 1.8em;">
-								<i class="fa-solid fa-heart"></i> 
-								{{format_number favorite_count /}}
-							</span>
-							{{if bookmark_count && bookmark_count > 0}}
-								<span class="tweet-stat me-3 me-sm-4" style="line-height: 1.8em;">
-									<i class="fa-solid fa-bookmark"></i> 
-									{{format_number bookmark_count /}}
-								</span>
-							{{/if}}
-							
-
-							{{if ~root["favorites"]}}
-								<div class="favorite_tweet d-flex flex-grow-1 justify-content-end">
-									{^{if favorited}}
-										<button class="btn btn-icon d-flex" onclick="favorite_tweet('{{:id_str}}', false);" title="Unfavorite this tweet">
-											<i class="fa-solid fa-star"></i>
-										</button>
-									{{else}}
-										<button class="btn btn-icon d-flex" onclick="favorite_tweet('{{:id_str}}', true);" title="Favorite this tweet">
-											<i class="far fa-star"></i>
-										</button>
-									{{/if}}
-								</div>
-							{{/if}}
-						</div>
-					</div>
-				</div>
-		</script>
-		<script class="d-none template" id="tweet-header" type="text/x-jsrender">
-			<!-- Tweet Header Template -->
-			<div class="card-header tweet-header bg-body-tertiary rounded-top">
-				<div class="tweet-profile-picture">
-				</div>
-				<div class="tweet-profile-name">
-					<a href="{{:user.url_path}}" target="_blank" class="text-decoration-none text-dark float-start ">
-						{{useravatar_img user_id_str ~classes="me-3 rounded-circle bg-body" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
-					</a>
-					<span class="fw-bold">
-						{{tweet_emoji user.name /}}
-					</span>
-					<small class="text-muted fst-italic">
-						@{{:user.screen_name}}
-					</small>
-				</div>
-				<div class="tweet-profile-timestamp fs-6">
-					<small class="text-muted">
-						<a href="#{{:user.screen_name}}/status/{{:id_str}}" class="text-decoration-none" target="_blank" title="Link to this tweet in this archive (new tab)">
-							<i class="fa-solid fa-link small me-1"></i>
-						</a>
-						• 
-						<a href="https://twitter.com/{{:user.screen_name}}/status/{{:id_str}}" target="_blank" class="text-decoration-none" title="View on Twitter">
-							<i class="fa-brands fa-twitter small mx-1"></i>
-						</a>
-						<a href="https://web.archive.org/web/https://twitter.com/{{:user.screen_name}}/status/{{:id_str}}" target="_blank" class="text-decoration-none" title="View on the Archive.org Wayback Machine">
-							<i class="fa-solid fa-cube small me-1"></i>
-						</a>
-						• 
-						<a href="#{{:user.screen_name}}/status/{{:id_str}}" class="text-decoration-none" title="Link to this tweet in this archive">
-							<span class="tweet-timestamp small ms-1">{{format_date created_at ~format="long" /}}</span>
-						</a>
-					</small>
-					
-					{{if in_reply_to_status_id_str != null}}
-						{{if in_reply_to_user_id_str == ~main_user.id_str}}
-							<a href="{{orig_url /}}#{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle">
-								<i class="fas fa-reply me-1"></i> 
-								{{:in_reply_to_screen_name}}
-							</a>
-						{{else}}
-							<a href="https://twitter.com/{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" target="_blank" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle">
-								<i class="fas fa-reply me-1"></i> 
-								{{:in_reply_to_screen_name}}
-							</a>
-						{{/if}}
-					{{/if}}
-
-					{{if is_quote_status == true}}
-						{{if quoted_status_permalink}}
-							<a href="{{:quoted_status_permalink.expanded}}" target="_blank" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle">
-								<i class="fas fa-retweet me-1"></i>
-								Quoted Tweet
-							</a>
-						{{else}}
-							<a href="https://twitter.com/placeholder/status/{{:quoted_status_id_str}}" target="_blank" class="float-end py-1 px-3 mx-2 small rounded-pill bg-light-subtle">
-								<i class="fas fa-retweet me-1"></i>
-								Quoted Tweet
-							</a>
-						{{/if}}
-					{{/if}}
-				</div>
-			</div>
-			{{if retweeting_user != undefined}}
-				<div class="tweet-retweet-credit position-absolute bottom-100 ps-3 py-2">
-					<small class="text-muted">
-						<i class="fa-solid fa-retweet me-2"></i>
-						Retweeted by <a href="{{:retweeting_user.url_path}}" target="_blank" class="text-decoration-none">
-							{{tweet_emoji retweeting_user.name /}}
-						</a>
-					</small>
-				</div>
-			{{/if}}
-		</script>
-		<script class="d-none template" id="tweet-poll" type="text/x-jsrender">
-			<!-- Tweet poll Templates -->
-			{{if card.name}}
-				<div class="card-body">
-					{{tweet_poll_counter id_str /}}
-					{{if card.name.indexOf('poll2') != -1 || card.name.indexOf('poll3') != -1 || card.name.indexOf('poll4') != -1}}
-						{{include tmpl="#tweet-poll-choice" ~choice=card.binding_values.choice1_label.string_value ~count=card.binding_values.choice1_count.string_value /}}
-						{{include tmpl="#tweet-poll-choice" ~choice=card.binding_values.choice2_label.string_value ~count=card.binding_values.choice2_count.string_value /}}
-					{{/if}}
-					{{if card.name.indexOf('poll3') != -1 || card.name.indexOf('poll4') != -1}}
-						{{include tmpl="#tweet-poll-choice" ~choice=card.binding_values.choice3_label.string_value ~count=card.binding_values.choice3_count.string_value /}}
-					{{/if}}
-					{{if card.name.indexOf('poll4') != -1}}
-						{{include tmpl="#tweet-poll-choice" ~choice=card.binding_values.choice4_label.string_value ~count=card.binding_values.choice4_count.string_value /}}
-					{{/if}}
-				</div>
-			{{/if}}
-		</script>
-		<script class="d-none template" id="tweet-poll-choice" type="text/x-jsrender">
-			<!-- Tweet Poll Choice Template -->
-			<div class="d-flex mb-3">
-				<div class="progress" role="progressbar" aria-label="{{:~choice}} - {{:~count}} votes" aria-valuenow="{{tweet_poll_percentage id_str ~count /}}" aria-valuemin="0" aria-valuemax="100" style="width:calc(100% - 18ch);height:30px">
-					<div class="progress-bar overflow-visible ps-3 text-start fs-6" style="width: {{tweet_poll_percentage id_str ~count /}}%">
-						{{:~choice}}
-					</div>
-				</div>
-				<div class="flex-grow-1 text-end">
-					{{:~count}} votes
-				</div>
-			</div>
-		</script>
-		<script class="d-none template" id="tweet-media" type="text/x-jsrender">
-			<!-- Tweet Media Templates -->
-			{{if extended_entities}}
-				<div class="card-body p-0 fs-6 d-flex flex-nowrap bg-dark-subtle {{:~classes}}" style="min-height:16em;max-height:60vh">
-					{{if extended_entities.media}}
-						{{for extended_entities.media ~id=id_str ~media_entities=extended_entities.media}}
-
-							<!-- Tweet Media Photo -->
-							{{if type == "photo"}}
-								<div class="photo position-relative flex-fill" style="width: -webkit-fill-available;">
-									{{tweet_image media_url_https alt_text ~classes=~classes + " img-fluid w-100 h-100"  ~crop=true /}}
-									
-									<!-- modal open with full image -->
-									<div class="modal fade" id="imageModal-{{:~id}}-{{:media_key}}" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-										<div class="modal-dialog modal-dialog-centered modal-xl" style="max-width:calc(100% - var(--bs-modal-margin) * 2);max-height:calc(100vh - 100px);">
-											<div class="modal-content w-auto mx-auto">
-												<div class="modal-body p-0">
-													{{tweet_image media_url_https alt_text ~classes="rounded-top img-fluid w-100" ~style="max-height:calc(100vh - 175px);" /}}
-												</div>
-												<div class="modal-footer">
-													<a href="{{:media_url_https}}" class="me-4 p-2" target="_blank">
-														<i class="fa-brands fa-twitter me-1"></i>
-													</a>
-													<a href="{{media_url media_url_https /}}" download="{{media_url media_url_https /}}" class="btn btn-primary me-1">
-														<i class="fa-solid fa-download"></i>
-													</a>
-													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-												</div>
-											</div>
-										</div>
-									</div>
-									<!-- end modal -->
-
-									<a href="#" data-bs-toggle="modal" data-bs-target="#imageModal-{{:~id}}-{{:media_key}}" class="stretched-link"></a>
-									<!-- <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal-{{:~id}}" onclick="bootstrap.Carousel.getInstance(document.getElementById('imageModal-{{:~id}}')).to({{*: (window.ext_ent >= 0) ? window.ext_ent +=1 :  window.ext_ent = 0 }});" class="stretched-link"></a> -->
-								</div>
-							{{/if}}
-
-							<!-- Tweet Media Animated GIF -->
-							{{if type == "animated_gif"}}
-								{{tweet_video video_info.variants ~id #data.id_str ~poster=media_url_https ~classes=~classes + " w-100" ~loop=true /}}
-							{{/if}}
-							
-							<!-- Tweet Media Video -->
-							{{if type == "video"}}
-								{{tweet_video video_info.variants ~id #data.id_str ~poster=media_url_https ~classes=~classes + " w-100" /}}
-							{{/if}}
-						{{/for}}
-						{{if extended_entities.media[0].type == "photo"}}
-							{{include tmpl="#tweet-media-modal" ~id=id_str ~media_entities=~media_entities /}}
-						{{/if}}
-					{{/if}}
-				</div>
-			{{else}}
-				{{if entities}}
-					<div class="card-body p-0 fs-6 position-relative">
-						{{if entities.media}}
-							{{for entities.media}}
-								<img class="img-fluid" src="{{:media_url_https}}" alt="{{:display_url}}" loading="lazy" />
-							{{/for}}
-						{{else}}
-							{{if entities.urls}}
-								{{if card ~id=id_str}}
-										<div class="card m-3 mt-0">
-											<div class="row g-0 flex-nowrap">
-												{{if card.binding_values.thumbnail_image}}
-													<div class="border-end" style="width: fit-content;height: fit-content;min-height: 8em;min-width:110px;max-height: 12em;max-width: 16em;">
-														{{tweet_image card.binding_values.thumbnail_image.image_value.url display_url ~classes="img-fluid rounded-start object-fit-cover" /}}
-													</div>
-													<div class="position-relative flex-fill overflow-hidden ">
-														<div class="card-body position-absolute lh-1">
-												{{else}}
-													{{if card.binding_values.player_image_large}}
-														<div class="position-relative border-end" style="width: fit-content;min-height: 8em;min-width:110px;max-height: 12em;max-width:min(16em, 25%);">
-															{{tweet_image card.binding_values.player_image_large.image_value.url display_url ~classes="img-fluid rounded-start h-100 object-fit-cover" /}}
-															<i class="fa-circle-play fa-regular fs-1 position-absolute start-50 text-white top-50 translate-middle"></i>
-														</div>
-														<div class="position-relative flex-fill overflow-hidden ">
-															<div class="card-body position-absolute lh-1">
-													{{else}}
-														<div class="col-12">
-															<div class="card-body lh-1 pb-4">
-													{{/if}}
-												{{/if}}
-														<h5 class="card-title">
-															{{if card.binding_values.title}}
-																{{:card.binding_values.title.string_value}}
-															{{else}}
-																{{:display_url}}
-															{{/if}}
-														</h5>
-														<p class="card-text">
-															{{if card.binding_values.description}}
-																<small>
-																	{{:card.binding_values.description.string_value}}
-																</small>
-															{{/if}}
-														</p>
-													</div>
-
-													{{if card.binding_values.vanity_url}}
-														<p class="card-text position-absolute z-1 bottom-0 mb-0 px-3 py-1 w-100 bg-body-secondary">
-															<small class="text-muted">{{:card.binding_values.vanity_url.string_value}}</small>
-														</p>
-													{{/if}}
-												</div>
-											</div>
-											<a href="{{:entities.urls[entities.urls.length - 1].expanded_url}}" target="_blank" class="stretched-link"></a>
-										</div>
-								{{else}}
-									{{for entities.urls ~id=id_str}}
-										{{if display_url.indexOf("i.imgur.com") != -1}}
-											<div class="card m-3 mt-0">
-												<img class="card-img-top rounded-top" src="{{:expanded_url}}" alt="{{:display_url}}" loading="lazy" />
-												<div class="card-body py-1 bg-body-secondary">
-													<span class="card-title small">{{:display_url}}</span>
-												</div>
-												<a href="{{:expanded_url}}" target="_blank" class="stretched-link"></a>
-											</div>
-										{{else}}
-											<!-- <a href="{{:expanded_url}}" target="_blank">{{:display_url}}</a> -->
-										{{/if}}
-									{{/for}}
-								{{/if}}
-							{{/if}}
-						{{/if}}
-					</div>
-				{{/if}}
-			{{/if}}
-		</script>
-		<script class="d-none template" id="tweet-media-modal" type="text/x-jsrender">
-			<!-- modal open with full image -->
-			<div class="modal fade" id="imageModal-{{:~id}}" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-				<div class="modal-dialog modal-dialog-centered modal-xl" style="max-width:calc(100%-var(--bs-modal-margin)*2);max-height:calc(100vh-100px);">
-					<div class="modal-content w-auto mx-auto">
-						<div class="modal-body p-0">
-							
-							<div id="imageModal-slider-{{:~id}}" class="carousel slide">
-								<div class="carousel-inner">
-									{{for #data.extended_entities.media ~id=~id ~index=#data.getIndex}}
-										<div class="carousel-item active" id="imageModal-slide-{{:~id}}-{{:media_key}}">
-											{{tweet_image media_url_https alt_text ~classes="rounded-top img-fluid w-100" ~style="max-height: calc(100vh - 175px);" /}}
-										</div>
-									{{/for}}
-								</div>
-							</div>
-							<button class="carousel-control-prev" type="button" data-bs-target="#imageModal-slider-{{:~id}}" data-bs-slide="prev">
-							  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-							  <span class="visually-hidden">Previous</span>
-							</button>
-							<button class="carousel-control-next" type="button" data-bs-target="#imageModal-slider-{{:~id}}" data-bs-slide="next">
-							  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-							  <span class="visually-hidden">Next</span>
-							</button>
-						</div>
-						<div class="modal-footer">
-							<a href="{{:media_url_https}}" class="me-4 p-2" target="_blank">
-								<i class="fa-brands fa-twitter me-1"></i>
-							</a>
-							<a href="{{media_url media_url_https /}}" download="{{media_url media_url_https /}}" class="btn btn-primary me-1">
-								<i class="fa-solid fa-download"></i>
-							</a>
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- end modal -->
-		</script>
-		<script class="d-none template" id="media-item" type="text/x-jsrender">
-			<!-- Media Gallery Item Template -->
-
-		</script>
 	</body>
 </html>

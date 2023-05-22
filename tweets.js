@@ -463,15 +463,8 @@ function loadTweets(file = "tweets.json", callback = function() {}) {
 				// Optimize the tweet
 				tweets_object['tweets'][key] = optimizeTweet(tweets_object['tweets'][key]);
 
-				// Set the prototype of the tweet to the tweets_object prototype
-				Object.setPrototypeOf( tweets_object['tweets'][key], tweets_object ); 
-				// If tweet contains a retweet, set the prototype of the retweet to the tweets_object prototype
-				if ( tweets_object['tweets'][key].retweeted_status_result !== undefined ) {
-					Object.setPrototypeOf( tweets_object['tweets'][key].retweeted_status_result.result.legacy, tweets_object );
-				}
-
-				// Change the date format of the tweets
-				tweets_object['tweets'][key].created_at = new Date(tweets_object['tweets'][key].created_at).getTime();
+				// Initialize the tweet object
+				tweets_object['tweets'][key] = initializeTweet(tweets_object['tweets'][key]);
 			});
 
 			Object.entries(tweets_object['users']).forEach(function([key, value]) {
@@ -498,6 +491,58 @@ function loadTweets(file = "tweets.json", callback = function() {}) {
 	xhttp.send();
 
 	return tweets_object;
+}
+
+/**
+ * Initialize a tweet object
+ * - Sets the prototype of the tweet to the tweets_object prototype
+ * - Converts the date to a Date object
+ * 
+ * @param {object} tweet - The tweet object to initialize
+ * 
+ * @returns {object} - The initialized tweet object
+ */
+function initializeTweet(tweet) {
+	// Set the prototype of the tweet to the tweets_object prototype
+	Object.setPrototypeOf( tweet, tweets_object ); 
+	// If tweet contains a retweet, set the prototype of the retweet to the tweets_object prototype
+	if ( tweet.retweeted_status_result !== undefined ) {
+		let retweet = tweet.retweeted_status_result.result;
+
+		// Add the retweeted user to the users object if it doesn't exist
+		if (tweets_object['users'][retweet.core.user_results.result.rest_id] !== undefined) {
+			tweets_object['users'][retweet.core.user_results.result.rest_id] 		= retweet.core.user_results.result.legacy;
+			tweets_object['users'][retweet.core.user_results.result.rest_id].id_str = retweet.core.user_results.result.rest_id;
+		}
+
+		// If the retweet contains a quoted tweet, set the prototype of the quoted tweet to the tweets_object prototype
+		if ( retweet.quoted_status_result !== undefined ) {
+			if ( retweet.quoted_status_result.result.legacy !== undefined ) {
+				let quoted_tweet = tweet.retweeted_status_result.result.quoted_status_result.result;
+
+				// Change the date format of the tweets
+				quoted_tweet.legacy.created_at = new Date(tweet.created_at).getTime();
+
+				// Add the quoted tweet to the tweets_object.tweets object
+				tweets_object['tweets'][quoted_tweet.legacy.id_str] = quoted_tweet.legacy;
+
+				// Add the quoted tweet user to the users object if it doesn't exist
+				if (tweets_object['users'][quoted_tweet.core.user_results.result.rest_id] !== undefined) {
+					tweets_object['users'][quoted_tweet.core.user_results.result.rest_id] 		= quoted_tweet.core.user_results.result.legacy;
+					tweets_object['users'][quoted_tweet.core.user_results.result.rest_id].id_str = quoted_tweet.core.user_results.result.rest_id;
+				}
+
+				Object.setPrototypeOf( quoted_tweet.legacy, tweets_object );
+			}
+		}
+
+		Object.setPrototypeOf( retweet.legacy, tweets_object );
+	}
+
+	// Change the date format of the tweets
+	tweet.created_at = new Date(tweet.created_at).getTime();
+
+	return tweet;
 }
 
 /**
@@ -676,11 +721,6 @@ function processTweets(callback = function() {}) {
 			tweet.retweet_count = retweet.retweet_count;
 			tweet.favorite_count = retweet.favorite_count;
 
-			// Add the retweet_user to the users object if it doesn't exist
-			if (tweets_object['users'][retweet_user.id_str] === undefined) {
-				tweets_object['users'][retweet_user.id_str] = retweet_user;
-			}
-
 			// If a tweet contains a "quoted_status_result" property, copy it to the tweet's "quoted_tweet" property
 			if (tweet.retweeted_status_result.result.quoted_status_result !== undefined) {
 				// Check for a tombstone property
@@ -747,7 +787,7 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 	let tweet_offset 	= (args.tweet_offset === undefined) ? 0 				: args.tweet_offset;
 
 	let tweetContainer 	= document.getElementsByClassName("tweets")[0];
-	let tweetsTemplate	= $.templates("#tweet-list");
+	let tweetsTemplate	= $.templates["tweet-list"];
 
 	// Set the loop to the current loop
 	tweets_object['current_loop'].name 			= loop;
@@ -844,14 +884,19 @@ function displayMoreTweets( e ) {
 			// Update the current loop offset
 			tweets_object['current_loop'].offset = offset;
 		} else {
-			// Show the tweet-list-end element
-			if ( list_end_exists ) {
-				document.querySelector(".tweet-list-end").classList.remove("d-none");
-			}
-
 			// Hide the tweet-list-loading element
 			if ( list_loading_exists ) {
 				document.querySelector(".tweet-list-loading").classList.add("d-none");
+			}
+
+			// If the current tweet list is empty, show the tweet-list-empty element
+			if ( document.querySelectorAll('.tweet').length === 0 ) {
+				document.querySelector(".tweet-list-empty").classList.remove("d-none");
+			} else {
+				// Show the tweet-list-end element
+				if ( list_end_exists ) {
+					document.querySelector(".tweet-list-end").classList.remove("d-none");
+				}
 			}
 		}
 	}
@@ -1268,16 +1313,17 @@ function downloadMedia(type, media) {
  * 
  * @returns {string} - The formatted picture element
  */
-function formatPicture( url, alt = "", args = { "classes": "", "style": ""} ) {
+function formatPicture( url, alt = "", args = { "classes": "", "classes_container": "", "style": ""} ) {
 
 	let media = substituteMediaUrl({ url: url }); // substitute the media
 
-	if (args.classes === undefined) args.classes 	= "";
-	if (args.style === undefined) args.style 		= "";
-	if (args.backup === undefined) args.backup 		= "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512' fill='%239995' style='scale:0.75'%3E%3C!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --%3E%3Cpath d='M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm96 256a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm69.2 46.9c-3-4.3-7.9-6.9-13.2-6.9s-10.2 2.6-13.2 6.9l-41.3 59.7-11.9-19.1c-2.9-4.7-8.1-7.5-13.6-7.5s-10.6 2.8-13.6 7.5l-40 64c-3.1 4.9-3.2 11.1-.4 16.2s8.2 8.2 14 8.2h48 32 40 72c6 0 11.4-3.3 14.2-8.6s2.4-11.6-1-16.5l-72-104z'/%3E%3C/svg%3E";
+	if (args.classes === undefined) args.classes 						= "";
+	if (args.classes_container === undefined) args.classes_container 	= "";
+	if (args.style === undefined) args.style 							= "";
+	if (args.backup === undefined) args.backup 							= "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512' fill='%239995' style='scale:0.75'%3E%3C!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --%3E%3Cpath d='M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm96 256a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm69.2 46.9c-3-4.3-7.9-6.9-13.2-6.9s-10.2 2.6-13.2 6.9l-41.3 59.7-11.9-19.1c-2.9-4.7-8.1-7.5-13.6-7.5s-10.6 2.8-13.6 7.5l-40 64c-3.1 4.9-3.2 11.1-.4 16.2s8.2 8.2 14 8.2h48 32 40 72c6 0 11.4-3.3 14.2-8.6s2.4-11.6-1-16.5l-72-104z'/%3E%3C/svg%3E";
 	
 	let image = `
-		<picture class="embed-responsive-item">
+		<picture class="embed-responsive-item ${args.classes_container}">
 			<source srcset="${media.orig_url}" type="image/${media.type}">
 			<source srcset="${media.url}" type="image/${media.type}">
 			<img 	src="${args.backup}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy" 
@@ -1452,6 +1498,10 @@ function registerCustomTags() {
 					date_options = { year: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h24', timeZone: 'UTC'  };
 					date_string = date_object.toLocaleTimeString("en-US", date_options);
 					break;
+				case "tiny":
+					date_options = { year: '2-digit', month: '2-digit', day: '2-digit' };
+					date_string = date_object.toLocaleDateString("en-US", date_options);
+					break;
 				case "short":
 				default:
 					date_options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -1582,14 +1632,16 @@ function registerCustomTags() {
 		},
 		tweet_image : function( url, alt = "" ) { // Embed an image in a tweet
 			let args = {
-				crop:		this.ctxPrm("crop"),
-				classes:	this.ctxPrm("classes"),
-				style:		this.ctxPrm("style"),
+				crop:				this.ctxPrm("crop"),
+				classes:			this.ctxPrm("classes"),
+				classes_container:	this.ctxPrm("classes_container"),
+				style:				this.ctxPrm("style"),
 			}
 
 			let crop_style = "";
-			if (args.crop === true) crop_style 				= `max-height: 40vh;object-fit: cover;`;
-			if (args.classes === undefined) {args.classes 	= "";}
+			if (args.crop === true) crop_style 									= `max-height: 40vh;object-fit: cover;`;
+			if (args.classes === undefined) {args.classes 						= "";}
+			if (args.classes_container === undefined) {args.classes_container 	= "";}
 			if (args.style === undefined) {
 				args.style 		= crop_style;
 			} else {
@@ -1806,17 +1858,27 @@ function setMainUser(user = tweets_object['users'][config.id]) {
 	// Replace the profile image URL with the larger version
 	main_user.profile_image_url_https = main_user.profile_image_url_https.replace("_normal", "_400x400");
 
-	// Set the page title
-	document.title = `${main_user.name} (@${main_user.screen_name}) / Twitter Archive`;
+	// Check if the first instances of the meta tags are filled out, if not, fill them out
+	let meta_tags = document.querySelectorAll("meta[property^='og:']");
+	meta_tags.forEach(function(tag) {
+		if (tag.getAttribute("property") === "og:title" && tag.getAttribute("content") === "Archived Tweets") {
+			tag.setAttribute("content", `${main_user.name} (@${main_user.screen_name})`);
+		} else if (tag.getAttribute("property") === "og:description" && tag.getAttribute("content") === "A page to display archived tweets from a tweets.json file.") {
+			tag.setAttribute("content", `Twitter Archive of ${main_user.name} (@${main_user.screen_name})`);
+		} else if (tag.getAttribute("property") === "og:image" && tag.getAttribute("content") === "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png") {
+			tag.setAttribute("content", main_user.profile_image_url_https);
+		}
+	});
 
-	// Set the page description
-	let description = "Twitter Archive of " + main_user.name + " (@" + main_user.screen_name + ")";
-	document.querySelector("meta[property='og:description']").setAttribute("content", description);
+	// Check if the page first instance of the page title is filled out, if not, fill it out
+	if (document.querySelectorAll("title")[0].innerHTML === "Archived Tweets") {
+		document.querySelectorAll("title")[0].innerHTML = `${main_user.name} (@${main_user.screen_name}) / Twitter Archive`;
+	}
 
 	// Display the user's bio using JSRender
-	let user_banner = $.templates("#user-banner");
-	let user_head 	= $.templates("#user-head");
-	let user_bio 	= $.templates("#user-bio");
+	let user_banner = $.templates["user-banner"];
+	let user_head 	= $.templates["user-head"];
+	let user_bio 	= $.templates["user-bio"];
 	
 	let user_banner_output 	= user_banner.render(main_user);
 	let user_head_output 	= user_head.render(main_user);
@@ -1828,6 +1890,43 @@ function setMainUser(user = tweets_object['users'][config.id]) {
 	
 
 	return main_user;
+}
+
+/**
+ * Sets the page title and description
+ * 
+ * @param {object} args - The arguments
+ * @param {string} args.title - The title to set
+ * @param {string} args.description - The description to set
+ * @param {string} args.image - The image to set
+ * 
+ * @returns {void}
+ */
+function setPageInfo(args = {title: undefined, description: undefined, image: undefined}) {
+	let title 			= (args.title === undefined) ? undefined : args.title;
+	let description 	= (args.description === undefined) ? undefined : args.description;
+	let image 			= (args.image === undefined) ? undefined : args.image;
+
+	// If the title, description, and image are all undefined, return
+	if (title === undefined && description === undefined && image === undefined) {
+		return;
+	}
+
+	// If the title is not undefined, set it
+	if (title !== undefined) {
+		document.title = `${title} / Twitter Archive`;
+		document.querySelector("meta[property='og:title']").setAttribute("content", title);
+	}
+
+	// If the description is not undefined, set it
+	if (description !== undefined) {
+		document.querySelector("meta[property='og:description']").setAttribute("content", description);
+	}
+
+	// If the image is not undefined, set it
+	if (image !== undefined) {
+		document.querySelector("meta[property='og:image']").setAttribute("content", image);
+	}
 }
 	
 /**
@@ -2030,10 +2129,10 @@ function handleScroll() {
 
 	// Do nothing if the scroll position is past the viewport height
 	if (window.scrollY > window.innerHeight) {
-		header.querySelector("img").classList.add("top-50",);
+		header.querySelector("img").style.margin = "30px 0 -34px 0";
 		header.querySelector("img").classList.remove("border");
 		header.querySelector("img").style.height = "64px";
-		header.querySelector("h1").style.marginLeft = "84px";
+		// header.querySelector("h1").style.marginLeft = "84px";
 		return;
 	}
 
@@ -2043,15 +2142,15 @@ function handleScroll() {
 	let navbar_height 			= navbar.offsetHeight;
 
 	if (window.scrollY > banner_height - navbar_height) {
-		header.querySelector("img").classList.add("top-50",);
+		header.querySelector("img").style.margin = "30px 0 -34px 0";
 		header.querySelector("img").classList.remove("border");
 		header.querySelector("img").style.height = "64px";
-		header.querySelector("h1").style.marginLeft = "84px";
+		// header.querySelector("h1").style.marginLeft = "84px";
 	} else {
-		header.querySelector("img").classList.remove("top-50",);
+		header.querySelector("img").style.margin = "clamp(0px, 3vw, 0.6em) 0 max(-140px, -14vw) 0";
 		header.querySelector("img").classList.add("border");
-		header.querySelector("img").style.height = "min(170px, 22vw)";
-		header.querySelector("h1").style.marginLeft = "min(190px, calc(22vw + 15px))";
+		header.querySelector("img").style.height = "min(170px, 14vw)";
+		// header.querySelector("h1").style.marginLeft = "min(190px, calc(22vw + 15px))";
 	}
 
 	// do parallax effect on banner if the banner is taller than 500px
@@ -2219,6 +2318,25 @@ function handleNavHashChange( e = null ) {
 		let conversation 	= [ linked_tweet ];
 		let loop 			= "tweet_single";
 
+		// Check if the linked_tweet exists
+		if ( linked_tweet === undefined || linked_tweet === null ) {
+			// // Embed the tweet
+			// embedTweet( tweet_id, loop );  // TODO: Implement this function
+			// return;
+
+			// Until the embedTweet function is implemented, just set it to an empty array
+			$.observable(tweets_object).setProperty( 'tweet_single', [] );
+
+			// Render the tweet
+			if ( initial ) {
+				displayTweets(tweets_object, {"loop": 'tweet_single', "offset": 0, "limit": 0/*, "tweet_offset": tweet_offset*/});
+			} else {
+				switchTweetLoop('tweet_single', {"force": true, "offset": 0, "limit": 0/*, "tweet_offset": tweet_offset*/});
+			}
+
+			return;
+		}
+
 		// Check if the conversation_id_str property exists
 		if ( linked_tweet.conversation_id_str !== undefined && linked_tweet.conversation_id_str !== null ) {
 			if ( linked_tweet.conversation_id_str === tweet_id ) { // Check if the linked tweet is the first tweet in the conversation
@@ -2301,6 +2419,10 @@ function handleNavHashChange( e = null ) {
 			switchTweetLoop(loop, {"force": true, "offset": 0, "limit": 5/*, "tweet_offset": tweet_offset*/});
 		}
 
+		// Change the sidebar toggle icon
+		document.querySelector("#sidebar-filter-toggle").style.display = "none";
+		document.querySelector("#sidebar-thread-toggle").style.display = "inline";
+
 		// If there is a page to go back to, show the back button
 		if (window.history.length > 1) {
 			back_button.classList.remove("d-none");
@@ -2369,6 +2491,10 @@ function handleNavHashChange( e = null ) {
 		//If the current function is not called from the hashchange event, it's on a page load, so we need to pass the 'true' to the navHash function so it can do an initial displayTweets call.
 		let initial = (e === null);
 		navHash[hash](initial);
+
+		// Change the sidebar toggle icon
+		document.querySelector("#sidebar-thread-toggle").style.display = "none";
+		document.querySelector("#sidebar-filter-toggle").style.display = "inline";
 	}
 
 	// If the hash matches a tweet's ID property, scroll to the tweet
