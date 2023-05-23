@@ -2,14 +2,14 @@
  * tweets.js
  * Loads and displays tweets from a tweets.json file
  * 
+ * @author Caspar "UPLYNXED" Neervoort <twitter.com/upLYNXed>
+ * @version 1.0.0
+ * @license MIT
+ * 
  * @uses config.json    - The file containing the config
  * @uses tweets.json    - The file containing the tweets to display
  * @uses JSRender       - The templating engine used to display the tweets
  * @uses JSViews		- The templating engine used to display the tweets
- * 
- * @version 1.0.0
- * @license MIT
- * 
  * 
  * Author:  UPLYNXED (@uplynxed)
  */
@@ -188,13 +188,15 @@ let tweets_object = {
 	 */
 	"current_loop": {
 		"name": "tweets_array",
+		"title": "Archived Tweets", // TODO: Implement this
 		"offset": 0,
 		"limit": 30,
 		"sort": "newest",
+		"users_relevant": [],
 	},
 	/**
 	 * The favorites array, this contains the favorited tweets as an array so they can be looped through
-	 * This value is stored locally in localStorage and can be exported and imported as a JSON file using downloadFavorites() and importFavorites()
+	 * This value is stored locally in localStorage and can be exported and imported as a JSON file using exportFavorites() and importFavorites()
 	 * @type {Array}
 	 * @value {string} tweet_id_str - The ID of the tweet
 	 */
@@ -206,7 +208,7 @@ let tweets_object = {
 	 * @value {Array} replies - The replies themselves
 	 * @value {object} replies.tweet - The tweet itself
 	 */
-	"replies": {},
+	"conversations": {},
 	/**
 	 * The retweets object, this contains the retweets as an array so they can be looped through
 	 * @type {Array}
@@ -266,12 +268,12 @@ let tweets_object = {
 				return undefined;
 			}
 
-			if ( tweets_object['replies'][this.conversation_id_str] === undefined ) { // If the conversation doesn't exist in the replies object
+			if ( tweets_object['conversations'][this.conversation_id_str] === undefined ) { // If the conversation doesn't exist in the replies object
 				return undefined;
 			}
 			
 			let conversation = {
-				"tweets": tweets_object['replies'][this.conversation_id_str],
+				"tweets": tweets_object['conversations'][this.conversation_id_str],
 				"index": 0,
 			};
 
@@ -280,6 +282,29 @@ let tweets_object = {
 
 			return conversation;
 		},
+		// /**
+		//  * Get a tweet's replies
+		//  * @returns {Array} - The replies
+		//  */
+		// get replies() {
+		// 	delete this.replies; 										// Delete the getter so it can be redefined
+		// 	if ( this.user_id_str === undefined ) {						// If there is no user associated with the given object
+		// 		return undefined;
+		// 	}
+
+		// 	// If the tweet's id_str exists as a key in the replies object, return that property
+		// 	if ( tweets_object['conversations'][this.id_str] !== undefined ) {
+		// 		this.replies = tweets_object['conversations'][this.id_str];
+		// 		return this.replies;
+		// 	}
+
+		// 	// Get any tweet with it's in_reply_to_status_id_str set to the current tweet's id_str
+		// 	this.replies = Object.values(tweets_object['tweets']).filter(function(tweet) {
+		// 		return tweet.in_reply_to_status_id_str === this.id_str;
+		// 	}, this);
+
+		// 	return this.replies;
+		// },
 		/**
 		 * Get tweet's or a user's url
 		 * @returns {string} - The url
@@ -382,10 +407,37 @@ function loadConfig(file = "config.json") {
 
 			// Merge the config_file object with the config object, overwriting any existing values
 			Object.assign(config, config_file);
+
+			// Copy the date_cutoff related properties to the tweets_object.current_loop object
+			try {
+				config.date_cutoff = new Date(config.date_cutoff);
+				tweets_object['current_loop'].date_cutoff = config.date_cutoff.getTime();
+				if (config.date_cutoff_toggle !== undefined && config.date_cutoff != false) {
+					tweets_object['current_loop'].date_cutoff_toggle = (config.date_cutoff_toggle === undefined) ? false : config.date_cutoff_toggle;
+					tweets_object['current_loop'].date_cutoff_toggle_option = (config.date_cutoff_toggle_option === undefined) ? true : config.date_cutoff_toggle_option;
+				} else {
+					tweets_object['current_loop'].date_cutoff_toggle = false;
+					tweets_object['current_loop'].date_cutoff_toggle_option = false;
+				}
+			} catch (e) {
+				console.error( 'Error: Invalid date_cutoff value in config.json', e );
+			}
 		}
 	};
 
-	xhttp.open("GET", file, false);
+	// Build the request URL
+	let request_url = "";
+	if (window.location.pathname.endsWith("/") || window.location.pathname == "/") {
+		request_url = window.location.href.split("#");
+		request_url = request_url[0] + file;
+	} else {
+		request_url = window.location.href.split("#");
+		request_url = request_url[0].split("/");
+		request_url.pop();
+		request_url = request_url.join("/") + "/" + file;
+	}
+
+	xhttp.open("GET", request_url, false);
 	xhttp.send();
 
 	return config;
@@ -411,12 +463,8 @@ function loadTweets(file = "tweets.json", callback = function() {}) {
 				// Optimize the tweet
 				tweets_object['tweets'][key] = optimizeTweet(tweets_object['tweets'][key]);
 
-				// Set the prototype of the tweet to the tweets_object prototype
-				Object.setPrototypeOf( tweets_object['tweets'][key], tweets_object ); 
-				// If tweet contains a retweet, set the prototype of the retweet to the tweets_object prototype
-				if ( tweets_object['tweets'][key].retweeted_status_result !== undefined ) {
-					Object.setPrototypeOf( tweets_object['tweets'][key].retweeted_status_result.result.legacy, tweets_object );
-				}
+				// Initialize the tweet object
+				tweets_object['tweets'][key] = initializeTweet(tweets_object['tweets'][key]);
 			});
 
 			Object.entries(tweets_object['users']).forEach(function([key, value]) {
@@ -427,10 +475,74 @@ function loadTweets(file = "tweets.json", callback = function() {}) {
 		callback;
 	};
 
-	xhttp.open("GET", file, false);
+	// Build the request URL
+	let request_url = "";
+	if (window.location.pathname.endsWith("/") || window.location.pathname == "/") {
+		request_url = window.location.href.split("#");
+		request_url = request_url[0] + file;
+	} else {
+		request_url = window.location.href.split("#");
+		request_url = request_url[0].split("/");
+		request_url.pop();
+		request_url = request_url.join("/") + "/" + file;
+	}
+
+	xhttp.open("GET", request_url, false);
 	xhttp.send();
 
 	return tweets_object;
+}
+
+/**
+ * Initialize a tweet object
+ * - Sets the prototype of the tweet to the tweets_object prototype
+ * - Converts the date to a Date object
+ * 
+ * @param {object} tweet - The tweet object to initialize
+ * 
+ * @returns {object} - The initialized tweet object
+ */
+function initializeTweet(tweet) {
+	// Set the prototype of the tweet to the tweets_object prototype
+	Object.setPrototypeOf( tweet, tweets_object ); 
+	// If tweet contains a retweet, set the prototype of the retweet to the tweets_object prototype
+	if ( tweet.retweeted_status_result !== undefined ) {
+		let retweet = tweet.retweeted_status_result.result;
+
+		// Add the retweeted user to the users object if it doesn't exist
+		if (tweets_object['users'][retweet.core.user_results.result.rest_id] !== undefined) {
+			tweets_object['users'][retweet.core.user_results.result.rest_id] 		= retweet.core.user_results.result.legacy;
+			tweets_object['users'][retweet.core.user_results.result.rest_id].id_str = retweet.core.user_results.result.rest_id;
+		}
+
+		// If the retweet contains a quoted tweet, set the prototype of the quoted tweet to the tweets_object prototype
+		if ( retweet.quoted_status_result !== undefined ) {
+			if ( retweet.quoted_status_result.result.legacy !== undefined ) {
+				let quoted_tweet = tweet.retweeted_status_result.result.quoted_status_result.result;
+
+				// Change the date format of the tweets
+				quoted_tweet.legacy.created_at = new Date(tweet.created_at).getTime();
+
+				// Add the quoted tweet to the tweets_object.tweets object
+				tweets_object['tweets'][quoted_tweet.legacy.id_str] = quoted_tweet.legacy;
+
+				// Add the quoted tweet user to the users object if it doesn't exist
+				if (tweets_object['users'][quoted_tweet.core.user_results.result.rest_id] !== undefined) {
+					tweets_object['users'][quoted_tweet.core.user_results.result.rest_id] 		= quoted_tweet.core.user_results.result.legacy;
+					tweets_object['users'][quoted_tweet.core.user_results.result.rest_id].id_str = quoted_tweet.core.user_results.result.rest_id;
+				}
+
+				Object.setPrototypeOf( quoted_tweet.legacy, tweets_object );
+			}
+		}
+
+		Object.setPrototypeOf( retweet.legacy, tweets_object );
+	}
+
+	// Change the date format of the tweets
+	tweet.created_at = new Date(tweet.created_at).getTime();
+
+	return tweet;
 }
 
 /**
@@ -536,20 +648,31 @@ function processTweets(callback = function() {}) {
 			tweets_quoted.push(quoted_tweet); 
 		}
 
-		// Copy any reply tweets to a "replies" object inside the tweets_object
-		if (tweet.in_reply_to_status_id_str !== undefined) {
-			if (tweets_object['replies'][tweet.conversation_id_str] === undefined) {
-				tweets_object['replies'][tweet.conversation_id_str] = [];
+		// Copy any conversation tweets to a "conversations" object inside the tweets_object
+		if (tweet.conversation_id_str !== undefined) {
+			if (tweets_object['conversations'][tweet.conversation_id_str] === undefined) { // If the conversation doesn't exist in the replies object
+				tweets_object['conversations'][tweet.conversation_id_str] = []; // Create the conversation in the replies object
 			}
-			tweets_object['replies'][tweet.conversation_id_str].push(tweet);
+			tweets_object['conversations'][tweet.conversation_id_str].push(tweet);
+		}
+
+		// Copy any tweets that are replies to a "replies" object inside the tweet object it is replying to
+		if (tweet.in_reply_to_status_id_str !== undefined && tweet.in_reply_to_status_id_str !== null) {
+			let tweet_replied_to = tweets_object['tweets'][tweet.in_reply_to_status_id_str]; // Get the tweet this tweet is replying to
+			if (tweet_replied_to !== undefined) { // If the tweet this tweet is replying to exists
+				if (tweet_replied_to.replies === undefined) { // If the tweet this tweet is replying to doesn't have a replies object
+					tweet_replied_to.replies = []; // Create the replies object
+				}
+				tweet_replied_to.replies.push( tweet ); // Add the tweet to the replies object
+			}
 		}
 	});
 
 	// Remove any conversations from the replies object that only have one tweet in them
-	Object.entries(tweets_object['replies']).filter(function([key, value]) {
+	Object.entries(tweets_object['conversations']).filter(function([key, value]) {
 		return value.length <= 1;
 	}).forEach(function([key, value]) {
-		delete tweets_object['replies'][key];
+		delete tweets_object['conversations'][key];
 	});
 
 	// Remove any:
@@ -598,11 +721,6 @@ function processTweets(callback = function() {}) {
 			tweet.retweet_count = retweet.retweet_count;
 			tweet.favorite_count = retweet.favorite_count;
 
-			// Add the retweet_user to the users object if it doesn't exist
-			if (tweets_object['users'][retweet_user.id_str] === undefined) {
-				tweets_object['users'][retweet_user.id_str] = retweet_user;
-			}
-
 			// If a tweet contains a "quoted_status_result" property, copy it to the tweet's "quoted_tweet" property
 			if (tweet.retweeted_status_result.result.quoted_status_result !== undefined) {
 				// Check for a tombstone property
@@ -617,7 +735,7 @@ function processTweets(callback = function() {}) {
 
 		// // Check if the tweet is a reply to the main user and add it to the replies object if it is, using the conversation_id_str as the key
 		// if (tweet.in_reply_to_user_id_str === main_user.id_str) {
-		// 	tweets_object['replies'][tweet.conversation_id_str].push(tweet);
+		// 	tweets_object['conversations'][tweet.conversation_id_str].push(tweet);
 			
 		// 	if (tweet.user_id_str !== main_user.id_str) { // Remove the tweet from the tweets array if it's not by the main user
 		// 		return false;
@@ -626,7 +744,7 @@ function processTweets(callback = function() {}) {
 
 		// // Check if the tweet is a reply by the main user to another user and add it to the replies object if it is, using the conversation_id_str as the key
 		// if (tweet.user_id_str === main_user.id_str && tweet.in_reply_to_user_id_str !== main_user.id_str) {
-		// 	tweets_object['replies'][tweet.conversation_id_str].push(tweet); // TODO rewrite this stuff when I'm less tired... it's a mess
+		// 	tweets_object['conversations'][tweet.conversation_id_str].push(tweet); // TODO rewrite this stuff when I'm less tired... it's a mess
 		// }
 
 		// // Check if the tweet is a retweet of the main user and add it to the retweets object if it is, using the conversation_id_str as the key
@@ -657,27 +775,29 @@ function processTweets(callback = function() {}) {
  * 
  * @returns {void}
  */
-function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "limit": 30 }) {
+function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "limit": 30, "tweet_offset": 0 }) {
 	showLoadingAnimation();
 
 	// Start counting execution time
 	console.time(`Displaying tweets: ${args.loop}, offset: ${args.offset}, limit: ${args.limit}. Execution Time:`);
 
-	let loop = (args.loop === undefined) ? "tweets_array" : args.loop;
-	let offset = (args.offset === undefined) ? undefined : args.offset;
-	let limit = (args.limit === undefined) ? undefined : args.limit;
+	let loop 			= (args.loop === undefined) 		? "tweets_array" 	: args.loop;
+	let offset 			= (args.offset === undefined) 		? undefined 		: args.offset;
+	let limit 			= (args.limit === undefined) 		? undefined 		: args.limit;
+	let tweet_offset 	= (args.tweet_offset === undefined) ? 0 				: args.tweet_offset;
 
 	let tweetContainer 	= document.getElementsByClassName("tweets")[0];
-	let tweetsTemplate	= $.templates("#tweet-list");
+	let tweetsTemplate	= $.templates["tweet-list"];
 
 	// Set the loop to the current loop
-	tweets_object['current_loop'].name = loop;
-	tweets_object['current_loop'].offset = offset;
-	tweets_object['current_loop'].limit = limit;
+	tweets_object['current_loop'].name 			= loop;
+	tweets_object['current_loop'].offset 		= offset;
+	tweets_object['current_loop'].limit 		= limit;
+	tweets_object['current_loop'].tweet_offset 	= tweet_offset;
 
 	// Set the current tweets to the right loop. If an offset and limit are specified, slice the array
 	if (offset !== undefined && limit !== undefined) {
-		tweets_object['current_tweets'] = tweets_object[loop].slice(offset, offset + limit);
+		tweets_object['current_tweets'] = tweets_object[loop].slice(offset, offset + tweet_offset + limit);
 	} else {
 		tweets_object['current_tweets'] = tweets_object[loop];
 	}
@@ -685,8 +805,22 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 	// Define the list views
 	let list_views = [ "tweets_array", "user_media", "favorites", "search_results", "all_in_archive" ];
 
+	// Define the args
+	let helpers = {
+		// Context:
+		"main_user": main_user,
+		"list_views": list_views,
+		// Filters:
+		"replies": "no_replies",
+		"retweets": "no_retweets",
+		"favorites": "all",
+		"media": "all",
+		"sort_order": "newest",
+		"date_cutoff_toggle": config.date_cutoff_toggle,
+	};
+
 	// Render the tweets using JSViews
-	tweetsTemplate.link(tweetContainer, tweets, { replies: "no_replies", retweets: "no_retweets", favorites: "all", sort_order: "newest", list_views: list_views });
+	tweetsTemplate.link(tweetContainer, tweets, helpers);
 
 	hideLoadingAnimation(attachVideoPlayHandler);
 
@@ -707,6 +841,7 @@ function displayMoreTweets( e ) {
 	let current_loop 	= tweets_object['current_loop'].name;
 	let offset 			= tweets_object['current_loop'].offset;
 	let limit 			= tweets_object['current_loop'].limit;
+	let tweet_offset 	= tweets_object['current_loop'].tweet_offset;
 
 	let scroll_distance = 100; // The distance from the bottom of the page to start loading more tweets
 	let scroll_position = window.innerHeight + window.scrollY; // The current scroll position
@@ -733,7 +868,10 @@ function displayMoreTweets( e ) {
 			}
 
 			// Define the new offset
-			offset += limit;
+			offset += tweet_offset + limit;
+
+			// Reset the tweet offset
+			tweets_object['current_loop'].tweet_offset = 0;
 
 			// Get the next tweets
 			let next_tweets = tweets_object[current_loop].slice(offset, offset + limit);
@@ -746,14 +884,19 @@ function displayMoreTweets( e ) {
 			// Update the current loop offset
 			tweets_object['current_loop'].offset = offset;
 		} else {
-			// Show the tweet-list-end element
-			if ( list_end_exists ) {
-				document.querySelector(".tweet-list-end").classList.remove("d-none");
-			}
-
 			// Hide the tweet-list-loading element
 			if ( list_loading_exists ) {
 				document.querySelector(".tweet-list-loading").classList.add("d-none");
+			}
+
+			// If the current tweet list is empty, show the tweet-list-empty element
+			if ( document.querySelectorAll('.tweet').length === 0 ) {
+				document.querySelector(".tweet-list-empty").classList.remove("d-none");
+			} else {
+				// Show the tweet-list-end element
+				if ( list_end_exists ) {
+					document.querySelector(".tweet-list-end").classList.remove("d-none");
+				}
 			}
 		}
 	}
@@ -772,10 +915,11 @@ function displayMoreTweets( e ) {
  * 
  * @returns {object} - The current tweets object
  */
-function switchTweetLoop( loop = "tweets_array", args = { "offset": 0, "limit": 30, "force": false } ) {
-	let offset = (args.offset === undefined) ? 0 : args.offset;
-	let limit = (args.limit === undefined) ? 30 : args.limit;
-	let force = (args.force === undefined) ? false : args.force;
+function switchTweetLoop( loop = "tweets_array", args = { "offset": 0, "limit": 30, "tweet_offset": 0, "force": false } ) {
+	let offset 			= (args.offset === undefined) 		? 0 	: args.offset;
+	let limit 			= (args.limit === undefined) 		? 30 	: args.limit;
+	let force 			= (args.force === undefined) 		? false : args.force;
+	let tweet_offset 	= (args.tweet_offset === undefined) ? 0 : args.tweet_offset;
 
 	// If the loop is the same as the current loop and force is false, don't switch
 	if ( loop === tweets_object['current_loop'].name && force === false ) {
@@ -783,15 +927,16 @@ function switchTweetLoop( loop = "tweets_array", args = { "offset": 0, "limit": 
 	}
 
 	//Swap the current_tweets array with the new loop
-	let new_tweets = tweets_object[ loop ].slice( offset, offset + limit );
+	let new_tweets = tweets_object[ loop ].slice( offset, offset + tweet_offset + limit );
 
 	// Refresh the current_tweets array with $.observable()
 	$.observable( tweets_object['current_tweets'] ).refresh( new_tweets );
 
 	// Update the current loop
 	$.observable( tweets_object['current_loop'] ).setProperty( "name", loop );
-	tweets_object['current_loop'].offset = offset;
-	tweets_object['current_loop'].limit = limit;
+	tweets_object['current_loop'].offset 		= offset;
+	tweets_object['current_loop'].limit 		= limit;
+	tweets_object['current_loop'].tweet_offset 	= tweet_offset;
 
 	hideLoadingAnimation(attachVideoPlayHandler);
 
@@ -1164,21 +1309,24 @@ function downloadMedia(type, media) {
  * @param {object} args - The arguments
  * @param {string} args.classes - The classes to add to the image
  * @param {string} args.style - The styles to add to the image
+ * @param {string} args.backup - URL to use as a backup if the image fails to load
  * 
  * @returns {string} - The formatted picture element
  */
-function formatPicture( url, alt = "", args = { "classes": "", "style": ""} ) {
+function formatPicture( url, alt = "", args = { "classes": "", "classes_container": "", "style": ""} ) {
 
 	let media = substituteMediaUrl({ url: url }); // substitute the media
 
-	if (args.classes === undefined) args.classes 	= "";
-	if (args.style === undefined) args.style 		= "";
+	if (args.classes === undefined) args.classes 						= "";
+	if (args.classes_container === undefined) args.classes_container 	= "";
+	if (args.style === undefined) args.style 							= "";
+	if (args.backup === undefined) args.backup 							= "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512' fill='%239995' style='scale:0.75'%3E%3C!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --%3E%3Cpath d='M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm96 256a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm69.2 46.9c-3-4.3-7.9-6.9-13.2-6.9s-10.2 2.6-13.2 6.9l-41.3 59.7-11.9-19.1c-2.9-4.7-8.1-7.5-13.6-7.5s-10.6 2.8-13.6 7.5l-40 64c-3.1 4.9-3.2 11.1-.4 16.2s8.2 8.2 14 8.2h48 32 40 72c6 0 11.4-3.3 14.2-8.6s2.4-11.6-1-16.5l-72-104z'/%3E%3C/svg%3E";
 	
 	let image = `
-		<picture class="embed-responsive-item">
+		<picture class="embed-responsive-item ${args.classes_container}">
 			<source srcset="${media.orig_url}" type="image/${media.type}">
 			<source srcset="${media.url}" type="image/${media.type}">
-			<img 	src="${media.url}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy" 
+			<img 	src="${args.backup}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy" 
 					onerror="handlePictureError(this);">
 		</picture>`;
 
@@ -1269,6 +1417,7 @@ function registerCustomTags() {
 			let args = {
 				classes:	this.ctxPrm("classes"),
 				style:		this.ctxPrm("style"),
+				backup:		`https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png`,
 			}
 
 			if (tweets_object['users'][id] === undefined) { // check if the user exists in the users object
@@ -1348,6 +1497,10 @@ function registerCustomTags() {
 				case "medium":
 					date_options = { year: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h24', timeZone: 'UTC'  };
 					date_string = date_object.toLocaleTimeString("en-US", date_options);
+					break;
+				case "tiny":
+					date_options = { year: '2-digit', month: '2-digit', day: '2-digit' };
+					date_string = date_object.toLocaleDateString("en-US", date_options);
 					break;
 				case "short":
 				default:
@@ -1479,14 +1632,16 @@ function registerCustomTags() {
 		},
 		tweet_image : function( url, alt = "" ) { // Embed an image in a tweet
 			let args = {
-				crop:		this.ctxPrm("crop"),
-				classes:	this.ctxPrm("classes"),
-				style:		this.ctxPrm("style"),
+				crop:				this.ctxPrm("crop"),
+				classes:			this.ctxPrm("classes"),
+				classes_container:	this.ctxPrm("classes_container"),
+				style:				this.ctxPrm("style"),
 			}
 
 			let crop_style = "";
-			if (args.crop === true) crop_style 				= `max-height: 40vh;object-fit: cover;`;
-			if (args.classes === undefined) {args.classes 	= "";}
+			if (args.crop === true) crop_style 									= `max-height: 40vh;object-fit: cover;`;
+			if (args.classes === undefined) {args.classes 						= "";}
+			if (args.classes_container === undefined) {args.classes_container 	= "";}
 			if (args.style === undefined) {
 				args.style 		= crop_style;
 			} else {
@@ -1608,8 +1763,12 @@ function registerCustomTags() {
 function searchTweets( query, initial = false ) {
 	let results = [];
 
+	// Search tweets_array or tweets object?
+	// let search_tweets = tweets_object['tweets_array'];
+	let search_tweets = Object.values(tweets_object['tweets']);
+
 	// Search the tweets_array for the query
-	tweets_object['tweets_array'].forEach(function(tweet) {
+	search_tweets.forEach(function(tweet) {
 		// Check if the tweet text contains the query
 		if (tweet.full_text.toLowerCase().includes(query.toLowerCase())) {
 			if (!results.includes(tweet)) results.push(tweet);
@@ -1618,6 +1777,15 @@ function searchTweets( query, initial = false ) {
 		// Check if the quoted tweet text contains the query
 		if (tweet.is_quote_status && tweet.quoted_tweet !== undefined && tweet.quoted_tweet.full_text.toLowerCase().includes(query.toLowerCase())) {
 			if (!results.includes(tweet)) results.push(tweet);
+		}
+
+		// If user is undefined, define it
+		if (tweet.user === undefined) {
+			tweet['user'] = tweets_object['users'][tweet.user_id_str];
+
+			if (tweet['user'] === undefined) {
+				return false;
+			}
 		}
 
 		// Check if the tweet's user's name contains the query
@@ -1690,13 +1858,27 @@ function setMainUser(user = tweets_object['users'][config.id]) {
 	// Replace the profile image URL with the larger version
 	main_user.profile_image_url_https = main_user.profile_image_url_https.replace("_normal", "_400x400");
 
-	// Set the page title
-	document.title = `${main_user.name} (@${main_user.screen_name}) / Twitter Archive`;
+	// Check if the first instances of the meta tags are filled out, if not, fill them out
+	let meta_tags = document.querySelectorAll("meta[property^='og:']");
+	meta_tags.forEach(function(tag) {
+		if (tag.getAttribute("property") === "og:title" && tag.getAttribute("content") === "Archived Tweets") {
+			tag.setAttribute("content", `${main_user.name} (@${main_user.screen_name})`);
+		} else if (tag.getAttribute("property") === "og:description" && tag.getAttribute("content") === "A page to display archived tweets from a tweets.json file.") {
+			tag.setAttribute("content", `Twitter Archive of ${main_user.name} (@${main_user.screen_name})`);
+		} else if (tag.getAttribute("property") === "og:image" && tag.getAttribute("content") === "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png") {
+			tag.setAttribute("content", main_user.profile_image_url_https);
+		}
+	});
+
+	// Check if the page first instance of the page title is filled out, if not, fill it out
+	if (document.querySelectorAll("title")[0].innerHTML === "Archived Tweets") {
+		document.querySelectorAll("title")[0].innerHTML = `${main_user.name} (@${main_user.screen_name}) / Twitter Archive`;
+	}
 
 	// Display the user's bio using JSRender
-	let user_banner = $.templates("#user-banner");
-	let user_head 	= $.templates("#user-head");
-	let user_bio 	= $.templates("#user-bio");
+	let user_banner = $.templates["user-banner"];
+	let user_head 	= $.templates["user-head"];
+	let user_bio 	= $.templates["user-bio"];
 	
 	let user_banner_output 	= user_banner.render(main_user);
 	let user_head_output 	= user_head.render(main_user);
@@ -1708,6 +1890,43 @@ function setMainUser(user = tweets_object['users'][config.id]) {
 	
 
 	return main_user;
+}
+
+/**
+ * Sets the page title and description
+ * 
+ * @param {object} args - The arguments
+ * @param {string} args.title - The title to set
+ * @param {string} args.description - The description to set
+ * @param {string} args.image - The image to set
+ * 
+ * @returns {void}
+ */
+function setPageInfo(args = {title: undefined, description: undefined, image: undefined}) {
+	let title 			= (args.title === undefined) ? undefined : args.title;
+	let description 	= (args.description === undefined) ? undefined : args.description;
+	let image 			= (args.image === undefined) ? undefined : args.image;
+
+	// If the title, description, and image are all undefined, return
+	if (title === undefined && description === undefined && image === undefined) {
+		return;
+	}
+
+	// If the title is not undefined, set it
+	if (title !== undefined) {
+		document.title = `${title} / Twitter Archive`;
+		document.querySelector("meta[property='og:title']").setAttribute("content", title);
+	}
+
+	// If the description is not undefined, set it
+	if (description !== undefined) {
+		document.querySelector("meta[property='og:description']").setAttribute("content", description);
+	}
+
+	// If the image is not undefined, set it
+	if (image !== undefined) {
+		document.querySelector("meta[property='og:image']").setAttribute("content", image);
+	}
 }
 	
 /**
@@ -1820,19 +2039,32 @@ function loadFavorites() {
  * 
  * @returns {boolean} - Whether the download was successful
  */
-function downloadFavorites() {
-	if (tweets_object['favorites'].length === 0) {
+function exportFavorites() {
+	// Check if the favorites array exists
+	if (tweets_object['favorites'] === undefined) {
 		return false;
 	}
 
-	let blob = new Blob([JSON.stringify(tweets_object['favorites'])], {type: "application/json"});
-	let url = window.URL.createObjectURL(blob);
-	let a = document.createElement("a");
-	a.href = url;
-	a.download = "favorites.json";
-	a.click();
+	// Check if the favorites array is empty
+	if (tweets_object['favorites'].length === 0) {
+		return false;
+	}
+	
+	// Create a JSON file from the favorites array
+	try {
+		let blob = new Blob([JSON.stringify(tweets_object['favorites'])], {type: "application/json"});
+		let url = window.URL.createObjectURL(blob);
+		let a = document.createElement("a");
+		a.href = url;
+		a.download = "favorites.json";
+		a.click();
 
-	window.URL.revokeObjectURL(url);
+		// Revoke the object URL to free up memory
+		window.URL.revokeObjectURL(url);
+	} catch (e) {
+		console.error("Error exporting favorites: ", e);
+		return false;
+	}
 
 	return true;
 }
@@ -1843,6 +2075,11 @@ function downloadFavorites() {
  * @returns {boolean} - Whether the import was successful
  */
 function importFavorites() {
+	let confirm_overwrite = confirm("Importing favorites will overwrite your current favorites. Are you sure you want to continue?");
+	if (!confirm_overwrite) {
+		return false;
+	}
+
 	try {
 		let input = document.createElement("input");
 		input.type = "file";
@@ -1859,7 +2096,7 @@ function importFavorites() {
 				});
 
 				try {
-					localStorage.setItem( "favorites", favorites );
+					localStorage.setItem( "favorites", JSON.stringify( favorites ) );
 
 					// Use loadFavorites() to update the favorites array from localStorage
 					loadFavorites();
@@ -1892,10 +2129,10 @@ function handleScroll() {
 
 	// Do nothing if the scroll position is past the viewport height
 	if (window.scrollY > window.innerHeight) {
-		header.querySelector("img").classList.add("top-50",);
+		header.querySelector("img").style.margin = "30px 0 -34px 0";
 		header.querySelector("img").classList.remove("border");
 		header.querySelector("img").style.height = "64px";
-		header.querySelector("h1").style.marginLeft = "84px";
+		// header.querySelector("h1").style.marginLeft = "84px";
 		return;
 	}
 
@@ -1905,15 +2142,15 @@ function handleScroll() {
 	let navbar_height 			= navbar.offsetHeight;
 
 	if (window.scrollY > banner_height - navbar_height) {
-		header.querySelector("img").classList.add("top-50",);
+		header.querySelector("img").style.margin = "30px 0 -34px 0";
 		header.querySelector("img").classList.remove("border");
 		header.querySelector("img").style.height = "64px";
-		header.querySelector("h1").style.marginLeft = "84px";
+		// header.querySelector("h1").style.marginLeft = "84px";
 	} else {
-		header.querySelector("img").classList.remove("top-50",);
+		header.querySelector("img").style.margin = "clamp(0px, 3vw, 0.6em) 0 max(-140px, -14vw) 0";
 		header.querySelector("img").classList.add("border");
-		header.querySelector("img").style.height = "min(170px, 22vw)";
-		header.querySelector("h1").style.marginLeft = "min(190px, calc(22vw + 15px))";
+		header.querySelector("img").style.height = "min(170px, 14vw)";
+		// header.querySelector("h1").style.marginLeft = "min(190px, calc(22vw + 15px))";
 	}
 
 	// do parallax effect on banner if the banner is taller than 500px
@@ -2076,17 +2313,115 @@ function handleNavHashChange( e = null ) {
 	 */
 	function navToTweet( hash, initial = false ) { // TODO: Fix this function - it doesn't work on a navchange event anymore, only the sidebar changes while the main content doesn't
 		// Get the tweet ID from the hash (formatted as "#username/status/tweet_id")
-		let tweet_id = hash.split("/")[2];
+		let tweet_id 		= hash.split("/")[2];
+		let linked_tweet 	= tweets_object['tweets'][tweet_id];
+		let conversation 	= [ linked_tweet ];
+		let loop 			= "tweet_single";
 
-		// Make a temporary object with only the tweet we want to display
-		tweets_object['tweet_single'] = [ tweets_object['tweets'][tweet_id] ];
+		// Check if the linked_tweet exists
+		if ( linked_tweet === undefined || linked_tweet === null ) {
+			// // Embed the tweet
+			// embedTweet( tweet_id, loop );  // TODO: Implement this function
+			// return;
+
+			// Until the embedTweet function is implemented, just set it to an empty array
+			$.observable(tweets_object).setProperty( 'tweet_single', [] );
+
+			// Render the tweet
+			if ( initial ) {
+				displayTweets(tweets_object, {"loop": 'tweet_single', "offset": 0, "limit": 0/*, "tweet_offset": tweet_offset*/});
+			} else {
+				switchTweetLoop('tweet_single', {"force": true, "offset": 0, "limit": 0/*, "tweet_offset": tweet_offset*/});
+			}
+
+			return;
+		}
+
+		// Check if the conversation_id_str property exists
+		if ( linked_tweet.conversation_id_str !== undefined && linked_tweet.conversation_id_str !== null ) {
+			if ( linked_tweet.conversation_id_str === tweet_id ) { // Check if the linked tweet is the first tweet in the conversation
+				if ( linked_tweet.replies !== undefined && linked_tweet.replies !== null ) { // Check if the linked tweet has a "replies" property
+					// Get the conversation
+					conversation = linked_tweet.replies;
+					// Add the linked tweet to the conversation if it's not already in the conversation
+					if ( !conversation.includes( linked_tweet ) ) {
+						conversation.unshift( linked_tweet );
+					}
+				} 
+			} else if ( tweets_object['tweets'][linked_tweet.conversation_id_str] !== undefined ) { // Check if the conversation exists in the tweets object
+				let original_tweet = tweets_object['tweets'][linked_tweet.conversation_id_str];
+				if ( original_tweet.replies !== undefined && original_tweet.replies !== null ) { // Check if the conversation has a "replies" property
+					// Get the conversation
+					conversation = original_tweet.replies;
+				}
+
+				// Remove the original and linked tweet from the conversation
+				conversation = conversation.filter( function(tweet) {
+					return tweet.id_str !== tweet_id && tweet.id_str !== original_tweet.id_str;
+				});
+
+				conversation = [ original_tweet, linked_tweet ].concat( conversation );
+			}
+
+			// Check if the conversation is empty
+			if ( conversation.length > 0 ) {
+				// If the conversation is empty, set the loop to "tweet_single"
+				loop = "tweet_thread";
+			}
+		 }
+
+		// Put the conversation in the tweets_object
+		$.observable(tweets_object).setProperty( loop, conversation);
+
+		// Get the relevant users for the tweet(s)
+		let users_relevant = {};
+		let users_order = 0;
+		tweets_object[loop].forEach(function(linked_tweet) {
+			if ( users_relevant[linked_tweet.user_id_str] === undefined ) {	// If the user is already in the users_relevant object
+				users_relevant[linked_tweet.user_id_str] = tweets_object['users'][linked_tweet.user_id_str];
+				users_relevant[linked_tweet.user_id_str]['order'] = users_order;
+				users_order++;
+			}
+
+			// If the tweet is a quote tweet, add the quoted tweet's user to the users_relevant object
+			if (linked_tweet.is_quote_status && linked_tweet.quoted_tweet !== undefined) {
+				if ( users_relevant[linked_tweet.quoted_tweet.user_id_str] === undefined ) {	// If the user is already in the users_relevant object
+					users_relevant[linked_tweet.quoted_tweet.user_id_str] = tweets_object['users'][linked_tweet.quoted_tweet.user_id_str];
+					users_relevant[linked_tweet.quoted_tweet.user_id_str]['order'] = users_order;
+					users_order++;
+				}
+			}
+
+			// If the tweet mentions any users, add them to the users_relevant object
+			if (linked_tweet.entities.user_mentions !== undefined) {
+				linked_tweet.entities.user_mentions.forEach(function(user_mention) {
+					if ( users_relevant[user_mention.id_str] !== undefined ) return;	// If the user is already in the users_relevant object, return
+					if ( tweets_object['users'][user_mention.id_str] === undefined ) return;	// If the user is not in the users object, return
+					users_relevant[user_mention.id_str] = tweets_object['users'][user_mention.id_str];
+					users_relevant[user_mention.id_str]['order'] = users_order;
+					users_order++;
+				});
+			}
+		});
+
+		// Change the relevant users object to an array and sort them by the users_order property.
+		users_relevant = Object.values(users_relevant).sort(function(a, b) {
+			return a.order - b.order;
+		});
+
+		// Replace the users_relevant object on the tweets_object.current_loop object
+		$.observable(tweets_object['current_loop']).setProperty("users_relevant", users_relevant);
 
 		// Render the tweet
 		if ( initial ) {
-			displayTweets(tweets_object, {"loop": "tweet_single"});
+			displayTweets(tweets_object, {"loop": loop, "offset": 0, "limit": 5/*, "tweet_offset": tweet_offset*/});
 		} else {
-			switchTweetLoop("tweet_single", {"force": true});
+			switchTweetLoop(loop, {"force": true, "offset": 0, "limit": 5/*, "tweet_offset": tweet_offset*/});
 		}
+
+		// Change the sidebar toggle icon
+		document.querySelector("#sidebar-filter-toggle").style.display = "none";
+		document.querySelector("#sidebar-thread-toggle").style.display = "inline";
 
 		// If there is a page to go back to, show the back button
 		if (window.history.length > 1) {
@@ -2094,6 +2429,8 @@ function handleNavHashChange( e = null ) {
 		} else {
 			back_button.classList.add("d-none");
 		}
+
+		scrollToHash();
 	}
 
 	// If the function is not called from the hashchange event, it's on a page load, so we need to check if the hash is a tweet ID
@@ -2154,11 +2491,16 @@ function handleNavHashChange( e = null ) {
 		//If the current function is not called from the hashchange event, it's on a page load, so we need to pass the 'true' to the navHash function so it can do an initial displayTweets call.
 		let initial = (e === null);
 		navHash[hash](initial);
+
+		// Change the sidebar toggle icon
+		document.querySelector("#sidebar-thread-toggle").style.display = "none";
+		document.querySelector("#sidebar-filter-toggle").style.display = "inline";
 	}
 
 	// If the hash matches a tweet's ID property, scroll to the tweet
 	if ( hash.includes("status") ) {
-		scrollToHash();
+		// scrollToHash();
+		navToTweet( hash );		// Testing with more paginated navigation
 	}
 
 	// If there are no other matches for the hashes, return

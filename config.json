@@ -1,51 +1,52 @@
 {
-    "-- read me --": 
-        "This file is used to configure the Archived Tweets page. Specify a user ID for the main account below:",
-    
-    "id": "1303103885159129090",
-    
-    
-    "-- customize --":
-        "Below are some options you can use to customize the appearance of the page.",
-        
-    "theme": "dark",
-    "theme_toggle": false,
-    "banner_pos_y": 50,
-    
-    
-    "-- aliases --":
-        "Specify known twitter handle aliases for updating older/outdated ones.",
-        
-    "aliases": [
-        {
-            "current": "INTERRO",
-            "former": ["heyinterrobang", "InterroTalks"]
-        }
-    ],
-    
-    
-    "-- favorite tweets --":
-        "Specify the ID's of any tweets to be set as favorites by default.",
-        
-    "favorites": [],
-    
-    
-    "-- hidden tweets --":
-        "Specify the ID's of any tweets to be hidden from the archive (they will still be in the data, but not rendered).",
-        
-    "hidden": [],
-    
-    
-    "-- date cutoff --":
-        "Specify a date to only show tweets up to that point (set to false for no cutoff date).",
-        
-    "date_cutoff": false,
-    "date_cutoff_toggle": false,
-    
+	"-- read me --": 
+		"This file is used to configure the Archived Tweets page. Specify a user ID for the main account below:",
+	
+		"id": "1303103885159129090",
+		
+	
+	"-- customize --":
+		"Below are some options you can use to customize the appearance of the page.",
+		
+		"theme": "dark",
+		"theme_toggle_option": false,
+		"banner_pos_y": 50,
+	
+	
+	"-- aliases --":
+		"Specify known twitter handle aliases for updating older/outdated ones.",
+		
+		"aliases": [
+			{
+				"current": "INTERRO",
+				"former": ["heyinterrobang", "InterroTalks"]
+			}
+		],
+	
+	
+	"-- favorite tweets --":
+		"Specify the ID's of any tweets to be set as favorites by default.",
+		
+		"favorites": [],
+	
+	
+	"-- hidden tweets --":
+		"Specify the ID's of any tweets to be hidden from the archive (they will still be in the data, but not rendered).",
+		
+		"hidden": [],
+	
+	
+	"-- date cutoff --":
+		"Specify a date to only show tweets up to that point (set to false for no cutoff date).",
+		
+		"date_cutoff": false,
+		"date_cutoff_toggle": false,
+		"date_cutoff_toggle_option": false,
+	
 
 
 
 
-    "-- version (do not edit) --":
-        "1.0.0"
+	"-- version (do not edit) --":
+		"1.0.0"
 }
