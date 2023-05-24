@@ -59,11 +59,11 @@ Eventually this project will support full local browsing, but for now it still r
 This project uses the following libraries and frameworks, which are currently loaded in from a CDN (Content Delivery Network) to reduce the size of the project.
 | Library            | Purpose                           | Link                             |
 | ------------------ | --------------------------------- | -------------------------------- |
-| jQuery 3.6.0       | As a dependency for JSViews       | (https://jquery.com/)            |
-| JSViews 1.0.13     | For templating and data binding   | (https://www.jsviews.com/)       |
-| Bootstrap 5.3.0    | For styling and layout            | (https://getbootstrap.com/)      |
-| Font Awesome 6.4.0 | For icons                         | (https://fontawesome.com/)       |
-| Twemoji 14.0.2     | For parsing Twitter emojis        | (https://twemoji.twitter.com/)   |
+| jQuery 3.6.0       | As a dependency for JSViews       | https://jquery.com/              |
+| JSViews 1.0.13     | For templating and data binding   | https://www.jsviews.com/         |
+| Bootstrap 5.3.0    | For styling and layout            | https://getbootstrap.com/        |
+| Font Awesome 6.4.0 | For icons                         | https://fontawesome.com/         |
+| Twemoji 14.0.2     | For parsing Twitter emojis        | https://twemoji.twitter.com/     |
 
 
 

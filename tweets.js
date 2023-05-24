@@ -1438,11 +1438,139 @@ function registerCustomTags() {
 			}
 			return media_replacements[tweets_object['users'][id].profile_banner_url].url;
 		},
-		userlink : function( id ) {
+		user_url : function( id ) {
 			if (tweets_object['users'][id] === undefined) { // check if the user exists in the users object
 				return "https://twitter.com/";
 			}
 			return `https://twitter.com/${tweets_object['users'][id].screen_name}`;
+		},
+		user_popover : { // Return a popover with the user's profile, has a an opening and closing tag to be specified in the tag
+			contentCtx: true, // the data context is the same as the parent
+			render: function(id) {
+				let args = {
+					tag:		this.ctxPrm("tag_name") || "span",
+					classes:	this.ctxPrm("classes") 	|| "",
+					href:		this.ctxPrm("href") 	|| false,
+					style:		this.ctxPrm("style") 	|| "",
+					attr:		this.ctxPrm("attr") 	|| "",
+					is_user:	this.ctxPrm("is_user") 	|| false,
+				};
+
+				if (tweets_object['users'][id] === undefined) { // check if the user exists in the users object
+					return `
+						<${args.tag} class="user-popover ${args.classes}" tabindex="0" style="${args.style}" ${args.attr}>
+							${this.tagCtx.render()}
+						</${args.tag}>
+					`;
+				}
+
+				if (args.href) {
+					args.attr += ` href="https://twitter.com/${tweets_object['users'][id].screen_name}"`;
+				}
+
+				let template = `
+					<${args.tag} class="user-popover ${args.classes}" style="${args.style}" ${args.attr} tabindex="0">
+						${this.tagCtx.render()}
+					</${args.tag}>
+				`;
+
+				return template;
+			},
+			onAfterLink: function( tagCtx, linkCtx, ctx, ev, eventArgs ) {
+				let args = {
+					tag:		this.ctxPrm("tag_name") || "span",
+					classes:	this.ctxPrm("classes") 	|| "",
+					href:		this.ctxPrm("href") 	|| false,
+					style:		this.ctxPrm("style") 	|| "",
+					attr:		this.ctxPrm("attr") 	|| "",
+					is_user:	this.ctxPrm("is_user") 	|| false,
+				};
+
+				let data = linkCtx.data;
+				let user = (args.is_user) ? data : data.user;
+
+				if (user === undefined || typeof user !== "object") {
+					console.log ("user_popover: user is undefined or not an object", user);
+					return;
+				}
+
+				let username = twemoji.parse(
+					user.name,
+					{
+						attributes: function() {
+							return {
+								"loading": "lazy",
+								"style": "height:1.1em;width:1.1em;"
+							}
+						},
+					}
+				);
+
+				let popover = `
+					{{useravatar_img id_str ~classes="mb-2 rounded-circle bg-body" ~style="height:64px;width:64px;max-height:64px;max-width:64px;" /}}
+					<h5 class="name text-body-emphasis">
+						{{tweet_emoji name /}}
+						<sub class="screen-name d-block pt-2 fw-normal text-body-secondary">
+							@{{:screen_name}}
+						</sub>
+					</h5>
+					<p class="description pt-3">
+						{{bio_content description /}}
+					</p>
+					<div class="user-stats">
+						<span class="followers fw-medium text-nowrap">
+							<span class="count fw-bold text-body-emphasis">
+								{{format_number followers_count /}}
+							</span> 
+							Followers
+						</span>
+						• 
+						<span class="following fw-medium text-nowrap">
+							<span class="count fw-bold text-body-emphasis">
+								{{format_number friends_count /}}
+							</span> 
+							Following
+						</span>
+					</div>
+				`;
+
+				popover = $.templates( popover );
+
+				// Initialize this popover
+				let elem = this.contents('.user-popover');
+				// On hover, focus or click, add the popover
+				$(document).on("mouseenter focus click", elem, function() {
+					elem = new bootstrap.Popover(elem, {
+						content: popover.render( user, tagCtx ),
+						html: true,
+						trigger: "hover focus",
+						sanitize: false,
+						allowList: Object.assign( bootstrap.Tooltip.Default.allowList, {
+							div: ["class"],
+							h3: ["class"],
+							span: ["class"],
+						}),
+						placement: "bottom",
+						offset: ({ placement, reference, popper }) => { // https://popper.js.org/docs/v2/modifiers/offset/
+							// Align the popper with the left side of the reference element
+							let skid = (reference.width - popper.width) / -2;
+							if (placement === "bottom") {
+								return [
+									skid, 
+									(args.is_user) ? 5 : 30
+								];
+							} else if (placement === "top") {
+								return [skid, 0];
+							} else {
+								return [];
+							}
+						},
+						fallbackPlacements: ["top", "right", "left"],
+					});
+
+					console.log( elem );
+				});
+			},
 		},
 		userstats : function( id ) {
 			if (tweets_object['users'][id] === undefined) { // check if the user exists in the users object

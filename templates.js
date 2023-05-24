@@ -23,7 +23,7 @@ $.templates("user-bio", `
 			<div class="bio-details row row-cols-auto text-muted">
 				<div>
 					<p class="mb-2 mb-md-3" title="Location">
-						<i class="fas fa-map-marker-alt me-1"></i> {{:location}}
+						<i class="fas fa-map-marker-alt me-1"></i> {{tweet_emoji location /}}
 					</p>
 				</div>
 				<div>
@@ -227,15 +227,18 @@ $.templates("tweet-list", `
 								<div class="card-body" style="max-height:calc(75vh - 180px);overflow-y:auto;">
 									{{if ~root['current_loop'].users_relevant}}
 										{^{for ~root['current_loop'].users_relevant}}
-											<div class="mb-3">
+												
+											{^{user_popover id_str ~tag_name="div" ~classes="mb-3" ~is_user=true}}
 												<a href="{{:url_path}}" target="_blank" class="text-decoration-none">
 													{{useravatar_img id_str ~classes="me-3 rounded-circle bg-body float-start" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
-													<h6 class="fs-5 mb-0 overflow-hidden" style="text-overflow:ellipsis;white-space:nowrap;">
-														{{tweet_emoji name /}}
-													</h6>
-													@{{:screen_name}}
 												</a>
-											</div>
+												<h6 class="fs-5 mb-0 overflow-hidden fw-medium" style="text-overflow:ellipsis;white-space:nowrap;">
+													{{tweet_emoji name /}}
+													<sub class="screen-name d-block lh-1 pb-2 fst-italic fw-normal text-muted">
+														@{{:screen_name}}
+													</sub>
+												</h6>
+											{{/user_popover}}
 										{{/for}}
 									{{/if}}
 								</div>
@@ -450,17 +453,17 @@ $.templates("tweet-header", `
 	<div class="card-header tweet-header bg-body-tertiary rounded-top">
 		<div class="tweet-profile-picture">
 		</div>
-		<div class="tweet-profile-name">
+		{^{user_popover user.id_str ~tag_name="div" ~classes="tweet-profile-name" ~style="width:fit-content;"}}
 			<a href="{{:user.url_path}}" target="_blank" class="text-decoration-none text-dark float-start ">
 				{{useravatar_img user_id_str ~classes="me-3 rounded-circle bg-body" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
 			</a>
-			<span class="fw-bold">
+			<h4 class="d-inline fs-6 fw-bold">
 				{{tweet_emoji user.name /}}
-			</span>
+			</h4>
 			<small class="text-muted fst-italic">
 				@{{:user.screen_name}}
 			</small>
-		</div>
+		{{/user_popover}}
 		<div class="tweet-profile-timestamp fs-6">
 			<small class="text-muted">
 				<a href="#{{:user.screen_name}}/status/{{:id_str}}" class="text-decoration-none" target="_blank" title="Link to this tweet in this archive (new tab)">
