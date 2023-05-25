@@ -30,7 +30,7 @@
 		4. Open this file in a web browser (tested in Firefox and Chrome).
 		4. You're done! You can now view your archived tweets in a web browser.
 -->
-<html lang="en" class="min-vh-100" data-bs-theme="dark">
+<html lang="en" class="min-vh-100" data-bs-theme="dark" data-link="data-bs-theme^{:~config.theme != 'auto' ? ~config.theme : (~window.matchMedia && ~window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'}">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -41,7 +41,7 @@
 			<meta name="twitter:site" 		content="@username" />
 			<meta name="twitter:creator" 	content="@upLYNXed" />
 
-			<meta property="og:url" 		content="https://kixstar.valk.cam/" />
+			<meta property="og:url" 		content="https://example.com/archive/" />
 			<meta property="og:title" 		content="User Name (@username) - Twitter Archive" />
 			<meta property="og:description" content="An archive of the majority of @username's tweets" />
 			<meta property="og:image"		content="" />

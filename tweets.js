@@ -807,9 +807,13 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 
 	// Define the args
 	let helpers = {
-		// Context:
+		// Window
+		"window": window,
+		// Context Data:
 		"main_user": main_user,
 		"list_views": list_views,
+		// Options / Config:
+		"config": config,
 		// Filters:
 		"replies": "no_replies",
 		"retweets": "no_retweets",
@@ -821,6 +825,9 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 
 	// Render the tweets using JSViews
 	tweetsTemplate.link(tweetContainer, tweets, helpers);
+
+	// Link the html element
+	$.link(true, "html", tweets, helpers);
 
 	hideLoadingAnimation(attachVideoPlayHandler);
 

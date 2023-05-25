@@ -59,22 +59,22 @@ $.templates("user-bio", `
 
 $.templates("tweet-list", `
 	<!-- Tweet List Template -->
-	{^{if ~root["current_tweets"].length > 0}}
+	{^{if ~root["current_tweets"]?.length > 0}}
 		<div class="col-lg-4 sidebar order-last">
 			<div class="offcanvas-lg border-0 offcanvas-end h-100" tabindex="-1" id="offcanvasFilters" aria-labelledby="offcanvasFiltersLabel">
 				<div class="offcanvas-header bg-body-tertiary border-bottom shadow" style="height:84px;/*margin-bottom:calc(-8.5em + 1em);*/">
 					<button type="button" class="btn-close h-100 px-4" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFilters" aria-label="Close"></button>
 				</div>
 				<div class="offcanvas-body h-100 pt-3 pt-sm-4 pt-md-5 pt-lg-0 pb-2 pb-lg-0 d-flex d-lg-block flex-column">
-					<div class="sticky-top w-100 d-flex d-lg-block flex-fill flex-column" style="top:8.5em;height:fit-content;">
+					<div class="sticky-lg-top w-100 d-grid flex-fill flex-column" style="top:8.5em;height:calc(100vh - 200px);grid-auto-rows:auto 1fr;">
 						{^{if ~list_views.includes(~root["current_loop"].name)}}
-							<div class="card mb-3 sticky-top w-100" style="height:fit-content;">
+							<div class="card mb-3 sticky-top w-100" style="min-height:-webkit-fill-available;">
 								<div class="card-header">
 									<h5 id="offcanvasFiltersLabel">
 										Filters
 									</h5>
 								</div>
-								<div class="card-body">
+								<div class="card-body" style="max-height:calc(75vh - 180px);overflow-y:auto;">
 									<div class="mb-3">
 										<label for="sort-order" class="form-label">Sort Order</label>
 										<select class="form-select" id="sort-order" data-link="{:~sort_order:}" disabled>
@@ -218,7 +218,7 @@ $.templates("tweet-list", `
 									</div>
 								</div>
 							{{/if}}
-							<div class="card mb-3 w-100" style="height:fit-content;">
+							<div class="card mb-3 w-100" style="min-height:-webkit-fill-available;">
 								<div class="card-header">
 									<h5 id="offcanvasFiltersLabel">
 										Relevant Users
@@ -244,6 +244,41 @@ $.templates("tweet-list", `
 								</div>
 							</div>
 						{{/if}}
+						<div class="card mb-3 w-100" style="height:fit-content;">
+							<div class="card-header">
+								<h5 id="offcanvasFiltersLabel">
+									Options
+								</h5>
+							</div>
+							<div class="card-body">
+								<div class="mb-3">
+									<h6>
+										Theme
+									</h6>
+									<!-- 3 way toggle switch for light, auto, and dark themes -->
+									<div class="form-group d-flex">
+										<label class="form-check-label me-2" for="theme_toggle_light">
+											<i class="fa-solid fa-sun"></i>
+										</label>
+										{^{if ~config.theme=='auto'}}
+											<input class="form-check-input rounded-start-pill border-end-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_light" value="light" title="Light Theme" data-link="{:~config.theme:}">
+											<input class="form-check-input rounded-0 border-start-0 border-end-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_auto" value="auto" title="Auto Theme" data-link="{:~config.theme:}">
+											<input class="form-check-input rounded-end-pill border-start-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_dark" value="dark" title="Dark Theme" data-link="{:~config.theme:}">
+										{{else}}
+											<input 	class="form-check-input rounded-start-pill border-end-0 bg-dark-subtle border" type="radio" name="theme_toggle" id="theme_toggle_light" value="light" title="Light Theme" data-link="{:~config.theme:}">
+											<input class="form-check-input rounded-0 border-start-0 border-end-0 bg-dark-subtle border" type="radio" name="theme_toggle" id="theme_toggle_auto" value="auto" title="Auto Theme" data-link="{:~config.theme:}">
+											<input class="form-check-input rounded-end-pill border-start-0 bg-dark-subtle border" type="radio" name="theme_toggle" id="theme_toggle_dark" value="dark" title="Dark Theme" data-link="{:~config.theme:}">
+										{{/if}}
+										<label class="form-check-label ms-2" for="theme_toggle_dark">
+											<i class="fa-solid fa-moon"></i>
+										</label>
+										<span class="ms-3">
+											{^{:~config.theme}}
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -253,27 +288,22 @@ $.templates("tweet-list", `
 			{^{for ~root["current_tweets"] ~replies ~retweets}}
 				{^{if id_str}}
 					{^{if ~retweets == "all" || (~retweets == "retweets" && retweeting_user != undefined) || (~retweets == "no_retweets" && retweeting_user == undefined) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
-						{^{if ~replies == "all" || (~replies == "replies" && in_reply_to_status_id_str != null) || (~replies == "no_replies" && in_reply_to_status_id_str == null) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
-							{^{if ~media == "all" || (~media == "media" && extended_entities) || (~media == "no_media" && !extended_entities) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
-								{^{if ~favorites == "all" || (~favorites == "favorites" && favorited == true)}}
-									{^{if ~date_cutoff_toggle == false  || (~date_cutoff_toggle == true && created_at < ~root["current_loop"].date_cutoff)}}
-										{{if user}}
-											{^{include #data ^tmpl="tweet" /}}
-										{{else}}
-											{^{include #data ^tmpl="404" ~message="Could not load this tweet" /}}
-										{{/if}}
-									{{/if}}
-								{{/if}}
-							{{/if}}
+					{^{if ~replies == "all" || (~replies == "replies" && in_reply_to_status_id_str != null) || (~replies == "no_replies" && in_reply_to_status_id_str == null) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
+					{^{if ~media == "all" || (~media == "media" && extended_entities) || (~media == "no_media" && !extended_entities) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
+					{^{if ~favorites == "all" || (~favorites == "favorites" && favorited == true)}}
+					{^{if ~date_cutoff_toggle == false  || (~date_cutoff_toggle == true && created_at < ~root["current_loop"].date_cutoff)}}
+						{^{if user #data ^tmpl="tweet"}}
+							{^{else #data ^tmpl="404" ~message="Could not load this tweet"}}
 						{{/if}}
+					{{/if}}
+					{{/if}}
+					{{/if}}
+					{{/if}}
 					{{/if}}
 				{{/if}}
 			{{/for}}
-			{^{if ~root["current_tweets"].length == 0}}
-				{^{include tmpl="404" /}}
-			{{/if}}
-			{^{if ~root["current_tweets"].length > 1}}
-				{^{include tmpl="tweet-list-end" /}}
+			{^{if ~root["current_tweets"].length == 0 tmpl="404" }}
+				{^{else tmpl="tweet-list-end" }}
 			{{/if}}
 		</div>
 	{{else}}
@@ -283,14 +313,14 @@ $.templates("tweet-list", `
 	{{/if}}
 `);
 
-$.templates("media-gallery-list", `
-	<!-- Media Gallery View Template -->
-	{{for ~root["current_tweets"] reverse=true}}
-		{{if !retweeted_status_result}}
-			{{include tmpl="media-item" /}}
-		{{/if}}
-	{{/for}}
-`);
+// $.templates("media-gallery-list", `
+// 	<!-- Media Gallery View Template -->
+// 	{{for ~root["current_tweets"] reverse=true}}
+// 		{{if !retweeted_status_result}}
+// 			{{include tmpl="media-item" /}}
+// 		{{/if}}
+// 	{{/for}}
+// `);
 
 $.templates("404", `
 	<div class="col-12 mb-3">
@@ -309,14 +339,14 @@ $.templates("404", `
 	</div>
 `);
 
-$.templates("tweet-list-more", `
-	<div class="col-12 mb-3">
-		<button class="btn btn-primary w-100" id="load-more" onclick="load_more();">
-			<i class="fa-solid fa-circle-arrow-down"></i>
-			Load More
-		</button>
-	</div>
-`);
+// $.templates("tweet-list-more", `
+// 	<div class="col-12 mb-3">
+// 		<button class="btn btn-primary w-100" id="load-more" onclick="load_more();">
+// 			<i class="fa-solid fa-circle-arrow-down"></i>
+// 			Load More
+// 		</button>
+// 	</div>
+// `);
 
 $.templates("tweet-list-end", `
 	<div class="col-12 mb-3">
@@ -364,11 +394,9 @@ $.templates("tweet", `
 					</div>
 				</div>
 
-				{{if card}}
-					{{if card.name}}
-						{{if card.name.indexOf("poll") != -1}}
-							{{include tmpl="tweet-poll" /}}
-						{{/if}}
+				{{if card?.name}}
+					{{if card.name.indexOf("poll") != -1}}
+						{{include tmpl="tweet-poll" /}}
 					{{/if}}
 				{{/if}}
 
@@ -388,19 +416,17 @@ $.templates("tweet", `
 							{{/if}}
 						</div>
 					</div>
-				{{else}}
-					{{if is_quote_status == true}} {{!-- Quoted Tweet is deleted or missing so we show a placeholder --}}
-						<div class="card-body tweet-quoted px-1 px-sm-3">
-							<div class="card tweet" id="tweet-{{:quoted_status_id_str}}">
-								<div class="card-body tweet-content px-2 px-sm-3">
-									<p class="text-muted m-0">
-										<i class="fas fa-exclamation-triangle me-2"></i>
-										Quoted Tweet is missing or deleted.
-									</p>
-								</div>
+				{{else is_quote_status == true}} {{!-- Quoted Tweet is deleted or missing so we show a placeholder --}}
+					<div class="card-body tweet-quoted px-1 px-sm-3">
+						<div class="card tweet" id="tweet-{{:quoted_status_id_str}}">
+							<div class="card-body tweet-content px-2 px-sm-3">
+								<p class="text-muted m-0">
+									<i class="fas fa-exclamation-triangle me-2"></i>
+									Quoted Tweet is missing or deleted.
+								</p>
 							</div>
 						</div>
-					{{/if}}
+					</div>
 				{{/if}}
 
 				<div class="card-footer tweet-stats row row-cols-auto mx-0 px-1">
@@ -572,55 +598,53 @@ $.templates("tweet-poll-choice", `
 
 $.templates("tweet-media", `
 	<!-- Tweet Media Templates -->
-	{{if extended_entities}}
+	{{if extended_entities?.media}}
 		<div class="card-body p-0 fs-6 d-flex flex-nowrap bg-dark-subtle {{:~classes}}" style="min-height:16em;max-height:60vh">
-			{{if extended_entities.media}}
-				{{for extended_entities.media ~id=id_str ~media_entities=extended_entities.media}}
+			{{for extended_entities.media ~id=id_str ~media_entities=extended_entities.media}}
 
-					<!-- Tweet Media Photo -->
-					{{if type == "photo"}}
-						<div class="photo position-relative flex-fill" style="width: -webkit-fill-available;">
-							{{tweet_image media_url_https alt_text ~classes=~classes + " img-fluid w-100 h-100"  ~crop=true /}}
-							
-							<!-- modal open with full image -->
-							<div class="modal fade" id="imageModal-{{:~id}}-{{:media_key}}" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-								<div class="modal-dialog modal-dialog-centered modal-xl" style="max-width:calc(100% - var(--bs-modal-margin) * 2);max-height:calc(100vh - 100px);">
-									<div class="modal-content w-auto mx-auto">
-										<div class="modal-body p-0">
-											{{tweet_image media_url_https alt_text ~classes="rounded-top img-fluid w-100" ~style="max-height:calc(100vh - 175px);" /}}
-										</div>
-										<div class="modal-footer">
-											<a href="{{:media_url_https}}" class="me-4 p-2" target="_blank">
-												<i class="fa-brands fa-twitter me-1"></i>
-											</a>
-											<a href="{{media_url media_url_https /}}" download="{{media_url media_url_https /}}" class="btn btn-primary me-1">
-												<i class="fa-solid fa-download"></i>
-											</a>
-											<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-										</div>
+				<!-- Tweet Media Photo -->
+				{{if type == "photo"}}
+					<div class="photo position-relative flex-fill" style="width: -webkit-fill-available;">
+						{{tweet_image media_url_https alt_text ~classes=~classes + " img-fluid w-100 h-100"  ~crop=true /}}
+						
+						<!-- modal open with full image -->
+						<div class="modal fade" id="imageModal-{{:~id}}-{{:media_key}}" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered modal-xl" style="max-width:calc(100% - var(--bs-modal-margin) * 2);max-height:calc(100vh - 100px);">
+								<div class="modal-content w-auto mx-auto">
+									<div class="modal-body p-0">
+										{{tweet_image media_url_https alt_text ~classes="rounded-top img-fluid w-100" ~style="max-height:calc(100vh - 175px);" /}}
+									</div>
+									<div class="modal-footer">
+										<a href="{{:media_url_https}}" class="me-4 p-2" target="_blank">
+											<i class="fa-brands fa-twitter me-1"></i>
+										</a>
+										<a href="{{media_url media_url_https /}}" download="{{media_url media_url_https /}}" class="btn btn-primary me-1">
+											<i class="fa-solid fa-download"></i>
+										</a>
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 									</div>
 								</div>
 							</div>
-							<!-- end modal -->
-
-							<a href="#" data-bs-toggle="modal" data-bs-target="#imageModal-{{:~id}}-{{:media_key}}" class="stretched-link"></a>
-							<!-- <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal-{{:~id}}" onclick="bootstrap.Carousel.getInstance(document.getElementById('imageModal-{{:~id}}')).to({{*: (window.ext_ent >= 0) ? window.ext_ent +=1 :  window.ext_ent = 0 }});" class="stretched-link"></a> -->
 						</div>
-					{{/if}}
+						<!-- end modal -->
 
-					<!-- Tweet Media Animated GIF -->
-					{{if type == "animated_gif"}}
-						{{tweet_video video_info.variants ~id #data.id_str ~poster=media_url_https ~classes=~classes + " w-100" ~loop=true /}}
-					{{/if}}
-					
-					<!-- Tweet Media Video -->
-					{{if type == "video"}}
-						{{tweet_video video_info.variants ~id #data.id_str ~poster=media_url_https ~classes=~classes + " w-100" /}}
-					{{/if}}
-				{{/for}}
-				{{if extended_entities.media[0].type == "photo"}}
-					{{include tmpl="tweet-media-modal" ~id=id_str ~media_entities=~media_entities /}}
+						<a href="#" data-bs-toggle="modal" data-bs-target="#imageModal-{{:~id}}-{{:media_key}}" class="stretched-link"></a>
+						<!-- <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal-{{:~id}}" onclick="bootstrap.Carousel.getInstance(document.getElementById('imageModal-{{:~id}}')).to({{*: (window.ext_ent >= 0) ? window.ext_ent +=1 :  window.ext_ent = 0 }});" class="stretched-link"></a> -->
+					</div>
 				{{/if}}
+
+				<!-- Tweet Media Animated GIF -->
+				{{if type == "animated_gif"}}
+					{{tweet_video video_info.variants ~id #data.id_str ~poster=media_url_https ~classes=~classes + " w-100" ~loop=true /}}
+				{{/if}}
+				
+				<!-- Tweet Media Video -->
+				{{if type == "video"}}
+					{{tweet_video video_info.variants ~id #data.id_str ~poster=media_url_https ~classes=~classes + " w-100" /}}
+				{{/if}}
+			{{/for}}
+			{{if extended_entities.media[0].type == "photo"}}
+				{{include tmpl="tweet-media-modal" ~id=id_str ~media_entities=~media_entities /}}
 			{{/if}}
 		</div>
 	{{else}}
