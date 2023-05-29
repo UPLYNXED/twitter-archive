@@ -66,15 +66,16 @@ $.templates("tweet-list", `
 					<button type="button" class="btn-close h-100 px-4" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFilters" aria-label="Close"></button>
 				</div>
 				<div class="offcanvas-body h-100 pt-3 pt-sm-4 pt-md-5 pt-lg-0 pb-2 pb-lg-0 d-flex d-lg-block flex-column">
-					<div class="sticky-lg-top w-100 d-grid flex-fill flex-column" style="top:8.5em;height:calc(100vh - 200px);grid-auto-rows:auto 1fr;">
+					<div class="sticky-lg-top w-100 d-flex flex-fill flex-column overflow-y-auto" style="top:8.5em;max-height:calc(100vh - var(--v_padding, 200px) - 6rem);grid-auto-rows:auto 1fr;">
 						{^{if ~list_views.includes(~root["current_loop"].name)}}
-							<div class="card mb-3 sticky-top w-100" style="min-height:-webkit-fill-available;">
-								<div class="card-header">
+							<div class="card mb-3 w-100" style="height:fit-content;">
+								<div class="card-header position-relative">
 									<h5 id="offcanvasFiltersLabel">
 										Filters
 									</h5>
+									<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_filters" aria-expanded="true" aria-controls="collapse_filters" title="Collapse / Open Filters Card"></a>
 								</div>
-								<div class="card-body" style="max-height:calc(75vh - 180px);overflow-y:auto;">
+								<div class="card-body collapse show" id="collapse_filters" style="max-height:calc(75vh - 180px);overflow-y:auto;">
 									<div class="mb-3">
 										<label for="sort-order" class="form-label">Sort Order</label>
 										<select class="form-select" id="sort-order" data-link="{:~sort_order:}" disabled>
@@ -109,6 +110,18 @@ $.templates("tweet-list", `
 												<option value="media" title="Only show tweets that contain media">
 													Only Media
 												</option>
+												<option value="images" title="Only show tweets that contain images" disabled>
+													Only Images
+												</option>
+												<option value="videos" title="Only show tweets that contain videos" disabled>
+													Only Videos
+												</option>
+												<option value="gifs" title="Only show tweets that contain GIFs" disabled>
+													Only GIFs
+												</option>
+												<option value="embeds" title="Only show tweets that contain cards or polls" disabled>
+													Only Cards/Polls
+												</option>
 												<option value="no_media" title="Hide tweets that contain media">
 													No Media
 												</option>
@@ -142,6 +155,12 @@ $.templates("tweet-list", `
 											<option value="retweets" title="Only show retweets">
 												Only Retweets
 											</option>
+											<option value="quotetweets" title="Only show quote tweets" disabled>
+												Only Quote Tweets
+											</option>
+											<option value="retweets_quotetweets" title="Only show retweets and quote tweets" disabled>
+												Only Retweets and Quote Tweets
+											</option>
 											<option value="no_retweets" title="Hide retweets">
 												No Retweets
 											</option>
@@ -168,8 +187,10 @@ $.templates("tweet-list", `
 										</div>
 									{{/if}}
 								</div>
-								{^{if ~root["current_loop"].name == "favorites"}}
-									<div class="card-body border-top border-bottom bg-body-tertiary py-2">
+							</div>
+							{^{if ~root["current_loop"].name == "favorites"}}
+								<div class="card mb-3 w-100" style="height:fit-content;">
+									<div class="card-header">
 										<h5>More</h5>
 									</div>
 									<div class="card-body">
@@ -188,8 +209,8 @@ $.templates("tweet-list", `
 											</button>
 										</div>
 									</div>
-								{{/if}}
-							</div>
+								</div>
+							{{/if}}
 						{{else}}
 							{{if ~root["current_loop"].date_cutoff_toggle_option != false && ~root["current_tweets"][0].created_at <= ~root["current_loop"].date_cutoff}}
 								<div class="card mb-3 w-100" style="height:fit-content;">
@@ -218,13 +239,14 @@ $.templates("tweet-list", `
 									</div>
 								</div>
 							{{/if}}
-							<div class="card mb-3 w-100" style="min-height:-webkit-fill-available;">
-								<div class="card-header">
+							<div class="card mb-3 w-100" style="height:fit-content;max-height:max(33vh, calc(66vh - 200px))">
+								<div class="card-header position-relative">
 									<h5 id="offcanvasFiltersLabel">
 										Relevant Users
 									</h5>
+									<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_rel_users" aria-expanded="true" aria-controls="collapse_rel_users" title="Collapse / Open Related Users Card"></a>
 								</div>
-								<div class="card-body" style="max-height:calc(75vh - 180px);overflow-y:auto;">
+								<div class="card-body collapse show" id="collapse_rel_users" style="max-height:calc(75vh - 180px);overflow-y:auto;">
 									{{if ~root['current_loop'].users_relevant}}
 										{^{for ~root['current_loop'].users_relevant}}
 												
@@ -259,6 +281,7 @@ $.templates("tweet-list", `
 									<div class="form-group d-flex">
 										<label class="form-check-label me-2" for="theme_toggle_light">
 											<i class="fa-solid fa-sun"></i>
+											<!-- <i class="fa-solid fa-sun text-warning" style="text-shadow: 0 0 10px rgba(var(--bs-warning-rgb),var(--bs-text-opacity))!important;"></i> -->
 										</label>
 										{^{if ~config.theme=='auto'}}
 											<input class="form-check-input rounded-start-pill border-end-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_light" value="light" title="Light Theme" data-link="{:~config.theme:}">
@@ -271,6 +294,7 @@ $.templates("tweet-list", `
 										{{/if}}
 										<label class="form-check-label ms-2" for="theme_toggle_dark">
 											<i class="fa-solid fa-moon"></i>
+											<!-- <i class="fa-moon fa-solid" style="text-shadow: 0 0 10px white;"></i> -->
 										</label>
 										<span class="ms-3">
 											{^{:~config.theme}}
@@ -395,23 +419,23 @@ $.templates("tweet", `
 				</div>
 
 				{{if card?.name}}
-					{{if card.name.indexOf("poll") != -1}}
+					{{if card?.name?.indexOf("poll") != -1}}
 						{{include tmpl="tweet-poll" /}}
 					{{/if}}
 				{{/if}}
 
-				{{if entities.urls[0] || extended_entities}}
+				{{if entities?.urls?.[0] || extended_entities}}
 					{{include tmpl="tweet-media" /}}
 				{{/if}}
 
-				{{if quoted_tweet && quoted_tweet.user}}
+				{{if quoted_tweet?.user}}
 					<div class="card-body tweet-quoted px-1 px-sm-3">
 						<div class="card tweet" id="tweet-{{:quoted_tweet.id_str}}">
 							{{include tmpl="tweet-header" quoted_tweet /}}
 							<div class="card-body tweet-content py-0 px-2 px-sm-3">
 								{{tweet_content quoted_status_id_str quoted_tweet.full_text /}}
 							</div>
-							{{if quoted_tweet.entities.urls[0] || quoted_tweet.extended_entities}}
+							{{if quoted_tweet.entities?.urls?.[0] || quoted_tweet?.extended_entities}}
 								{{include tmpl="tweet-media" quoted_tweet ~classes="rounded-bottom" /}}
 							{{/if}}
 						</div>
@@ -510,7 +534,7 @@ $.templates("tweet-header", `
 			
 			<div class="tweet-context-links float-end">
 				{{if in_reply_to_status_id_str != null}}
-					{{if in_reply_to_user_id_str == ~main_user.id_str}}
+					{{if in_reply_to_user_id_str == ~main_user?.id_str}}
 						<a href="{{orig_url /}}#{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" class="d-inline-block py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none" title="Replying to {{:in_reply_to_screen_name}}">
 							<i class="fas fa-reply" style="text-indent:-0.125em;"></i>
 							<span class="d-none d-md-inline ms-1">
@@ -550,7 +574,7 @@ $.templates("tweet-header", `
 				{{/if}}
 			</div>
 		</div>
-		{{if retweeting_user != undefined}}
+		{{if retweeting_user}}
 			<div class="tweet-retweet-credit position-absolute bottom-100 ps-3 py-2">
 				<small class="text-muted">
 					<i class="fa-solid fa-retweet me-2"></i>
@@ -565,7 +589,7 @@ $.templates("tweet-header", `
 
 $.templates("tweet-poll", `
 	<!-- Tweet poll Templates -->
-	{{if card.name}}
+	{{if card?.name}}
 		<div class="card-body">
 			{{tweet_poll_counter id_str /}}
 			{{if card.name.indexOf('poll2') != -1 || card.name.indexOf('poll3') != -1 || card.name.indexOf('poll4') != -1}}
@@ -643,85 +667,79 @@ $.templates("tweet-media", `
 					{{tweet_video video_info.variants ~id #data.id_str ~poster=media_url_https ~classes=~classes + " w-100" /}}
 				{{/if}}
 			{{/for}}
-			{{if extended_entities.media[0].type == "photo"}}
+			{{if extended_entities?.media?.[0]?.type == "photo"}}
 				{{include tmpl="tweet-media-modal" ~id=id_str ~media_entities=~media_entities /}}
 			{{/if}}
 		</div>
-	{{else}}
-		{{if entities}}
-			<div class="card-body p-0 fs-6 position-relative">
-				{{if entities.media}}
-					{{for entities.media}}
-						<img class="img-fluid" src="{{:media_url_https}}" alt="{{:display_url}}" loading="lazy" />
-					{{/for}}
-				{{else}}
-					{{if entities.urls}}
-						{{if card ~id=id_str}}
-								<div class="card m-3 mt-0 mx-1 mx-sm-3">
-									<div class="row g-0 flex-nowrap">
-										{{if card.binding_values.thumbnail_image}}
-											<div class="border-end" style="width:fit-content;min-height:8em;min-width:110px;max-height:12em;max-width:min(16em, 25%);">
-												{{tweet_image card.binding_values.thumbnail_image.image_value.url display_url ~classes="img-fluid rounded-start h-100 object-fit-cover" /}}
-											</div>
-											<div class="position-relative flex-fill overflow-hidden ">
-												<div class="card-body position-absolute lh-1">
-										{{else}}
-											{{if card.binding_values.player_image_large}}
-												<div class="position-relative border-end" style="width:fit-content;min-height:8em;min-width:110px;max-height:12em;max-width:min(16em, 25%);">
-													{{tweet_image card.binding_values.player_image_large.image_value.url display_url ~classes="img-fluid rounded-start h-100 object-fit-cover" /}}
-													<i class="fa-circle-play fa-regular fs-1 position-absolute start-50 text-white top-50 translate-middle"></i>
-												</div>
-												<div class="position-relative flex-fill overflow-hidden ">
-													<div class="card-body position-absolute lh-1">
-											{{else}}
-												<div class="col-12">
-													<div class="card-body lh-1 pb-4">
-											{{/if}}
-										{{/if}}
-												<h5 class="card-title">
-													{{if card.binding_values.title}}
-														{{:card.binding_values.title.string_value}}
-													{{else}}
-														{{:display_url}}
-													{{/if}}
-												</h5>
-												<p class="card-text">
-													{{if card.binding_values.description}}
-														<small>
-															{{:card.binding_values.description.string_value}}
-														</small>
-													{{/if}}
-												</p>
-											</div>
-
-											{{if card.binding_values.vanity_url}}
-												<p class="card-text position-absolute z-1 bottom-0 mb-0 px-3 py-1 w-100 bg-body-secondary">
-													<small class="text-muted">{{:card.binding_values.vanity_url.string_value}}</small>
-												</p>
-											{{/if}}
-										</div>
-									</div>
-									<a href="{{:entities.urls[entities.urls.length - 1].expanded_url}}" target="_blank" class="stretched-link"></a>
+	{{else entities}}
+		<div class="card-body p-0 fs-6 position-relative">
+			{{if entities?.media}}
+				{{for entities.media}} <!--/* TODO: Look into this, is this necessary still? */-->
+					<img class="img-fluid" src="{{:media_url_https}}" alt="{{:display_url}}" loading="lazy" />
+				{{/for}}
+			{{else entities?.urls}}
+				{{if card ~id=id_str}}
+					<div class="card m-3 mt-0 mx-1 mx-sm-3">
+						<div class="row g-0 flex-nowrap">
+							{{if card?.binding_values?.thumbnail_image}}
+								<div class="border-end" style="width:fit-content;min-height:8em;min-width:110px;max-height:12em;max-width:min(16em, 25%);">
+									{{tweet_image card.binding_values.thumbnail_image.image_value.url display_url ~classes="img-fluid rounded-start h-100 object-fit-cover" /}}
 								</div>
-						{{else}}
-							{{for entities.urls ~id=id_str}}
-								{{if display_url.indexOf("i.imgur.com") != -1}}
-									<div class="card m-3 mt-0">
-										<img class="card-img-top rounded-top" src="{{:expanded_url}}" alt="{{:display_url}}" loading="lazy" />
-										<div class="card-body py-1 bg-body-secondary">
-											<span class="card-title small">{{:display_url}}</span>
-										</div>
-										<a href="{{:expanded_url}}" target="_blank" class="stretched-link"></a>
-									</div>
-								{{else}}
-									<!-- <a href="{{:expanded_url}}" target="_blank">{{:display_url}}</a> -->
+								<div class="position-relative flex-fill overflow-hidden ">
+									<div class="card-body position-absolute lh-1">
+							{{else card?.binding_values?.player_image_large}}
+								<div class="position-relative border-end" style="width:fit-content;min-height:8em;min-width:110px;max-height:12em;max-width:min(16em, 25%);">
+									{{tweet_image card.binding_values.player_image_large.image_value.url display_url ~classes="img-fluid rounded-start h-100 object-fit-cover" /}}
+									<i class="fa-circle-play fa-regular fs-1 position-absolute start-50 text-white top-50 translate-middle"></i>
+								</div>
+								<div class="position-relative flex-fill overflow-hidden ">
+									<div class="card-body position-absolute lh-1">
+							{{else}}
+								<div class="col-12">
+									<div class="card-body lh-1 pb-4">
+							{{/if}}
+									<h5 class="card-title">
+										{{if card?.binding_values?.title}}
+											{{:card.binding_values.title.string_value}}
+										{{else}}
+											{{:display_url}}
+										{{/if}}
+									</h5>
+									<p class="card-text">
+										{{if card?.binding_values?.description}}
+											<small>
+												{{:card.binding_values.description.string_value}}
+											</small>
+										{{/if}}
+									</p>
+								</div>
+
+								{{if card?.binding_values?.vanity_url}}
+									<p class="card-text position-absolute z-1 bottom-0 mb-0 px-3 py-1 w-100 bg-body-secondary">
+										<small class="text-muted">{{:card.binding_values.vanity_url.string_value}}</small>
+									</p>
 								{{/if}}
-							{{/for}}
+							</div>
+						</div>
+						<a href="{{:entities.urls[entities.urls.length - 1].expanded_url}}" target="_blank" class="stretched-link"></a>
+					</div>
+				{{else}}
+					{{for entities.urls ~id=id_str}}
+						{{if display_url.indexOf("i.imgur.com") != -1}}
+							<div class="card m-3 mt-0">
+								<img class="card-img-top rounded-top" src="{{:expanded_url}}" alt="{{:display_url}}" loading="lazy" />
+								<div class="card-body py-1 bg-body-secondary">
+									<span class="card-title small">{{:display_url}}</span>
+								</div>
+								<a href="{{:expanded_url}}" target="_blank" class="stretched-link"></a>
+							</div>
+						{{else}}
+							<!-- <a href="{{:expanded_url}}" target="_blank">{{:display_url}}</a> -->
 						{{/if}}
-					{{/if}}
+					{{/for}}
 				{{/if}}
-			</div>
-		{{/if}}
+			{{/if}}
+		</div>
 	{{/if}}
 `);
 
