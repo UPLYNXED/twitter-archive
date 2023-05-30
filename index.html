@@ -104,28 +104,34 @@
 					<div class="offcanvas-body pt-3 pt-sm-4 pt-md-5 pt-lg-0 pb-2 pb-lg-0" id="navbarToggler">
 						<ul class="navbar-nav nav-pills nav-fill mb-3 mb-lg-0 me-lg-2 me-xl-4">
 							<li class="nav-item px-0 px-lg-1" id="tweets">
-								<a class="nav-link border border-secondary border-opacity-10 px-4 py-3 mb-3 py-lg-2 mb-lg-0 active" aria-current="page" href="#tweets" title="Tweets">
-									<i class="fa-regular fa-comment fa-flip-horizontal"></i>
-									<span class="d-inline d-lg-none">Tweets</span>
+								<a class="nav-link mb-3 mb-lg-0 p-0 active" aria-current="page" href="#tweets" title="Tweets">
+									<span class="d-block focus-ring border border-opacity-10 border-secondary rounded-3 px-4 py-3 py-lg-2 w-100" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasNavbar">
+										<i class="fa-regular fa-comment fa-flip-horizontal"></i>
+										<span class="d-inline d-lg-none">Tweets</span>
+									</span>
 								</a>
 							</li>
 							<li class="nav-item px-0 px-lg-1" id="media">
-								<a class="nav-link border border-secondary border-opacity-10 px-4 py-3 mb-3 py-lg-2 mb-lg-0" href="#media" title="Media Tweets (images, videos, etc.)">
-									<i class="fa-solid fa-photo-film"></i>
-									<span class="d-inline d-lg-none">Media</span>
+								<a class="nav-link mb-3 mb-lg-0 p-0" href="#media" title="Media Tweets (images, videos, etc.)">
+									<span class="d-block focus-ring border border-opacity-10 border-secondary rounded-3 px-4 py-3 py-lg-2 w-100" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasNavbar">
+										<i class="fa-solid fa-photo-film"></i>
+										<span class="d-inline d-lg-none">Media</span>
+									</span>
 								</a>
 							</li>
 							<li class="nav-item px-0 px-lg-1" id="favorites">
-								<a class="nav-link border border-secondary border-opacity-10 px-4 py-3 mb-3 py-lg-2 mb-lg-0" href="#favorites" title="Favorite Tweets (stored locally)">
-									<i class="far fa-star"></i>
-									<span class="d-inline d-lg-none">Favorites</span>
+								<a class="nav-link mb-3 mb-lg-0 p-0" href="#favorites" title="Favorite Tweets (stored locally)">
+									<span class="d-block focus-ring border border-opacity-10 border-secondary rounded-3 px-4 py-3 py-lg-2 w-100" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasNavbar">
+										<i class="far fa-star"></i>
+										<span class="d-inline d-lg-none">Favorites</span>
+									</span>
 								</a>
 							</li>
 						</ul>
 						<form class="btn-toolbar d-flex" role="toolbar" aria-label="Search Bar" onsubmit="handleSearch(event); return false;" autocomplete="off">
 							<div class="input-group w-100">
 								<input class="form-control py-2 py-lg-0" type="search" placeholder="Search" aria-label="Search" name="search" id="search">
-								<button class="btn btn-primary" type="button" title="Search this archive (this feature is still a work in progress)" onclick="handleSearch(event);">
+								<button class="btn btn-primary" type="button" title="Search this archive (this feature is still a work in progress)" onclick="handleSearch(event);" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasNavbar">
 									<i class="fas fa-search"></i>
 								</button>
 							</div>
