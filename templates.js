@@ -68,7 +68,7 @@ $.templates("tweet-list", `
 				<div class="offcanvas-body h-100 pt-3 pt-sm-4 pt-md-5 pt-lg-0 pb-2 pb-lg-0 d-flex d-lg-block flex-column">
 					<div class="sticky-lg-top w-100 d-flex flex-fill flex-column overflow-y-auto" style="top:8.5em;max-height:calc(100vh - var(--v_padding, 200px) - 6rem);grid-auto-rows:auto 1fr;">
 						{^{if ~list_views.includes(~root["current_loop"].name)}}
-							<div class="card mb-3 w-100" style="height:fit-content;">
+							<div class="card mb-3 w-100" style="height:fit-content;min-height:0;">
 								<div class="card-header position-relative">
 									<h5 id="offcanvasFiltersLabel">
 										Filters
@@ -83,21 +83,6 @@ $.templates("tweet-list", `
 											<option value="oldest">Oldest First</option>
 										</select>
 									</div>
-									{^{if ~root["current_loop"].name != "favorites"}}
-										<div class="mb-3">
-											<label for="filter-favorites" class="form-label" title="Filter tweets that you have favorited">
-												Favorites
-											</label>
-											<select class="form-select" id="filter-favorites" data-link="{:~favorites:}" title="Tweets that you have favorited">
-												<option value="all" title="Show all tweets, including favorites">
-													All Tweets
-												</option>
-												<option value="favorites" title="Only show tweets that you have favorited">
-													Only Favorites
-												</option>
-											</select>
-										</div>
-									{{/if}}
 									{^{if ~root["current_loop"].name != "user_media"}}
 										<div class="mb-3">
 											<label for="filter-media" class="form-label" title="Filter tweets that contain media (images, videos, etc.)">
@@ -166,6 +151,21 @@ $.templates("tweet-list", `
 											</option>
 										</select>
 									</div>
+									{^{if ~root["current_loop"].name != "favorites"}}
+										<div class="mb-3">
+											<label for="filter-favorites" class="form-label" title="Filter tweets that you have favorited">
+												Favorites
+											</label>
+											<select class="form-select" id="filter-favorites" data-link="{:~favorites:}" title="Tweets that you have favorited">
+												<option value="all" title="Show all tweets, including favorites">
+													All Tweets
+												</option>
+												<option value="favorites" title="Only show tweets that you have favorited">
+													Only Favorites
+												</option>
+											</select>
+										</div>
+									{{/if}}
 									{{if ~root["current_loop"].date_cutoff_toggle_option != false}}
 										<div class="mb-3">
 											<div class="form-check form-switch">
@@ -190,10 +190,13 @@ $.templates("tweet-list", `
 							</div>
 							{^{if ~root["current_loop"].name == "favorites"}}
 								<div class="card mb-3 w-100" style="height:fit-content;">
-									<div class="card-header">
-										<h5>More</h5>
+									<div class="card-header position-relative">
+										<h5>
+											Favorites
+										</h5>
+										<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_faves" aria-expanded="false" aria-controls="collapse_faves"></a>
 									</div>
-									<div class="card-body">
+									<div class="card-body collapse" id="collapse_faves">
 										<div class="mb-3">
 											<label for="export-favorites" class="form-label">Export Favorites</label>
 											<button class="btn btn-primary w-100" id="export-favorites" onclick="exportFavorites();">
@@ -214,10 +217,13 @@ $.templates("tweet-list", `
 						{{else}}
 							{{if ~root["current_loop"].date_cutoff_toggle_option != false && ~root["current_tweets"][0].created_at <= ~root["current_loop"].date_cutoff}}
 								<div class="card mb-3 w-100" style="height:fit-content;">
-									<div class="card-header">
-										<h5>Filters</h5>
+									<div class="card-header position-relative">
+										<h5>
+											Thread Filters
+										</h5>
+										<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_filters" aria-expanded="false" aria-controls="collapse_filters"></a>
 									</div>
-									<div class="card-body">
+									<div class="card-body collapse" id="collapse_filters">
 										<div class="mb-3">
 											<div class="form-check form-switch">
 												<input class="form-check-input" type="checkbox" role="switch" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
@@ -239,7 +245,7 @@ $.templates("tweet-list", `
 									</div>
 								</div>
 							{{/if}}
-							<div class="card mb-3 w-100" style="height:fit-content;max-height:max(33vh, calc(66vh - 200px))">
+							<div class="card mb-3 w-100" style="height:fit-content;min-height:0;">
 								<div class="card-header position-relative">
 									<h5 id="offcanvasFiltersLabel">
 										Relevant Users
@@ -266,13 +272,14 @@ $.templates("tweet-list", `
 								</div>
 							</div>
 						{{/if}}
-						<div class="card mb-3 w-100" style="height:fit-content;">
-							<div class="card-header">
+						<div class="card w-100" style="height:fit-content;">
+							<div class="card-header position-relative">
 								<h5 id="offcanvasFiltersLabel">
 									Options
 								</h5>
+								<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_options" aria-expanded="true" aria-controls="collapse_options" title="Collapse / Open Options Card"></a>
 							</div>
-							<div class="card-body">
+							<div class="card-body collapse" id="collapse_options">
 								<div class="mb-3">
 									<h6>
 										Theme
@@ -373,7 +380,7 @@ $.templates("404", `
 // `);
 
 $.templates("tweet-list-end", `
-	<div class="col-12 mb-3">
+	<div class="col-12">
 		<div class="card tweet-list-loading">
 			<div class="card-body">
 				<p class="card-text text-muted">

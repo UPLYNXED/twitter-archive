@@ -19,7 +19,7 @@
  * @type {object}
  */
 let config = {
-	theme: "dark",
+	theme: "auto",
 	banner_pos_y: 65,
 };
 
@@ -388,6 +388,9 @@ function init() {
 
 	// // Run navigation hash handler on page load
 	// handleNavHashChange();
+
+	// Attach the breakpoint resize handlers
+	attachBreakpointHandlers();
 
 	// Attach the navigation hash handler
 	attachNavHashHandler();
@@ -2255,15 +2258,17 @@ function importFavorites() {
 /**
  * Function to handle the header and banner on scroll events
  * 
+ * @param {Event} e - The scroll event
+ * 
  * @returns {void}
  */
-function handleScroll() {
+function handleScroll( e ) {
 	let header = document.querySelector(".user-head");
 	let banner = document.querySelector(".user-banner");
 	let navbar = document.querySelector(".navbar");
 
 	// Do nothing if the scroll position is past the viewport height
-	if (window.scrollY > window.innerHeight) {
+	if ( e.target.scrollingElement.scrollTop > window.innerHeight ) {
 		header.querySelector("img").style.margin = "30px 0 -34px 0";
 		header.querySelector("img").classList.remove("border");
 		header.querySelector("img").style.height = "64px";
@@ -2276,7 +2281,7 @@ function handleScroll() {
 	let banner_height 			= Math.min(banner_calc_height, banner_actual_height);
 	let navbar_height 			= navbar.offsetHeight;
 
-	if (window.scrollY > banner_height - navbar_height) {
+	if ( e.target.scrollingElement.scrollTop > banner_height - navbar_height ) {
 		header.querySelector("img").style.margin = "30px 0 -34px 0";
 		header.querySelector("img").classList.remove("border");
 		header.querySelector("img").style.height = "64px";
@@ -2290,19 +2295,19 @@ function handleScroll() {
 
 	// do parallax effect on banner if the banner is taller than 500px
 	if (banner_calc_height > banner_actual_height) {
-		if (window.scrollY < 500) {
+		if ( e.target.scrollingElement.scrollTop < 500 ) {
 			let offset_dis = config.banner_pos_y * 0.75;
 			let scroll_dis = 100 - offset_dis;
 
 			// add easing to accelerate the parallax effect as the user scrolls, maxing out at 100.
-			let offset_pos = Math.min(100, (Math.pow(window.scrollY, 2) / 250000) + (scroll_dis * (window.scrollY / 500)) + offset_dis);
+			let offset_pos = Math.min(100, (Math.pow(e.target.scrollingElement.scrollTop, 2) / 250000) + (scroll_dis * (e.target.scrollingElement.scrollTop / 500)) + offset_dis);
 			banner.getElementsByTagName("img")[0].style.objectPosition = `50% ${offset_pos}%`;
 		} 
 	} else {
 		banner.getElementsByTagName("img")[0].style.objectPosition = `50% ${config.banner_pos_y}%`;
 	}
 
-	if (window.scrollY > banner_height - 20) {
+	if (e.target.scrollingElement.scrollTop > banner_height - 20) {
 		banner.classList.add("position-sticky");
 		banner.classList.remove("top-0");
 		banner.style.top = `-${banner_height - 20}px`;
@@ -2347,6 +2352,47 @@ function attachScrollHandler() {
 	window.addEventListener("scroll", throttle(handleScroll, 5, {leading: true, trailing: true}));
 	window.addEventListener("scroll", throttle(handleVideoPastView, 1000, {leading: false, trailing: true}));
 	window.addEventListener("scroll", throttle(displayMoreTweets, 1000, {leading: true, trailing: true}));
+}
+
+/**
+ * Fix the sidebar height padding based on the height of the header and footer
+ * //TODO: Refactor this at some point, it was only a quick fix.
+ * 
+ * @param {Event} e - The bs.breakpoint event
+ * 
+ * @returns {void}
+ */
+function handleSidebarHeight(e) {
+	console.log( 'handleSidebarHeight', e.breakpoint );
+	let sidebar = document.querySelector(".sidebar");
+
+	if ( ["xSmall", "small", "medium"].includes(e.breakpoint) ) {
+		sidebar.style.setProperty("--v_padding", "0px");
+		return;
+	}
+
+	let header 	= document.querySelector(".user-head");
+	let footer 	= document.querySelector("footer");
+
+	let header_height = header.offsetHeight;
+	let footer_height = footer.offsetHeight;
+
+	let vertical_padding = header_height + footer_height + 20;
+
+	sidebar.style.setProperty("--v_padding", `${vertical_padding}px`);
+}
+
+/**
+ * Attach the handleSidebarHeight function to the bs.breakpoint events
+ * 
+ * @returns {void}
+ */
+function attachBreakpointHandlers() {
+	requestIdleCallback(function() {
+		$(window).on("init.bs.breakpoint", handleSidebarHeight);
+		$(window).on("new.bs.breakpoint", handleSidebarHeight);
+		bsBreakpoints.init();
+	});
 }
 
 /**
@@ -2755,14 +2801,14 @@ function throttle(func, wait, options) {
 	var timeout, context, args, result;
 	var previous = 0;
 	if (!options) options = {};
-  
+
 	var later = function() {
 		previous = options.leading === false ? 0 : new Date().getTime();
 		timeout = null;
 		result = func.apply(context, args);
 		if (!timeout) context = args = null;
 	};
-  
+
 	var throttled = function() {
 		var _now = new Date().getTime();
 		if (!previous && options.leading === false) previous = _now;
@@ -2782,15 +2828,15 @@ function throttle(func, wait, options) {
 		}
 		return result;
 	};
-  
+
 	throttled.cancel = function() {
 		clearTimeout(timeout);
 		previous = 0;
 		timeout = context = args = null;
 	};
-  
+
 	return throttled;
-  }
+}
 
 /**
  * _.js Debounce function
@@ -2798,35 +2844,35 @@ function throttle(func, wait, options) {
  */
 function debounce(func, wait, immediate) {
 	var timeout, previous, args, result, context;
-  
+
 	var later = function() {
-	  var passed = new Date().getTime() - previous;
-	  if (wait > passed) {
-		timeout = setTimeout(later, wait - passed);
-	  } else {
-		timeout = null;
-		if (!immediate) result = func.apply(context, args);
-		if (!timeout) args = context = null;
-	}
-  };
+		var passed = new Date().getTime() - previous;
+		if (wait > passed) {
+			timeout = setTimeout(later, wait - passed);
+		} else {
+			timeout = null;
+			if (!immediate) result = func.apply(context, args);
+			if (!timeout) args = context = null;
+		}
+	};
 
-  var debounced = restArguments(function(_args) {
-	context = this;
-	args = _args;
-	previous = new Date().getTime();
-	if (!timeout) {
-	  timeout = setTimeout(later, wait);
-	  if (immediate) result = func.apply(context, args);
-	}
-	return result;
-  });
+	var debounced = restArguments(function(_args) {
+		context = this;
+		args = _args;
+		previous = new Date().getTime();
+		if (!timeout) {
+			timeout = setTimeout(later, wait);
+			if (immediate) result = func.apply(context, args);
+		}
+		return result;
+	});
 
-  debounced.cancel = function() {
-	clearTimeout(timeout);
-	timeout = args = context = null;
-  };
+	debounced.cancel = function() {
+		clearTimeout(timeout);
+		timeout = args = context = null;
+	};
 
-  return debounced;
+	return debounced;
 }
 
 /**
