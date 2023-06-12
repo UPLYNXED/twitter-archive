@@ -21,6 +21,10 @@
 let config = {
 	theme: "auto",
 	banner_pos_y: 65,
+	filters: {
+		"is_reply": false,
+		"is_retweet": false,
+	},
 };
 
 /**
@@ -669,30 +673,8 @@ function processTweets(callback = function() {}) {
 				tweet_replied_to.replies.push( tweet ); // Add the tweet to the replies object
 			}
 		}
-	});
 
-	// Remove any conversations from the replies object that only have one tweet in them
-	Object.entries(tweets_object['conversations']).filter(function([key, value]) {
-		return value.length <= 1;
-	}).forEach(function([key, value]) {
-		delete tweets_object['conversations'][key];
-	});
-
-	// Remove any:
-	// - quoted tweets
-	// - tweets not by the main user
-	tweets_object['tweets_array'] = tweets_object['tweets_array'].filter(function(tweet) {
-		if (tweets_quoted.indexOf(tweet) !== -1) {
-			return false;
-		}
-		if (tweet.user_id_str !== main_user.id_str) {
-			return false;
-		}
-		return true;
-	});
-
-	// Modify retweets
-	tweets_object['tweets_array'].forEach(function(tweet) {
+		// Modify retweets
 		/** If the tweet is a retweet:
 		 *	- rename the tweet's "user" property to the "retweeting_user" property
 		 *	- rename the tweet's "user_id_str" to "retweeting_user_id_str"
@@ -734,26 +716,64 @@ function processTweets(callback = function() {}) {
 				}
 			}
 		}
+
+		// Add filter object properties to the tweet object
+		tweet['filters'] = {
+			'is_by_main_user': tweet.user_id_str === main_user.id_str,
+
+			'is_reply': tweet.in_reply_to_status_id_str !== undefined && tweet.in_reply_to_status_id_str !== null,
+			'is_reply_to_main_user': tweet.in_reply_to_user_id_str === main_user.id_str,
+
+			'is_retweet': tweet.retweeted_status_result !== undefined,
+			'is_quote': tweet.is_quote_status === true,
+
+			'has_media': tweet.extended_entities?.media !== undefined || tweet.card !== undefined || tweet.entities?.polls !== undefined || tweet.entities?.urls !== undefined,
+			'has_mention': tweet.entities?.user_mentions !== undefined && tweet.entities?.user_mentions?.length > 0,
+			'has_hashtag': tweet.entities?.hashtags !== undefined && tweet.entities?.hashtags?.length > 0,
+		};
+
+		if (tweet.filters.has_media === true) {
+			if (tweet.extended_entities?.media !== undefined) {
+				tweet.filters['media'] = {
+					'type': tweet.extended_entities.media[0].type,
+				}
+			} else if (tweet.card !== undefined) {
+				tweet.filters['media'] = {
+					'type': 'card',
+					'url': tweet.card.url
+				}
+			} else if (tweet.entities?.polls !== undefined) {
+				tweet.filters['media'] = {
+					'type': 'poll',
+				}
+			} else if (tweet.entities?.urls !== undefined && tweet.entities?.urls?.length > 0) {
+				tweet.filters['media'] = {
+					'type': 'url',
+					'url': tweet.entities.urls[0].expanded_url
+				}
+			}
+		}
 	});
 
-		// // Check if the tweet is a reply to the main user and add it to the replies object if it is, using the conversation_id_str as the key
-		// if (tweet.in_reply_to_user_id_str === main_user.id_str) {
-		// 	tweets_object['conversations'][tweet.conversation_id_str].push(tweet);
-			
-		// 	if (tweet.user_id_str !== main_user.id_str) { // Remove the tweet from the tweets array if it's not by the main user
-		// 		return false;
-		// 	}
-		// }
+	// Remove any conversations from the replies object that only have one tweet in them
+	Object.entries(tweets_object['conversations']).filter(function([key, value]) {
+		return value.length <= 1;
+	}).forEach(function([key, value]) {
+		delete tweets_object['conversations'][key];
+	});
 
-		// // Check if the tweet is a reply by the main user to another user and add it to the replies object if it is, using the conversation_id_str as the key
-		// if (tweet.user_id_str === main_user.id_str && tweet.in_reply_to_user_id_str !== main_user.id_str) {
-		// 	tweets_object['conversations'][tweet.conversation_id_str].push(tweet); // TODO rewrite this stuff when I'm less tired... it's a mess
-		// }
-
-		// // Check if the tweet is a retweet of the main user and add it to the retweets object if it is, using the conversation_id_str as the key
-		// if (tweet.retweeted_status_result !== undefined) {
-		// 	tweets_object['retweets'][tweet.conversation_id_str].push(tweet);
-		// }
+	// Remove any:
+	// - quoted tweets
+	// - tweets not by the main user
+	tweets_object['tweets_array'] = tweets_object['tweets_array'].filter(function(tweet) {
+		if (tweets_quoted.indexOf(tweet) !== -1) {
+			return false;
+		}
+		if (tweet.user_id_str !== main_user.id_str) {
+			return false;
+		}
+		return true;
+	});
 
 	// Order the tweets by date
 	tweets_object['tweets_array'] = tweets_object['tweets_array'].sort(function(a, b) {
@@ -769,6 +789,35 @@ function processTweets(callback = function() {}) {
 	callback();
 
 	return tweets_object;
+}
+
+/**
+ * Filters tweets by the given filter
+ * 
+ * @param {object} tweets - The tweets to filter
+ * @param {object} filters - The filters to apply
+ * @param {object} args - Additional arguments
+ * @param {function} args.callback - The callback function to call after the tweets have been filtered
+ *
+ * @returns {object} - The filtered tweets
+ */
+function filterTweets(tweets, filters, args = { "callback": function() {} }) {
+	let callback = (args.callback === undefined) ? function() {} : args.callback;
+
+	// Start counting execution time
+	console.time(`Filtering tweets. Execution Time:`);
+
+	// Filter the tweets based on the given filters and the tweet's filters object
+	let filtered_tweets = tweets.filter(function(tweet) {
+		// stub for the tweet's filters object
+	});
+
+	// End counting execution time
+	console.timeEnd(`Filtering tweets. Execution Time:`);
+
+	callback();
+
+	return filtered_tweets;
 }
 
 /**
@@ -824,6 +873,7 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 		"media": "all",
 		"sort_order": "newest",
 		"date_cutoff_toggle": config.date_cutoff_toggle,
+		"filters": config.filters,
 	};
 
 	// Render the tweets using JSViews
