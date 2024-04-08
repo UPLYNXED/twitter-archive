@@ -22,10 +22,179 @@ let config = {
 	theme: "auto",
 	banner_pos_y: 65,
 	filters: {
-		"is_reply": false,
-		"is_retweet": false,
+		"is_reply": "false",
+		"is_retweet": "false",
 	},
 };
+
+/**
+ * The filters_config object, this is used to define the filters and their options.
+ * @type {object}
+ * 
+ * @key {string} filter - The filter name
+ * @value {object} filter_def - The filter definition
+ * @value {string} filter_def.title - The title of the filter
+ * @value {string} filter_def.description - The description of the filter
+ * @value {string} filter_def.type - The type of the filter
+ * @value {string} filter_def.default - The default value of the filter
+ * @value {object} filter_def.options - The options of the filter
+ * @key {string} filter_def.options.option - The option name
+ * @value {string} filter_def.options.option.title - The title of the option
+ * @value {string} filter_def.options.option.description - The description of the option
+ * @value {string} filter_def.options.option.value - The value of the option
+ * @value {function} filter_def.options.option.callback - The callback function to call when the option is selected
+ */
+let filters_config = {
+	"is_reply": {
+		"title": "Replies",
+		"description": "Select whether to show tweets that are replies or not.",
+		"type": "select",
+		"default": "false",
+		"options": {
+			"false": {
+				"title": "Hide replies",
+				"description": "Hide all replies",
+				"value": "false",
+			},
+			"true": {
+				"title": "Show replies",
+				"description": "Show all replies",
+				"value": "true",
+			},
+			"only": {
+				"title": "Only show replies",
+				"description": "Only show replies",
+				"value": "only",
+			},
+		},
+	},
+	"is_retweet": {
+		"title": "Retweets",
+		"description": "Select whether to show tweets that are retweets or not.",
+		"type": "select",
+		"default": "false",
+		"options": {
+			"false": {
+				"title": "Hide retweets",
+				"description": "Hide all retweets",
+				"value": "false",
+			},
+			"true": {
+				"title": "Show retweets",
+				"description": "Show all retweets",
+				"value": "true",
+			},
+			"only_rt": {
+				"title": "Only show retweets",
+				"description": "Only show retweets (no quoted retweets)",
+				"value": "only",
+			},
+			"only_qrt": {
+				"title": "Only show quoted retweets",
+				"description": "Only show quoted retweets",
+				"value": "only_qrt",
+			},
+			"only_qrt_rt": {
+				"title": "Only show quoted retweets and retweets",
+				"description": "Only show quoted retweets and retweets",
+				"value": "only_qrt_rt",
+			}
+		},
+	},
+	"has_media": {
+		"title": "Media",
+		"description": "Select whether to show tweets that have media or not.",
+		"type": "select",
+		"default": "true",
+		"options": {
+			"false": {
+				"title": "Hide Media",
+				"description": "Hide all tweets with media",
+				"value": "false",
+			},
+			"true": {
+				"title": "Show Media",
+				"description": "Show all tweets with media",
+				"value": "true",
+			},
+			"only": {
+				"title": "Only Media",
+				"description": "Only show tweets with media",
+				"value": "only",
+			},
+			"only_img": {
+				"title": "Only Images",
+				"description": "Only show tweets with images",
+				"value": "only_img",
+			},
+			"only_vid": {
+				"title": "Only Videos",
+				"description": "Only show tweets with videos",
+				"value": "only_vid",
+			},
+			"only_gif": {
+				"title": "Only GIFs",
+				"description": "Only show tweets with GIFs",
+				"value": "only_gif",
+			},
+			"only_crd": {
+				"title": "Only Cards/Polls",
+				"description": "Only show tweets with cards or polls",
+				"value": "only_crd",
+			},
+		},
+	},
+	"is_favorited": {
+		"title": "Favorites",
+		"description": "Select whether to show tweets that are favorited or not.",
+		"type": "select",
+		"default": "true",
+		"options": {
+			"false": {
+				"title": "Hide favorited tweets",
+				"description": "Hide all favorited tweets",
+				"value": "false",
+				"callback": function() { },
+			},
+			"true": {
+				"title": "Show favorited tweets",
+				"description": "Show all favorited tweets",
+				"value": "true",
+				"callback": function() { },
+			},
+			"only": {
+				"title": "Only show favorited tweets",
+				"description": "Only show favorited tweets",
+				"value": "only",
+				"callback": function() { },
+			},
+		},
+	},
+	"date_cutoff": {
+		"title": "Date Cutoff",
+		"description": "Select whether to show tweets before or after a certain date.",
+		"type": "checkbox",
+		"default": false,
+		"options": {
+			"false": {
+				"title": "Show all tweets",
+				"description": "Show all tweets",
+				"value": false,
+				"callback": function() { },
+			},
+			"true": {
+				"title": "Show only tweets before a certain date",
+				"description": "Show only tweets before a certain date",
+				"value": true,
+				"callback": function() { },
+			},
+		},
+	},
+};
+
+
+
+
 
 /**
  * Main user object, this is used to store the main user's data
@@ -809,7 +978,36 @@ function filterTweets(tweets, filters, args = { "callback": function() {} }) {
 
 	// Filter the tweets based on the given filters and the tweet's filters object
 	let filtered_tweets = tweets.filter(function(tweet) {
-		// stub for the tweet's filters object
+		// For each filter, check if the tweet passes the filter
+		return Object.entries(filters).every(function([key, value]) {
+			/* Use the filters_config object to filter the tweets */
+			// Check if the reply filter is set to a value in the filters_config object's options object
+			if (key === 'reply') {
+
+			// // If the filter is a boolean, check if the tweet's filter object has the filter property and if it matches the filter value
+			// if (typeof value === 'boolean') {
+			// 	return tweet.filters[key] === value;
+			// }
+
+			// // If the filter is a string, check if the tweet's filter object has the filter property and if it matches the filter value
+			// if (typeof value === 'string') {
+			// 	return tweet.filters[key] === value || tweet.filters[key] === "any";
+			// }
+
+			// // If the filter is for media
+			// if (key === 'media') {
+			// 	// If the filter is a string, check if the tweet's filter object has the filter property and if it matches the filter value
+			// 	if (typeof value === 'string') {
+			// 		return tweet.filters[key] !== undefined && tweet.filters[key].type === value;
+			// 	}
+
+			// 	// If the filter is an array, check if the tweet's filter object has the filter property and if it matches any of the filter values
+			// 	if (Array.isArray(value)) {
+			// 		return tweet.filters[key] !== undefined && value.indexOf(tweet.filters[key].type) !== -1;
+			// 	}
+		};
+	});
+			// TODO: This shit probably makes no fucking sense so just rewrite it.
 	});
 
 	// End counting execution time
@@ -818,6 +1016,35 @@ function filterTweets(tweets, filters, args = { "callback": function() {} }) {
 	callback();
 
 	return filtered_tweets;
+}
+
+/**
+ * Handles the filtering of tweets on filter form element changes
+ * @uses filterTweets
+ * 
+ * @param {object} args - Additional arguments
+ * @param {function} args.tweets - The tweets to filter
+ * @param {function} args.filters - The filters to apply
+ * @param {function} args.callback - The callback function to call after the tweets have been filtered
+ */
+function handleFilters(event, args = { "tweets": [], "filters": {}, "callback": function() {} }) {
+	
+	/* Console log dump all the parameters */
+	console.log(args, event);
+
+	let tweets 		= (args.tweets !== undefined) 	? args.tweets 	: tweets_object.current_tweets;
+	let filters 	= (args.filters !== undefined) 	? args.filters 	: config.filters;
+	let callback 	= (args.callback !== undefined) ? args.callback : function() {};
+	
+	/* Console log dump all the parameters */
+	console.log(tweets, filters, callback);
+
+	// filter the tweets
+	let filtered_tweets = filterTweets(tweets, filters, { "callback": callback });
+	tweets_object.filtered_tweets = filtered_tweets;
+
+	// display the tweets
+	displayTweets(filtered_tweets, { "loop": "filtered_tweets" });
 }
 
 /**
@@ -874,6 +1101,7 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 		"sort_order": "newest",
 		"date_cutoff_toggle": config.date_cutoff_toggle,
 		"filters": config.filters,
+		"filter_handler": handleFilters,
 	};
 
 	// Render the tweets using JSViews
@@ -951,7 +1179,7 @@ function displayMoreTweets( e ) {
 
 			// If the current tweet list is empty, show the tweet-list-empty element
 			if ( document.querySelectorAll('.tweet').length === 0 ) {
-				document.querySelector(".tweet-list-empty").classList.remove("d-none");
+				document.querySelector(".tweet-list-empty")?.classList?.remove("d-none");
 			} else {
 				// Show the tweet-list-end element
 				if ( list_end_exists ) {
@@ -1554,16 +1782,8 @@ function registerCustomTags() {
 					return;
 				}
 
-				let username = twemoji.parse(
-					user.name,
-					{
-						attributes: function() {
-							return {
-								"loading": "lazy",
-								"style": "height:1.1em;width:1.1em;"
-							}
-						},
-					}
+				let username = parse_emojis(
+					user.name
 				);
 
 				let popover = `
@@ -1782,15 +2002,10 @@ function registerCustomTags() {
 			}
 
 			// Replace any emojis with Twemoji from Twitter
-			text = twemoji.parse(
+			text = parse_emojis(
 				text,
-				{
-					attributes: function() {
-						return {
-							"loading": "lazy",
-							"style": "height:1.2em;width:1.2em;"
-						}
-					},
+				{ 
+				    attr: { "style": "height:1.2em;width:1.2em;vertical-align:-0.2em;margin:0 0.1em;" }
 				}
 			);
 
@@ -1804,16 +2019,8 @@ function registerCustomTags() {
 			return text;
 		},
 		tweet_emoji : function( text ) { // Replace any emojis with Twemoji from Twitter
-			text = twemoji.parse(
-				text,
-				{
-					attributes: function() {
-						return {
-							"loading": "lazy",
-							"style": "height:1.1em;width:1.1em;"
-						}
-					},
-				}
+			text = parse_emojis(
+				text
 			);
 
 			return text;
@@ -2950,6 +3157,47 @@ function restArguments(func, startIndex) {
 		args[startIndex] = rest;
 		return func.apply(this, args);
 	};
+}
+
+/**
+ * Parse emojis
+ * @desc A function to simplify Twemoji.parse() usage and fix a CDN issue
+ * 
+ * @param {HTML | text} content - The content to parse emojis in.
+ * @param {object} params - Optional additional parameters if needed.
+ * @param {object} params.prop - Additional properties to pass on to the Twemoji.parse() function.
+ * @param {object} params.attr - Additional attributes to pass on to the Twemoji.parse() function.
+ * 
+ * @return {HTML} parsed_content - The original content with emojis parsed to HTML images of the twemojis.
+ */
+function parse_emojis(content, params = {'prop': {}, 'attr': {}}) {
+    let parsed_content = content;
+    params = ( typeof params == 'object' ) ? params : {'prop': {}, 'attr': {}};
+    let properties = ( typeof params.prop == 'object' ) ? params.prop : {};
+    let attributes = ( typeof params.attr == 'object' ) ? params.attr : {};
+    
+    let default_properties = {
+        base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
+    }
+    properties = Object.assign(properties, default_properties);
+    
+    let default_attributes = {
+        'loading': 'lazy',
+        'style': 'height:1.1em;width:1.1em;vertical-align:-0.2em;margin:0 0.1em;',
+    }
+    attributes = Object.assign(default_attributes, attributes);
+    
+    if( typeof properties.attributes == 'function' ) {
+        attributes = Object.assign(properties.attributes(), attributes);
+    }
+    
+    properties.attributes = function() {
+        return attributes;
+    }
+    
+    parsed_content = twemoji.parse(content, properties);
+
+    return parsed_content;
 }
 
 // Run the init() function when the page loads
