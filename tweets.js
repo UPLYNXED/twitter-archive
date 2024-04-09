@@ -960,6 +960,48 @@ function processTweets(callback = function() {}) {
 	return tweets_object;
 }
 
+/** 
+ * Process Users
+ * 
+ * @param {object} args - Function arguments
+ * @param {object} args.users - The users to process
+ * @param {function} args.callback - The callback function to call when the users are processed
+ * 
+ * @returns {object} - The processed users
+ */
+function processUsers(args = { "users": [], "callback": function() {} }) {
+	let users = (args.users === undefined) ? tweets_object['users'] : args.users;
+	let callback = (args.callback === undefined) ? function() {} : args.callback;
+
+	// Wrap the user parameter in an array if it's not already an array
+	if (!Array.isArray(users)) {
+		users = [users];
+	}
+
+	// Add former usernames to the relevant user's object
+	if (config.aliases !== undefined && config.aliases.length > 0) {
+		config.aliases.forEach(function(alias) {
+			// Find the user in the users object
+			let users_array = Object.values(users);
+
+
+			if (user !== undefined) {
+				user['former_usernames'] = alias.former;
+			}
+		});
+	}
+
+	// Process each provided user
+	users.forEach(function(user) {
+		//stub for now
+	});
+
+	callback();
+
+	return users;
+}
+
+
 /**
  * Filters tweets by the given filter
  * 
@@ -1658,6 +1700,60 @@ function formatVideo( url, type = "video/mp4", args = { "loop": "", "poster": ""
 	return video;
 }
 
+/**
+ * Parse user mentions and format them as links
+ * 
+ * @TODO Add support for popover cards on hover, if user is in the users object
+ * 
+ * @param {string} text - The text to parse
+ * @param {object} mentions - The mentions object
+ * @param {object} args - The arguments
+ * @param {string} args.reply_screen_name - The screen name of the user being replied to (if applicable)
+ * @param {string} args.classes - Additional classes to add to the link
+ * @param {string} args.style - Additional styles to add to the link
+ * 
+ * @returns {string} - The parsed text
+ */
+function parseUserMentions( text, mentions = [], args = { "reply_screen_name": undefined, "classes": "", "style": "" } ) {
+	// Get the reply screen name from the args
+	let reply_screen_name = args.reply_screen_name;
+
+	// Get username aliases from the config
+	let aliases = config.aliases;
+	// Replace any aliases in the aliases[].former array in the tweet with the current username mention
+	aliases.forEach(function(alias) {
+		alias.former.forEach(function(former) {
+			alias_regex = new RegExp(`(?<![ "]>|\w)@${former}`, "ig");
+			text = text.replace(alias_regex, `<a href="https://twitter.com/${alias.current}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover" title="&commat;${former}">@${alias.current}</a>`);
+		});
+	});
+
+	// Replace any mentions in the tweet with the actual mentions from the entities
+	mentions.forEach(function(mention) {
+		mention_regex = new RegExp(`(?<![ "]>|\w)@${mention.screen_name}`, "ig");
+		text = text.replace(mention_regex, `<a href="https://twitter.com/${mention.screen_name}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@${mention.screen_name}</a>`);
+	});
+
+	// Replace any reply mentions in the tweet with the actual mention from the reply_screen_name
+	if (reply_screen_name !== undefined) {
+		mention_regex = new RegExp(`(?<![ "]>|\w)@${reply_screen_name}`, "ig");
+		// check if the mention still matches the reply_screen_name
+		if (text.includes(`@${reply_screen_name}`)) {
+			text = text.replace(mention_regex, `<a href="https://twitter.com/${reply_screen_name}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@${reply_screen_name}</a>`);
+		}
+	}
+
+	// Wrap any mentions not already wrapped in <a> tags in <a> tags with the class "mention-failed"
+	let mark_unresolved = (mentions === undefined || mentions.length === 0) ? false : true;
+	let unformatted_mention_regex 	= /(?<![ "]>|\w)@(\w+)/g;
+	if (mark_unresolved) {
+		text = text.replace(unformatted_mention_regex, `<a href="https://twitter.com/$1" target="_blank" class="mention mention-failed link link-danger link-underline-danger link-underline-opacity-0 link-underline-opacity-100-hover">@$1</a>`);
+	} else {
+		text = text.replace(unformatted_mention_regex, `<a href="https://twitter.com/$1" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@$1</a>`);
+	}
+
+	return text;
+}
 
 /**
  * Register custom JSRender tags
@@ -1782,7 +1878,7 @@ function registerCustomTags() {
 					return;
 				}
 
-				let username = parse_emojis(
+				let username = parseEmojis(
 					user.name
 				);
 
@@ -1920,34 +2016,29 @@ function registerCustomTags() {
 			return date_string;
 		},
 		bio_content : function(text) { // Format the bio content to include links, hashtags, and mentions
-			// Get the tweet's entities
+			// Get the bio's entities
 			let links 						= main_user.entities.description.urls;
 			let hashtags 					= main_user.entities.description.hashtags;
 
 			// Replace newlines with <br> tags
 			text = text.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
-			// Replace any links in the tweet with the actual links from the entities
+			// Replace any links in the bio with the actual links from the entities
 			if ( links !== undefined ) {
 				links.forEach(function(link) {
 					text = text.replace(link.url, `<a href="${link.expanded_url}" target="_blank" class="link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">${link.display_url}</a>`);
 				});
 			}
 
-			// Replace any hashtags in the tweet with the actual hashtags from the entities
+			// Replace any hashtags in the bio with the actual hashtags from the entities
 			if ( hashtags !== undefined ) {
 				hashtags.forEach(function(hashtag) {
 					text = text.replace(`#${hashtag.text}`, `<a href="https://twitter.com/hashtag/${hashtag.text}" target="_blank" class="link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">#${hashtag.text}</a>`);
 				});
 			}
 
-			// Replace any mentions in the tweet with links to the mentioned users' profiles
-			let bio_mentions = text.match(/(?<!\w)@(\w+)/g);
-			if ( bio_mentions !== null ) {
-				bio_mentions.forEach(function(mention) {
-					text = text.replace(mention, `<a href="https://twitter.com/${mention.substring(1)}" target="_blank" class="link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">${mention}</a>`);
-				});
-			}
+			// Replace any mentions in the bio with links to the mentioned users' profiles
+			text = parseUserMentions(text);
 
 			return text;
 		},
@@ -1956,8 +2047,6 @@ function registerCustomTags() {
 			let links 						= this.tagCtx.view.data.entities.urls;
 			let mentions 					= this.tagCtx.view.data.entities.user_mentions;
 			let reply_screen_name 			= this.tagCtx.view.data.in_reply_to_screen_name;
-
-			let unformatted_mention_regex 	= /(?<!>)@(\w+)/g;
 
 			// Replace newlines with <br> tags
 			text = text.replace(/(?:\r\n|\r|\n)/g, '<br>');
@@ -1971,22 +2060,7 @@ function registerCustomTags() {
 			});
 
 			// Replace any mentions in the tweet with the actual mentions from the entities
-			mentions.forEach(function(mention) {
-				mention_regex = new RegExp(`(?<!>)@${mention.screen_name}`, "ig");
-				text = text.replace(mention_regex, `<a href="https://twitter.com/${mention.screen_name}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@${mention.screen_name}</a>`);
-			});
-
-			// Replace any reply mentions in the tweet with the actual mention from the reply_screen_name
-			if (reply_screen_name !== undefined) {
-				mention_regex = new RegExp(`(?<!>)@${reply_screen_name}`, "ig");
-				// check if the mention still matches the reply_screen_name
-				if (text.includes(`@${reply_screen_name}`)) {
-					text = text.replace(mention_regex, `<a href="https://twitter.com/${reply_screen_name}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@${reply_screen_name}</a>`);
-				}
-			}
-
-			// Wrap any mentions not already wrapped in <a> tags in <a> tags with the class "mention-failed"
-			text = text.replace(unformatted_mention_regex, `<a href="https://twitter.com/$1" target="_blank" class="mention mention-failed link link-danger link-underline-danger link-underline-opacity-0 link-underline-opacity-100-hover">@$1</a>`);
+			text = parseUserMentions(text, mentions, { "reply_screen_name": reply_screen_name });
 
 			// Remove any URLs from the tweet text that match media URLs
 			if (this.tagCtx.view.data.entities.media !== undefined) {
@@ -2002,7 +2076,7 @@ function registerCustomTags() {
 			}
 
 			// Replace any emojis with Twemoji from Twitter
-			text = parse_emojis(
+			text = parseEmojis(
 				text,
 				{ 
 				    attr: { "style": "height:1.2em;width:1.2em;vertical-align:-0.2em;margin:0 0.1em;" }
@@ -2019,7 +2093,7 @@ function registerCustomTags() {
 			return text;
 		},
 		tweet_emoji : function( text ) { // Replace any emojis with Twemoji from Twitter
-			text = parse_emojis(
+			text = parseEmojis(
 				text
 			);
 
@@ -2237,6 +2311,66 @@ function handleSearch(event) {
 	}
 
 	return search_results;
+}
+
+/**
+ * Resolve User Object from related data (e.g. username, former username, etc.)
+ * 
+ * @param {object} data - The related data
+ * @param {string} data.screen_name - The username of the user (either current or former)
+ * @param {string} data.username - alias for data.screen_name
+ * @param {string} data.name - The screen name of the user
+ * 
+ * @returns {object} - The user object
+ */
+function resolveUserObject( data = {} ) {
+	let user_data = {
+		"username"	: 	(data.screen_name === undefined) 	? (data.username === undefined) 	? "" : data.username : data.screen_name,
+		"name"		: 	(data.name === undefined) 		? "" : data.name,
+	};
+
+	if ( user_data.username === "" && user_data.name === "" ) {
+		return false;
+	}
+
+	if ( user_data.username !== "" ) {
+		// Check if the username is or has an alias defined in the config
+		let has_alias = (
+			config.aliases.find(alias => alias.current === user_data.username) 		!== undefined
+		);
+		let is_alias = (
+			config.aliases.find(alias => alias.former.includes(user_data.username)) !== undefined
+		);
+		
+		if ( is_alias ) {
+			user_data.former_username = user_data.username;
+			let alias = config.aliases.find(alias => alias.former.includes(user_data.username));
+			user_data.username = alias.current;
+		}
+
+		// Find the user object containing the username
+		let user = Object.values(tweets_object['users']).find(
+			user => user.screen_name === user_data.username
+		);
+
+		if ( user === undefined ) {
+			return false;
+		}
+
+		return user;
+		
+	} else if ( user_data.name !== "" ) {
+		// Find the user object containing the name
+		let user = Object.values(tweets_object['users']).find(
+			user => user.name === user_data.name
+		);
+
+		if ( user === undefined ) {
+			return false;
+		}
+
+		return user;
+	}
 }
 
 
@@ -3170,7 +3304,7 @@ function restArguments(func, startIndex) {
  * 
  * @return {HTML} parsed_content - The original content with emojis parsed to HTML images of the twemojis.
  */
-function parse_emojis(content, params = {'prop': {}, 'attr': {}}) {
+function parseEmojis(content, params = {'prop': {}, 'attr': {}}) {
     let parsed_content = content;
     params = ( typeof params == 'object' ) ? params : {'prop': {}, 'attr': {}};
     let properties = ( typeof params.prop == 'object' ) ? params.prop : {};
