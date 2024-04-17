@@ -2002,7 +2002,7 @@ function formatVideo( url, type = "video/mp4", args = { "loop": "", "poster": ""
 	if (args.style === undefined) args.style 		= "";
 
 	let video = `
-		<video class="embed-responsive-item ${args.classes}" playsinline controls ${args.loop} preload="none" poster="${args.poster}" style="${args.style}">
+		<video class="embed-responsive-item ${args.classes}" playsinline controls ${args.loop} preload="metadata" poster="${args.poster}" style="${args.style}">
 			<source src="${media.orig_url}" type="${type}">
 			<source src="${media.url}" type="${type}">
 			<source src="media/${media.filename}_002.${media.type}" type="${type}">
