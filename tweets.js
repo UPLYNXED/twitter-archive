@@ -21,7 +21,182 @@
 let config = {
 	theme: "auto",
 	banner_pos_y: 65,
+	filters: {
+		"is_reply": "no_replies",
+		"is_retweet": "no_retweets",
+		"has_media": "all",
+		"is_favorite": "all",
+	},
 };
+
+/**
+ * The filters_config object, this is used to define the filters and their options.
+ * @type {object}
+ * 
+ * @key {string} filter - The filter name
+ * @value {object} filter_def - The filter definition
+ * @value {string} filter_def.title - The title of the filter
+ * @value {string} filter_def.description - The description of the filter
+ * @value {string} filter_def.type - The type of the filter
+ * @value {string} filter_def.default - The default value of the filter
+ * @value {object} filter_def.options - The options of the filter
+ * @key {string} filter_def.options.option - The option name
+ * @value {string} filter_def.options.option.title - The title of the option
+ * @value {string} filter_def.options.option.description - The description of the option
+ * @value {string} filter_def.options.option.value - The value of the option
+ * @value {function} filter_def.options.option.callback - The callback function to call when the option is selected
+ */
+let filters_config = {
+	"is_reply": {
+		"title": "Replies",
+		"description": "Select whether to show tweets that are replies or not.",
+		"type": "select",
+		"default": "false",
+		"options": {
+			"no_replies": {
+				"title": "Hide replies",
+				"description": "Hide all replies",
+				"value": "false",
+			},
+			"all": {
+				"title": "Show replies",
+				"description": "Show all, including replies",
+				"value": "true",
+			},
+			"replies": {
+				"title": "Only show replies",
+				"description": "Only show replies",
+				"value": "only",
+			},
+		},
+	},
+	"is_retweet": {
+		"title": "Retweets",
+		"description": "Select whether to show tweets that are retweets or not.",
+		"type": "select",
+		"default": "false",
+		"options": {
+			"no_retweets": {
+				"title": "Hide retweets",
+				"description": "Hide all retweets",
+				"value": "false",
+			},
+			"retweets": {
+				"title": "Show retweets",
+				"description": "Show all, including retweets",
+				"value": "true",
+			},
+			"only_rt": {
+				"title": "Only show retweets",
+				"description": "Only show retweets (no quoted retweets)",
+				"value": "only",
+			},
+			"only_qrt": {
+				"title": "Only show quoted retweets",
+				"description": "Only show quoted retweets",
+				"value": "only_qrt",
+			},
+			"only_qrt_rt": {
+				"title": "Only show quoted retweets and retweets",
+				"description": "Only show quoted retweets and retweets",
+				"value": "only_qrt_rt",
+			}
+		},
+	},
+	"has_media": {
+		"title": "Media",
+		"description": "Select whether to show tweets that have media or not.",
+		"type": "select",
+		"default": "true",
+		"options": {
+			"false": {
+				"title": "Hide Media",
+				"description": "Hide all tweets with media",
+				"value": "false",
+			},
+			"true": {
+				"title": "Show Media",
+				"description": "Show all tweets with media",
+				"value": "true",
+			},
+			"only": {
+				"title": "Only Media",
+				"description": "Only show tweets with media",
+				"value": "only",
+			},
+			"only_img": {
+				"title": "Only Images",
+				"description": "Only show tweets with images",
+				"value": "only_img",
+			},
+			"only_vid": {
+				"title": "Only Videos",
+				"description": "Only show tweets with videos",
+				"value": "only_vid",
+			},
+			"only_gif": {
+				"title": "Only GIFs",
+				"description": "Only show tweets with GIFs",
+				"value": "only_gif",
+			},
+			"only_crd": {
+				"title": "Only Cards/Polls",
+				"description": "Only show tweets with cards or polls",
+				"value": "only_crd",
+			},
+		},
+	},
+	"is_favorited": {
+		"title": "Favorites",
+		"description": "Select whether to show tweets that are favorited or not.",
+		"type": "select",
+		"default": "true",
+		"options": {
+			"false": {
+				"title": "Hide favorited tweets",
+				"description": "Hide all favorited tweets",
+				"value": "false",
+				"callback": function() { },
+			},
+			"true": {
+				"title": "Show favorited tweets",
+				"description": "Show all favorited tweets",
+				"value": "true",
+				"callback": function() { },
+			},
+			"only": {
+				"title": "Only show favorited tweets",
+				"description": "Only show favorited tweets",
+				"value": "only",
+				"callback": function() { },
+			},
+		},
+	},
+	"date_cutoff": {
+		"title": "Date Cutoff",
+		"description": "Select whether to show tweets before or after a certain date.",
+		"type": "checkbox",
+		"default": false,
+		"options": {
+			"false": {
+				"title": "Show all tweets",
+				"description": "Show all tweets",
+				"value": false,
+				"callback": function() { },
+			},
+			"true": {
+				"title": "Show only tweets before a certain date",
+				"description": "Show only tweets before a certain date",
+				"value": true,
+				"callback": function() { },
+			},
+		},
+	},
+};
+
+
+
+
 
 /**
  * Main user object, this is used to store the main user's data
@@ -56,9 +231,12 @@ let navHash = {
 		});
 		document.querySelector(".nav-item#tweets a").classList.add("active");
 
+		// Set the title of the current loop
+		tweets_object['current_loop'].title = "Archived Tweets";
+
 		// Initialise with displayTweets() or switchTweetLoop()
 		if ( initial ) {
-			displayTweets(tweets_object, {"loop": "tweets_array", "offset": 0, "limit": 30});
+			displayTweets({"tweets": tweets_object, "loop": "tweets_array", "offset": 0, "limit": 30});
 		} else {
 			switchTweetLoop("tweets_array", {"offset": 0, "limit": 30, "force": true});
 		}
@@ -75,9 +253,12 @@ let navHash = {
 		});
 		document.querySelector(".nav-item#media a").classList.add("active");
 
+		// Set the title of the current loop
+		tweets_object['current_loop'].title = "Media";
+
 		// Initialise with displayTweets() or switchTweetLoop()
 		if ( initial ) {
-			displayTweets(tweets_object, {"loop": "user_media", "offset": 0, "limit": 30});
+			displayTweets({"tweets": tweets_object, "loop": "user_media", "offset": 0, "limit": 30});
 		} else {
 			switchTweetLoop("user_media", {"offset": 0, "limit": 30, "force": true});
 		}
@@ -94,9 +275,12 @@ let navHash = {
 		});
 		document.querySelector(".nav-item#favorites a").classList.add("active");
 
+		// Set the title of the current loop
+		tweets_object['current_loop'].title = "Favorited Tweets";
+
 		// Initialise with displayTweets() or switchTweetLoop()
 		if ( initial ) {
-			displayTweets(tweets_object, {"loop": "favorites", "offset": 0, "limit": 30});
+			displayTweets({"tweets": tweets_object, "loop": "favorites", "offset": 0, "limit": 30});
 		} else {
 			switchTweetLoop("favorites", {"offset": 0, "limit": 30, "force": true});
 		}
@@ -116,12 +300,36 @@ let navHash = {
 			}
 		});
 
+		// Set the title of the current loop
+		tweets_object['current_loop'].title = "All Archived Tweets";
+
 		// Initialise with displayTweets() or switchTweetLoop()
 		if ( initial ) {
-			displayTweets(tweets_object, {"loop": "all_in_archive", "offset": 0, "limit": 30});
+			displayTweets({"tweets": tweets_object, "loop": "all_in_archive", "offset": 0, "limit": 30});
 		} else {
 			switchTweetLoop("all_in_archive", {"offset": 0, "limit": 30, "force": true});
 		}
+	},
+	"#search": function( initial = false ) { // TODO: Figure out how to implement this
+		showLoadingAnimation();
+		// Scroll to the top of the page
+		window.scrollTo({ top: 0, behavior: "instant" });
+
+		// Remove the "active" class from all nav items
+		let nav_items = document.querySelectorAll(".nav-item a");
+		nav_items.forEach(function(nav_item) {
+			nav_item.classList.remove("active");
+		});
+
+		// Set the title of the current loop
+		tweets_object['current_loop'].title = "Search";
+
+		// // Initialise with displayTweets() or switchTweetLoop()
+		// if ( initial ) {
+		// 	displayTweets({"tweets": tweets_object, "loop": "search_results"});
+		// } else {
+		// 	switchTweetLoop("search_results", {"force": true});
+		// }
 	},
 	"#replies": function() {
 		// Scroll to the top of the page
@@ -132,7 +340,7 @@ let navHash = {
 		// Scroll to the top of the page
 		window.scrollTo({ top: 0, behavior: "instant" });
 		// Display the retweets
-		displayTweets(tweets_object, {"loop": "retweets"});
+		displayTweets({"tweets": tweets_object, "loop": "retweets"});
 	},
 	"#users": function() {
 		// TODO: figure something out for this
@@ -145,22 +353,34 @@ let navHash = {
 };
 
 /**
- * The tweets object, this contains the tweets, users and other data
+ * tweets_object - contains the tweets, users and other data
+ * 
  * @type {object}
- * @property {object} tweets - The tweets
- * @property {object} tweets_array - The tweets as an array
- * @property {object} replies - The replies
- * @property {object} retweets - The retweets
- * @property {object} users - The users
+ * @property {object} tweets 			- The tweets loaded from the tweets.json file and processed (processTweets())
+ * 
+ * @property {array} loaded_tweets 		- The current selection of tweets to display on the page
+ * @property {object} current_loop 		- Describes the context of the currently active loop of tweets
+ * @property {string} current_loop.name 			- The name of the current loop
+ * @property {string} current_loop.title 			- A title for the current loop to display on the page
+ * @property {array} current_loop.tweet_list 		- A working copy of the current loop of tweets that can be modified without affecting the original loop
+ * @property {integer} current_loop.offset			- The offset of loaded tweets from the current loop
+ * @property {integer} current_loop.limit			- The iterative limit of how many tweets to load at a time from the current loop
+ * @property {string} current_loop.sort				- The sort order of the current loop
+ * @property {array} current_loop.users_relevant 	- The users relevant to the current loop, used for conversation views
+ * 
+ * @property {object} users 			- The users loaded from the tweets.json file and processed
+ * 
+ * @property {object} conversations 	- The conversations grouped by conversation ID
+ * 
+ * @property {array} tweets_array 		- [loop] The tweets from the main user as an array (main user defined in config.json)
+ * @property {array} favorites 			- [loop] The favorited tweets
+ * @property {object} retweets 			- [loop] All retweets as an object
+ * @property {array} user_media 		- [loop] The media posted by the main user as an array
+ * @property {array} search_results 	- [loop] A dynamic array of search results, created as a search is performed
+ * 
  * 
  */
 let tweets_object = {
-	/**
-	 * The tweets array, this contains the tweets as an array so they can be looped through
-	 * @type {Array}
-	 * @value {object} tweet - The tweet itself
-	 */
-	"tweets_array": [],
 	/**
 	 * The tweets object, this contains the tweets as an object, with the tweet_id_str as the key so they can be accessed by ID
 	 * @type {object}
@@ -169,18 +389,11 @@ let tweets_object = {
 	 */
 	"tweets": {},
 	/**
-	 * The users object, this contains the users as an object, with the user_id_str as the key so they can be accessed by ID
-	 * @type {object}
-	 * @key {string} id - The ID of the user
-	 * @value {object} user - The user itself
-	 */
-	"users": {},
-	/**
-	 * The current_tweets array, this contains the current tweets if there's any selected
+	 * The loaded_tweets array, this contains the currently loaded tweets if there's any selected
 	 * @type {Array}
 	 * @value {object} tweet - The tweet itself
 	 */
-	"current_tweets": [],
+	"loaded_tweets": [],
 	/**
 	 * The current_loops string, this identifies the current loop
 	 * @type {string}
@@ -189,11 +402,36 @@ let tweets_object = {
 	"current_loop": {
 		"name": "tweets_array",
 		"title": "Archived Tweets", // TODO: Implement this
+		"tweet_list": () => {
+			delete tweets_object['current_loop'].tweet_list;
+			return tweets_object[tweets_object['current_loop'].name];
+		},
 		"offset": 0,
 		"limit": 30,
 		"sort": "newest",
 		"users_relevant": [],
 	},
+	/**
+	 * The users object, this contains the users as an object, with the user_id_str as the key so they can be accessed by ID
+	 * @type {object}
+	 * @key {string} id - The ID of the user
+	 * @value {object} user - The user itself
+	 */
+	"users": {},
+	/**
+	 * The conversations object, this contains the replies as an object, with the conversation_id_str as the key so they can be accessed by the conversation ID
+	 * @type {object}
+	 * @key {string} conversation_id - The ID of the conversation
+	 * @value {Array} replies - The replies themselves
+	 * @value {object} replies.tweet - The tweet itself
+	 */
+	"conversations": {},
+	/**
+	 * The tweets array, this contains the tweets as an array so they can be looped through
+	 * @type {Array}
+	 * @value {object} tweet - The tweet itself
+	 */
+	"tweets_array": [],
 	/**
 	 * The favorites array, this contains the favorited tweets as an array so they can be looped through
 	 * This value is stored locally in localStorage and can be exported and imported as a JSON file using exportFavorites() and importFavorites()
@@ -201,14 +439,6 @@ let tweets_object = {
 	 * @value {string} tweet_id_str - The ID of the tweet
 	 */
 	"favorites": [],
-	/**
-	 * The replies object, this contains the replies as an object, with the conversation_id_str as the key so they can be accessed by the conversation ID
-	 * @type {object}
-	 * @key {string} conversation_id - The ID of the conversation
-	 * @value {Array} replies - The replies themselves
-	 * @value {object} replies.tweet - The tweet itself
-	 */
-	"conversations": {},
 	/**
 	 * The retweets object, this contains the retweets as an array so they can be looped through
 	 * @type {Array}
@@ -234,7 +464,7 @@ let tweets_object = {
 	get user_media() {
 		delete this.user_media;											// Delete the getter so it can be redefined
 		// Do not continue if this is not in the top level of the tweets_object
-		if ( this.tweets_array === undefined ) {
+		if ( this.tweets_array === undefined ) { // Does not work because the tweets_array is referenced in the prototype in the __proto__ object
 			return undefined;
 		}
 		this.user_media = this.tweets_array.filter(function(tweet) { 	// Redefine user_media
@@ -251,10 +481,10 @@ let tweets_object = {
 			delete this.user; 										// Delete the getter so it can be redefined
 			if ( this.user_id_str === undefined ) { 					// If there is no user associated with the given object
 				return undefined;
-			} else if ( this.users[this.user_id_str] === undefined ) { 	// If the user doesn't exist in the users object
+			} else if ( tweets_object.users[this.user_id_str] === undefined ) { 	// If the user doesn't exist in the users object
 				return undefined;
 			}
-			return this.users[this.user_id_str];
+			return tweets_object.users[this.user_id_str];
 		},
 		/**
 		 * Get a tweet's conversation by ID
@@ -264,7 +494,7 @@ let tweets_object = {
 		 */
 		get conversation() {
 			delete this.conversation; 										// Delete the getter so it can be redefined
-			if ( this.conversation_id_str === undefined || this.user_id_str === undefined ) {
+			if ( this.conversation_id_str === undefined || this.user_id_str === undefined ) { // If there is no conversation associated with the given object or no user associated with the given object
 				return undefined;
 			}
 
@@ -282,29 +512,49 @@ let tweets_object = {
 
 			return conversation;
 		},
-		// /**
-		//  * Get a tweet's replies
-		//  * @returns {Array} - The replies
-		//  */
-		// get replies() {
-		// 	delete this.replies; 										// Delete the getter so it can be redefined
-		// 	if ( this.user_id_str === undefined ) {						// If there is no user associated with the given object
-		// 		return undefined;
-		// 	}
+		/**
+		 * Get a tweet's replies
+		 * @returns {Array} - The replies
+		 */
+		get replies() {
+			delete this.replies; 										// Delete the getter so it can be redefined
+			if ( this.user_id_str === undefined ) {	// If there is no user associated with the given object
+				return undefined;
+			}
 
-		// 	// If the tweet's id_str exists as a key in the replies object, return that property
-		// 	if ( tweets_object['conversations'][this.id_str] !== undefined ) {
-		// 		this.replies = tweets_object['conversations'][this.id_str];
-		// 		return this.replies;
-		// 	}
+			let replies = [];
 
-		// 	// Get any tweet with it's in_reply_to_status_id_str set to the current tweet's id_str
-		// 	this.replies = Object.values(tweets_object['tweets']).filter(function(tweet) {
-		// 		return tweet.in_reply_to_status_id_str === this.id_str;
-		// 	}, this);
+			// If the tweet's id_str exists as a key in the conversations object, return that property
+			if ( tweets_object['conversations'][this.id_str] !== undefined ) {
+				replies = tweets_object['conversations'][this.id_str];
 
-		// 	return this.replies;
-		// },
+				// Remove the current tweet from the replies array
+				replies = replies.filter(function(tweet) {
+					return tweet.id_str !== this.id_str;
+				}, this);
+
+				this.replies = replies; 									// Redefine the getter
+
+				return replies;												// Return the replies as we don't need to look further
+			}
+
+			// If the tweet's conversation_id_str exists as a key in the conversations object, look for the tweet in the conversation
+			if ( this.conversation_id_str !== undefined && tweets_object['conversations'][this.conversation_id_str] !== undefined ) {
+				// Get any tweet with it's in_reply_to_status_id_str set to the current tweet's id_str
+				replies = tweets_object['conversations'][this.conversation_id_str].filter(function(tweet) {
+					return tweet.in_reply_to_status_id_str === this.id_str;
+				}, this);
+			} else {
+				// Get any tweet with it's in_reply_to_status_id_str set to the current tweet's id_str in a parent conversation object
+				replies = Object.values(tweets_object['tweets']).filter(function(tweet) {
+					return tweet.in_reply_to_status_id_str === this.id_str;
+				}, this);
+			}
+
+			this.replies = replies; 									// Redefine the getter
+
+			return replies;
+		},
 		/**
 		 * Get tweet's or a user's url
 		 * @returns {string} - The url
@@ -326,7 +576,7 @@ let tweets_object = {
 				} else { 															// If the given tweet is not by the main user
 					url_path = "https://twitter.com/"
 				}
-				url_path += `${this.user.screen_name}/status/${this.id_str}`;
+				url_path += `${this.user.screen_name}/status/${this.id_str}`; // TODO: Check if tweet is in archive and use local URL if it is
 				this.url_path = url_path;
 				return url_path;
 			} else if ( this.id_str === undefined ) { 							// If the given object is not a tweet or a user somehow
@@ -343,17 +593,15 @@ let tweets_object = {
 };
 
 /**
- * The media replacements object, this is used to keep track of media replacements so we don't have to download the same media multiple times
+ * The media replacements object, this is used to keep track of media URL replacements to local or archived URLs
  * @type {object}
  * @key {string} url - The URL of the media
- * @value {object} media - The media itself
- * @value {string} media.url - The URL of the media
- * @value {string} media.thumbnail - The URL of the media's thumbnail if it has one
- * @value {string} media.filename - The filename of the media
- * @value {string} media.type - The type of media
- * @value {string} media.id - The ID of the media
- * @value {string} media.user_id_str - The ID of the user who posted the media, if applicable
- * @value {string} media.tweet_id_str - The ID of the tweet the media is in, if applicable
+ * @property {string} filename - The filename of the media
+ * @property {string} orig_url - The original URL of the media
+ * @property {string} type - The type of media
+ * @property {string} url - The local URL of the media in case it was downloaded
+ * @property {string} wayback_url - The Wayback Machine URL of the media in case it has been archived there
+ * @property {string} resolved_url - The URL that the media was successfully loaded from on the page
  */
 let media_replacements = {};
 
@@ -373,6 +621,9 @@ function init() {
 	// Load the tweets
 	loadTweets("tweets.json");
 
+	// Load the media replacements from localStorage
+	loadMediaReplacements();
+
 	// Set the theme
 	setTheme(config.theme);
 
@@ -383,8 +634,14 @@ function init() {
 	// Set the main user
 	setMainUser(tweets_object['users'][config.id]);
 
+	// Process the users
+	processUsers();
+
 	// Process the tweets and display them
-	processTweets(handleNavHashChange);
+	processTweets(() => {
+		loadFavorites();
+		handleNavHashChange();
+	});
 
 	// // Run navigation hash handler on page load
 	// handleNavHashChange();
@@ -469,10 +726,6 @@ function loadTweets(file = "tweets.json", callback = function() {}) {
 				// Initialize the tweet object
 				tweets_object['tweets'][key] = initializeTweet(tweets_object['tweets'][key]);
 			});
-
-			Object.entries(tweets_object['users']).forEach(function([key, value]) {
-				Object.setPrototypeOf( tweets_object['users'][key], tweets_object ); // Set the prototype of the user to the tweets_object prototype
-			});
 		}
 
 		callback;
@@ -507,7 +760,7 @@ function loadTweets(file = "tweets.json", callback = function() {}) {
  */
 function initializeTweet(tweet) {
 	// Set the prototype of the tweet to the tweets_object prototype
-	Object.setPrototypeOf( tweet, tweets_object ); 
+	Object.setPrototypeOf( tweet, tweets_object.__proto__ ); 
 	// If tweet contains a retweet, set the prototype of the retweet to the tweets_object prototype
 	if ( tweet.retweeted_status_result !== undefined ) {
 		let retweet = tweet.retweeted_status_result.result;
@@ -535,11 +788,11 @@ function initializeTweet(tweet) {
 					tweets_object['users'][quoted_tweet.core.user_results.result.rest_id].id_str = quoted_tweet.core.user_results.result.rest_id;
 				}
 
-				Object.setPrototypeOf( quoted_tweet.legacy, tweets_object );
+				Object.setPrototypeOf( quoted_tweet.legacy, tweets_object.__proto__ );
 			}
 		}
 
-		Object.setPrototypeOf( retweet.legacy, tweets_object );
+		Object.setPrototypeOf( retweet.legacy, tweets_object.__proto__ );
 	}
 
 	// Change the date format of the tweets
@@ -625,6 +878,9 @@ function processTweets(callback = function() {}) {
 
 	console.log(tweets_object);
 
+	// Remove ads from the tweets
+	tweets_object['tweets_array'] = discardAds(tweets_object['tweets_array']);
+
 	// Handle Quoted Tweets and Replies
 	let tweets_quoted = []; // An array to store the quoted tweets
 
@@ -669,30 +925,8 @@ function processTweets(callback = function() {}) {
 				tweet_replied_to.replies.push( tweet ); // Add the tweet to the replies object
 			}
 		}
-	});
 
-	// Remove any conversations from the replies object that only have one tweet in them
-	Object.entries(tweets_object['conversations']).filter(function([key, value]) {
-		return value.length <= 1;
-	}).forEach(function([key, value]) {
-		delete tweets_object['conversations'][key];
-	});
-
-	// Remove any:
-	// - quoted tweets
-	// - tweets not by the main user
-	tweets_object['tweets_array'] = tweets_object['tweets_array'].filter(function(tweet) {
-		if (tweets_quoted.indexOf(tweet) !== -1) {
-			return false;
-		}
-		if (tweet.user_id_str !== main_user.id_str) {
-			return false;
-		}
-		return true;
-	});
-
-	// Modify retweets
-	tweets_object['tweets_array'].forEach(function(tweet) {
+		// Modify retweets
 		/** If the tweet is a retweet:
 		 *	- rename the tweet's "user" property to the "retweeting_user" property
 		 *	- rename the tweet's "user_id_str" to "retweeting_user_id_str"
@@ -710,19 +944,19 @@ function processTweets(callback = function() {}) {
 			let retweet_user 			= tweet.retweeted_status_result.result.core.user_results.result.legacy;
 				retweet_user['id_str'] 	= tweet.retweeted_status_result.result.core.user_results.result.rest_id;
 
-			tweet.retweeting_user = tweet.user;
-			tweet.retweeting_user_id_str = tweet.user_id_str;
-			tweet.user = retweet_user;
-			tweet.user_id_str = retweet_user.id_str;
-			tweet.full_text = retweet.full_text;
-			tweet.entities = retweet.entities;
-			tweet.extended_entities = retweet.extended_entities;
-			tweet.is_quote_status = retweet.is_quote_status;
-			tweet.quoted_status_id_str = retweet.quoted_status_id_str;
-			tweet.quoted_status_permalink = retweet.quoted_status_permalink;
-			tweet.reply_count = retweet.reply_count;
-			tweet.retweet_count = retweet.retweet_count;
-			tweet.favorite_count = retweet.favorite_count;
+			tweet.retweeting_user 			= tweet.user;
+			tweet.retweeting_user_id_str 	= tweet.user_id_str;
+			tweet.user 						= retweet_user;
+			tweet.user_id_str 				= retweet_user.id_str;
+			tweet.full_text 				= retweet.full_text;
+			tweet.entities 					= retweet.entities;
+			tweet.extended_entities 		= retweet.extended_entities;
+			tweet.is_quote_status 			= retweet.is_quote_status;
+			tweet.quoted_status_id_str 		= retweet.quoted_status_id_str;
+			tweet.quoted_status_permalink 	= retweet.quoted_status_permalink;
+			tweet.reply_count 				= retweet.reply_count;
+			tweet.retweet_count 			= retweet.retweet_count;
+			tweet.favorite_count 			= retweet.favorite_count;
 
 			// If a tweet contains a "quoted_status_result" property, copy it to the tweet's "quoted_tweet" property
 			if (tweet.retweeted_status_result.result.quoted_status_result !== undefined) {
@@ -734,60 +968,384 @@ function processTweets(callback = function() {}) {
 				}
 			}
 		}
+
+		// Add filter object properties to the tweet object
+		tweet['filters'] = {
+			'is_by_main_user': tweet.user_id_str === main_user.id_str,
+
+			'is_reply': tweet.in_reply_to_status_id_str !== undefined && tweet.in_reply_to_status_id_str !== null,
+			'is_reply_to_main_user': tweet.in_reply_to_user_id_str === main_user.id_str,
+
+			'is_retweet': tweet.retweeted_status_result !== undefined,
+			'is_quote': tweet.is_quote_status === true,
+
+			'has_media': tweet.extended_entities !== undefined || tweet.entities.media !== undefined || (tweet.entities.urls !== undefined && tweet.entities.urls.length > 0) || tweet.card !== undefined,
+			'media_types': {},
+			'has_mention': tweet.entities?.user_mentions !== undefined && tweet.entities?.user_mentions?.length > 0,
+			'has_hashtag': tweet.entities?.hashtags !== undefined && tweet.entities?.hashtags?.length > 0,
+		};
+
+		tweet.filters['media_types'] = (() => {
+			delete tweet.filters.media_types; // Delete the getter so it can be redefined
+
+			let media_types = {};
+			if (tweet.filters.has_media === true) {
+				if (tweet.extended_entities?.media !== undefined) {
+					tweet.extended_entities.media.forEach(function(media) {
+						media_types[media.type] = true;
+					});
+				}
+				if (tweet.card !== undefined) {
+					if (tweet.card.name.includes("poll")) {
+						media_types['poll'] = true;
+					} else {
+						media_types['card'] = tweet.card.url;
+					}
+				}
+				if (tweet.entities?.urls !== undefined && tweet.entities?.urls?.length > 0) {
+					media_types['url'] = tweet.entities.urls.map(function(url) {
+						return url.expanded_url;
+					});
+				}
+			}
+
+			tweet.filters.media_types = media_types; // Redefine the getter to the static value
+
+			return media_types;
+		})();
 	});
 
-		// // Check if the tweet is a reply to the main user and add it to the replies object if it is, using the conversation_id_str as the key
-		// if (tweet.in_reply_to_user_id_str === main_user.id_str) {
-		// 	tweets_object['conversations'][tweet.conversation_id_str].push(tweet);
-			
-		// 	if (tweet.user_id_str !== main_user.id_str) { // Remove the tweet from the tweets array if it's not by the main user
-		// 		return false;
-		// 	}
-		// }
+	// Remove any conversations from the replies object that only have one tweet in them
+	Object.entries(tweets_object['conversations']).filter(function([key, value]) {
+		return value.length <= 1;
+	}).forEach(function([key, value]) {
+		delete tweets_object['conversations'][key];
+	});
 
-		// // Check if the tweet is a reply by the main user to another user and add it to the replies object if it is, using the conversation_id_str as the key
-		// if (tweet.user_id_str === main_user.id_str && tweet.in_reply_to_user_id_str !== main_user.id_str) {
-		// 	tweets_object['conversations'][tweet.conversation_id_str].push(tweet); // TODO rewrite this stuff when I'm less tired... it's a mess
-		// }
-
-		// // Check if the tweet is a retweet of the main user and add it to the retweets object if it is, using the conversation_id_str as the key
-		// if (tweet.retweeted_status_result !== undefined) {
-		// 	tweets_object['retweets'][tweet.conversation_id_str].push(tweet);
-		// }
+	// Remove any:
+	// - quoted tweets
+	// - tweets not by the main user, unless the tweet was retweeted by the main user
+	tweets_object['tweets_array'] = tweets_object['tweets_array'].filter(function(tweet) {
+		if (tweets_quoted.indexOf(tweet) !== -1) {
+			return false;
+		}
+		if (tweet.user_id_str !== main_user.id_str) {
+			if (tweet.retweeting_user_id_str !== main_user.id_str) {
+				return false;
+			}
+		}
+		return true;
+	});
 
 	// Order the tweets by date
 	tweets_object['tweets_array'] = tweets_object['tweets_array'].sort(function(a, b) {
 		return new Date(b.created_at) - new Date(a.created_at);
 	});
 
-	// Set the current tweets to the tweets array by default
-	tweets_object['current_tweets'] = tweets_object['tweets_array'];
-
-	// Load the favorites from localStorage
-	loadFavorites();
+	// Set the currently loaded tweets to the tweets array by default
+	tweets_object['current_loop']['tweet_list'] = tweets_object['tweets_array'];
 
 	callback();
 
 	return tweets_object;
 }
 
+/** 
+ * Process Users
+ * 
+ * @param {object} args - Function arguments
+ * @param {object} args.users - The users to process
+ * @param {function} args.callback - The callback function to call when the users are processed
+ * 
+ * @returns {object} - The processed users
+ */
+function processUsers(callback = function() {}) {
+	callback = (callback === undefined) ? function() {} : callback;
+
+	// Get the users from the tweets_object
+	let users = tweets_object['users'];
+	// Turn the users object into an array. The key in the original object is numeric, use it as the index in the new array
+	let users_array = Object.keys(users).map(function(key) {
+		return users[key.toString()];
+	});
+
+	// Add former screen_name to the relevant user's object
+	if (config.aliases !== undefined && config.aliases.length > 0) {
+		config.aliases.forEach(function(alias) {
+			// Find the user in the users object
+			let user = resolveUserObject({ "screen_name": alias.current });
+			// If the user is found, add the former screen_name to the user object
+			if (user !== undefined) {
+				if (user['former_screen_names'] !== undefined && user['former_screen_names'].length !== 0) {
+					user['former_screen_names'] = alias.former;
+				}
+			}
+		});
+	}
+
+	// Process each provided user
+	users_array.forEach(function(user) {
+		// // Optimize the user object by removing unused properties
+		// delete user.can_dm;
+		// delete user.can_media_tag;
+		// delete user.fast_followers_count;
+		// delete user.has_custom_timelines;
+		// delete user.is_translator;
+		// delete user.is_translation_enabled;
+		// delete user.possibly_sensitive;
+		// delete user.translator_type;
+		// delete user.withheld_in_countries;
+		// delete user.ext_has_nft_avatar;
+		// delete user.geo_enabled;
+		// delete user.has_extended_profile;
+
+		// Order the properties in the user object
+		user_properties_order = [ // The order of the properties in the user object
+			"id_str",
+			"screen_name",
+			"name",
+			"description",
+			"location",
+			"created_at",
+			"statuses_count",
+			"followers_count",
+			"friends_count",
+			"favourites_count",
+			"listed_count",
+			"pinned_tweet_ids_str",
+			"protected",
+			"entities",
+			"verified",
+			"profile_image_url_https",
+			"profile_image_url",
+			"profile_banner_url",
+			"profile_banner_url_https",
+			"profile_background_image_url",
+			"profile_background_image_url_https",
+			"profile_link_color",
+			"url",
+			"url_path",
+			// "user_tweets",
+		];
+
+		// Sort the properties in the user object
+		let sorted_user = {};
+		user_properties_order.forEach(function(property) {
+			if (user[property] === undefined) {
+				return;
+			}
+			sorted_user[property] = JSON.parse(JSON.stringify(user[property]));
+		});
+
+		// Add a getter function to get the user's tweets from the archived tweets
+		Object.defineProperty(sorted_user, 'user_tweets', {
+			get: function() {
+				delete user.user_tweets; // Delete the getter so it can be redefined
+				let tweets = Object.values(tweets_object['tweets']);
+				let user_tweets = tweets.filter(function(tweet) {
+					return tweet.user_id_str === user.id_str || tweet.retweeting_user_id_str === user.id_str || tweet.quoted_tweet?.user_id_str === user.id_str;
+				});
+				user.user_tweets = user_tweets; // Redefine the getter to the static value
+				return user_tweets;
+			}
+		});
+
+		// Set the prototype of the user to the tweets_object prototype
+		Object.setPrototypeOf( sorted_user, tweets_object.__proto__ ); 
+
+		// Add the sorted user object to the users object
+		users[user.id_str] = sorted_user;
+	});
+
+	// Put the users back into the tweets_object
+	tweets_object['users'] = users;
+
+	callback();
+
+	return users;
+}
+
+
+/**
+ * Filters tweets by the given filter
+ * 
+ * @param {object} tweets - The tweets to filter
+ * @param {object} filters - The filters to apply
+ * @param {object} args - Additional arguments
+ * @param {function} args.callback - The callback function to call after the tweets have been filtered
+ *
+ * @returns {object} - The filtered tweets
+ */
+function filterTweets(tweets, filters, args = { "callback": function() {} }) {
+	let callback = (args.callback === undefined) ? function() {} : args.callback;
+
+	// Start counting execution time
+	console.time(`Filtering tweets. Execution Time:`);
+
+	// let loop_tweets = tweets_object;
+
+	// Filter the tweets based on the given filters and the tweet's filters object
+	let filtered_tweets = tweets.filter(function(tweet) {
+		// For each filter, check if the tweet passes the filter
+		return Object.entries(filters).every(function([key, value]) {
+			// Use the filters object in the tweet to filter the tweets
+
+			// // Check if the reply filter is set to a value in the filters_config object's options object
+			// Check if 'is_reply' is a valid match.
+			switch (key) {
+				case 'is_reply':
+					switch (value) {
+						case 'replies':
+							return tweet.filters.is_reply === true;
+						case 'no_replies':
+							return tweet.filters.is_reply === false;
+						default:
+							return true;
+					}
+				case 'is_retweet':
+					switch (value) {
+						case 'retweets':				// Only show retweets
+							return tweet.filters.is_retweet === true;
+						case 'quotetweets': 			// Only show quote tweets
+							return tweet.filters.is_quote === true && tweet.filters.is_retweet === false;
+						case 'retweets_quotetweets': 	// Show both retweets and quote tweets
+							return tweet.filters.is_retweet === true || tweet.filters.is_quote === true;
+						case 'no_retweets':				// Only show tweets that are not retweets
+							return tweet.filters.is_retweet === false;
+						case 'no_quotetweets':			// Only show tweets that are not quote tweets
+							return tweet.filters.is_quote === false;
+						case 'no_retweets_quotetweets':	// Only show tweets that are not retweets or quote tweets
+							return tweet.filters.is_retweet === false && tweet.filters.is_quote === false;
+						default:
+							return true;
+					}
+				case 'has_media':
+					switch (value) {
+						case 'media':					// Only show tweets with media
+							return tweet.filters.has_media === true;
+						case 'images':					// Only show tweets with images
+							return tweet.filters.has_media === true && tweet.filters.media_types['photo'] !== undefined;
+						case 'videos':					// Only show tweets with videos
+							return tweet.filters.has_media === true && tweet.filters.media_types['video'] !== undefined;
+						case 'gifs':					// Only show tweets with gifs
+							return tweet.filters.has_media === true && tweet.filters.media_types['animated_gif'] !== undefined;
+						case 'cards':					// Only show tweets with cards
+							return tweet.filters.has_media === true && tweet.filters.media_types['card'] !== undefined;
+						case 'polls':					// Only show tweets with polls
+							return tweet.filters.has_media === true && tweet.filters.media_types['poll'] !== undefined;
+						case 'no_media':				// Only show tweets without media
+							return tweet.filters.has_media === false;
+						default:
+							return true;
+					}
+				case 'is_favorite':
+					switch (value) {
+						case 'favorites':				// Only show tweets that are favorited
+							return tweet.favorited === true;
+						case 'no_favorites':			// Only show tweets that are not favorited
+							return tweet.favorited === false;
+						default:
+							return true;
+					}
+				default:
+					return true;
+			}
+		});
+	});
+
+	// End counting execution time
+	console.timeEnd(`Filtering tweets. Execution Time:`);
+
+	callback();
+
+	return filtered_tweets;
+}
+
+/**
+ * Handles on change events for filter input elements
+ * 
+ * @param {event} e - The event
+ * @param {object} args - Additional arguments
+ * @param {object} args.filter - The changed filter
+ * 
+ * @returns {Object} - The filtered tweets
+ */
+function handleFilters(e, args = { "filter": "" }, initial = false ) {
+	let loop 	= tweets_object['current_loop'].name;
+	// let current_tweets 	= tweets_object['current_loop']['tweet_list'];
+
+	let filter 	= (args.filter === undefined || args.filter === "") ? e.target.name : args.filter;
+	let value 	= e.target.value;
+
+	// Get the default filters from the config object and the current_loop object (if defined)
+	let default_filters = config.filters;
+	let current_filters = tweets_object['current_loop']?.filters;
+
+	// Overwrite the default filters with the current filters
+	current_filters = Object.assign(default_filters, current_filters);
+
+	// Overwrite the current filters with the new filter value
+	current_filters[filter] = value;
+
+	// Filter the tweets
+	let filtered_tweets = filterTweets(tweets_object[loop], current_filters);
+
+	// Store the filtered tweets
+	// tweets_object[loop] = filtered_tweets;
+	tweets_object['current_loop']['tweet_list'] = filtered_tweets;
+
+	// Display the filtered tweets
+	console.log(loop, current_filters, filtered_tweets, tweets_object[loop]);
+
+	
+	// Render the filtered tweets
+	// if ( initial ) {
+		displayTweets({"tweets": tweets_object, "loop": loop}, false);
+	// } else {
+	// 	switchTweetLoop(loop, {"force": true});
+	// }
+
+	return filtered_tweets;
+}
+
+
 /**
  * Displays tweets on the page
  * 
- * @param {object} tweets - The tweets to display
+ * @param {object} args 			- Additional arguments
+ * @param {string} args.loop 			- The loop to display the tweets in
+ * @param {integer} args.offset 		- The offset to start displaying the tweets at
+ * @param {integer} args.limit 			- The number of tweets to display
+ * @param {integer} args.tweet_offset 	- The number of tweets to offset
+ * @param {object} args.context 		- The tweets_object context to pass along to the template
+ * @param {boolean} initial 		- Whether this is the initial display of the tweets
  * 
  * @returns {void}
  */
-function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "limit": 30, "tweet_offset": 0 }) {
+function displayTweets(args = { "loop": "tweets_array", "offset": 0, "limit": 30, "tweet_offset": 0, "context": tweets_object }, initial = true) {
 	showLoadingAnimation();
+
+	// Default args
+	const default_args = {
+		"loop": "tweets_array",
+		"offset": 0,
+		"limit": 30,
+		"tweet_offset": 0,
+		"context": tweets_object,
+	};
+
+	// Merge the default args with the given args
+	args = Object.assign(default_args, args);
 
 	// Start counting execution time
 	console.time(`Displaying tweets: ${args.loop}, offset: ${args.offset}, limit: ${args.limit}. Execution Time:`);
 
+	// TODO: I don't think the ternary operators are needed anymore with the default_args object now
 	let loop 			= (args.loop === undefined) 		? "tweets_array" 	: args.loop;
 	let offset 			= (args.offset === undefined) 		? undefined 		: args.offset;
 	let limit 			= (args.limit === undefined) 		? undefined 		: args.limit;
 	let tweet_offset 	= (args.tweet_offset === undefined) ? 0 				: args.tweet_offset;
+	let context 		= (args.context === undefined) 		? tweets_object 	: args.context;
 
 	let tweetContainer 	= document.getElementsByClassName("tweets")[0];
 	let tweetsTemplate	= $.templates["tweet-list"];
@@ -798,15 +1356,30 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 	tweets_object['current_loop'].limit 		= limit;
 	tweets_object['current_loop'].tweet_offset 	= tweet_offset;
 
-	// Set the current tweets to the right loop. If an offset and limit are specified, slice the array
+	// Get the tweets from the current loop's array on initial run of the function
+	if ( initial ) {
+		// Filter the tweets, if the loop is not 'tweet_thread' or 'tweet_single'
+		if ( loop !== "tweet_thread" && loop !== "tweet_single" ) {
+			let filtered_tweets = filterTweets(tweets_object[loop], config.filters);
+			tweets_object['current_loop'].tweet_list = filtered_tweets;
+		} else {
+			tweets_object['current_loop'].tweet_list = tweets_object[loop];
+		}
+	}
+
+	// Set the currently loaded tweets to the right loop. If an offset and limit are specified, slice the array
 	if (offset !== undefined && limit !== undefined) {
-		tweets_object['current_tweets'] = tweets_object[loop].slice(offset, offset + tweet_offset + limit);
+		// tweets_object['loaded_tweets'] = tweets_object[loop].slice(offset, offset + tweet_offset + limit);
+		tweets_object['loaded_tweets'] = tweets_object['current_loop']['tweet_list'].slice(offset, offset + tweet_offset + limit);
+		// tweets_object['current_loop']['tweet_list'] = tweets_object[loop].slice(offset, offset + tweet_offset + limit);
 	} else {
-		tweets_object['current_tweets'] = tweets_object[loop];
+		// tweets_object['loaded_tweets'] = tweets_object[loop];
+		tweets_object['loaded_tweets'] = tweets_object['current_loop']['tweet_list'];
+		// tweets_object['current_loop']['tweet_list'] = tweets_object[loop];
 	}
 
 	// Define the list views
-	let list_views = [ "tweets_array", "user_media", "favorites", "search_results", "all_in_archive" ];
+	let list_views = [ "tweets_array", "user_media", "favorites", "search_results", "all_in_archive", "filtered_tweets" ];
 
 	// Define the args
 	let helpers = {
@@ -824,13 +1397,18 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
 		"media": "all",
 		"sort_order": "newest",
 		"date_cutoff_toggle": config.date_cutoff_toggle,
+		"filters": config.filters,
+		"filter_handler": handleFilters,
 	};
 
 	// Render the tweets using JSViews
-	tweetsTemplate.link(tweetContainer, tweets, helpers);
+	tweetsTemplate.link(tweetContainer, context, helpers);
 
 	// Link the html element
-	$.link(true, "html", tweets, helpers);
+	$.link(true, "html", context, helpers);
+
+	// Set the content title
+	setContentTitle( tweets_object['current_loop'].title );
 
 	hideLoadingAnimation(attachVideoPlayHandler);
 
@@ -849,6 +1427,7 @@ function displayTweets(tweets, args = { "loop": "tweets_array", "offset": 0, "li
  */
 function displayMoreTweets( e ) {
 	let current_loop 	= tweets_object['current_loop'].name;
+	let current_tweets 	= tweets_object['current_loop'].tweet_list;
 	let offset 			= tweets_object['current_loop'].offset;
 	let limit 			= tweets_object['current_loop'].limit;
 	let tweet_offset 	= tweets_object['current_loop'].tweet_offset;
@@ -863,10 +1442,30 @@ function displayMoreTweets( e ) {
 	let list_end_exists = (list_end !== null) ? true : false;
 	let list_loading_exists = (list_loading !== null) ? true : false;
 
+	// If the length of the current tweets is less than the limit
+	if (current_tweets.length <= limit) {
+		// Hide the tweet-list-loading element
+		if ( list_loading_exists ) {
+			list_loading.classList.add("d-none");
+		}
+
+		// Show the tweet-list-end element
+		if ( list_end_exists ) {
+			list_end.classList.remove("d-none");
+		}
+
+		// If there are no tweets to display
+		if (current_tweets.length === 0) {
+			document.querySelector(".tweet-list-empty").classList.remove("d-none");
+		}
+
+		return;
+	}
+
 	// If the user has scrolled to the bottom of the page
 	if ( scroll_position >= (page_height - scroll_distance) ) {
 		// If there are more tweets to display
-		if (tweets_object[current_loop].length > offset ) {
+		if (current_tweets.length > offset ) {
 			// Hide the tweet-list-end element
 			if ( list_end_exists ) {
 				list_end.classList.add("d-none");
@@ -884,10 +1483,11 @@ function displayMoreTweets( e ) {
 			tweets_object['current_loop'].tweet_offset = 0;
 
 			// Get the next tweets
-			let next_tweets = tweets_object[current_loop].slice(offset, offset + limit);
+			let next_tweets = current_tweets.slice(offset, offset + limit);
 
 			// Add the next tweets to the current tweets
-			$.observable(tweets_object["current_tweets"]).insert(next_tweets);
+			$.observable(tweets_object["loaded_tweets"]).insert(next_tweets);
+			// $.observable(tweets_object['current_loop']['tweet_list']).insert(next_tweets);
 
 			hideLoadingAnimation(attachVideoPlayHandler);
 
@@ -901,7 +1501,7 @@ function displayMoreTweets( e ) {
 
 			// If the current tweet list is empty, show the tweet-list-empty element
 			if ( document.querySelectorAll('.tweet').length === 0 ) {
-				document.querySelector(".tweet-list-empty").classList.remove("d-none");
+				document.querySelector(".tweet-list-empty")?.classList?.remove("d-none");
 			} else {
 				// Show the tweet-list-end element
 				if ( list_end_exists ) {
@@ -933,14 +1533,9 @@ function switchTweetLoop( loop = "tweets_array", args = { "offset": 0, "limit": 
 
 	// If the loop is the same as the current loop and force is false, don't switch
 	if ( loop === tweets_object['current_loop'].name && force === false ) {
-		return tweets_object[ 'current_tweets' ];
+		// return tweets_object[ 'loaded_tweets' ];
+		return tweets_object['current_loop']['tweet_list'];
 	}
-
-	//Swap the current_tweets array with the new loop
-	let new_tweets = tweets_object[ loop ].slice( offset, offset + tweet_offset + limit );
-
-	// Refresh the current_tweets array with $.observable()
-	$.observable( tweets_object['current_tweets'] ).refresh( new_tweets );
 
 	// Update the current loop
 	$.observable( tweets_object['current_loop'] ).setProperty( "name", loop );
@@ -948,9 +1543,30 @@ function switchTweetLoop( loop = "tweets_array", args = { "offset": 0, "limit": 
 	tweets_object['current_loop'].limit 		= limit;
 	tweets_object['current_loop'].tweet_offset 	= tweet_offset;
 
+	// Filter the tweets, if the loop is not 'tweet_thread' or 'tweet_single'
+	if ( loop !== "tweet_thread" && loop !== "tweet_single" ) {
+		let filtered_tweets = filterTweets(tweets_object[loop], config.filters);
+
+		// Set the current_loop tweet_list to the current loop's tweets
+		tweets_object['current_loop']['tweet_list'] = filtered_tweets;
+	} else {
+		// Set the current_loop tweet_list to the current loop's tweets
+		tweets_object['current_loop']['tweet_list'] = tweets_object[loop];
+	}
+
+	//Swap the loaded_tweets array with the new loop
+	let new_tweets = tweets_object['current_loop']['tweet_list'].slice( offset, offset + tweet_offset + limit );
+
+	// Refresh the loaded_tweets array with $.observable()
+	$.observable( tweets_object['loaded_tweets'] ).refresh( new_tweets );
+
+	// Set the content title
+	setContentTitle( tweets_object['current_loop'].title );
+
 	hideLoadingAnimation(attachVideoPlayHandler);
 
-	return tweets_object[ 'current_tweets' ];
+	return tweets_object[ 'loaded_tweets' ];
+	// return tweets_object['current_loop']['tweet_list'];
 }
 
 /**
@@ -1095,6 +1711,7 @@ function substituteMediaUrl(params = { url, filename }) {
 	if (filename === undefined) {
 		/* Example URLs:
 		 * profile image: 	https://pbs.twimg.com/profile_images/1634660415241347072/UHbaE_6f_normal.png
+		 * 					https://unavatar.io/twitter/uplynxed
 		 * profile banner: 	https://pbs.twimg.com/profile_banners/309366491/1678568388
 		 * card thumbnail: 	https://pbs.twimg.com/card_img/1655287536250413066/gSu-NHFet?format=jpg&name=280x280
 		 * card image:		https://pbs.twimg.com/card_img/1655800965935529984/Up7mk-C9?format=png&name=orig
@@ -1170,15 +1787,19 @@ function substituteMediaUrl(params = { url, filename }) {
 
 
 	// otherwise, add it to the media_replacements object and return the local URL
-	media_replacements[url] = {
-		"url": filepath,
-		"orig_url": orig_url,
-		"wayback_url": wayback_url,
-		"filename": filename,
-		"type": filetype
-	}
+	let return_media = setMediaReplacements(
+		url, 
+		{
+			"filename": filename,
+			"type": filetype,
+			"index_url": url,
+			"orig_url": orig_url,
+			"url": filepath,
+			"wayback_url": wayback_url,
+		}
+	);
 
-	return media_replacements[url];
+	return return_media;
 }
 
 /**
@@ -1333,11 +1954,21 @@ function formatPicture( url, alt = "", args = { "classes": "", "classes_containe
 	if (args.backup === undefined) args.backup 							= "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512' fill='%239995' style='scale:0.75'%3E%3C!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --%3E%3Cpath d='M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm96 256a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm69.2 46.9c-3-4.3-7.9-6.9-13.2-6.9s-10.2 2.6-13.2 6.9l-41.3 59.7-11.9-19.1c-2.9-4.7-8.1-7.5-13.6-7.5s-10.6 2.8-13.6 7.5l-40 64c-3.1 4.9-3.2 11.1-.4 16.2s8.2 8.2 14 8.2h48 32 40 72c6 0 11.4-3.3 14.2-8.6s2.4-11.6-1-16.5l-72-104z'/%3E%3C/svg%3E";
 	
 	let image = `
+		<source srcset="${media.orig_url}" type="image/${media.type}">
+		<source srcset="${media.url}" type="image/${media.type}">
+		<img 	src="${args.backup}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy" 
+				onerror="handlePictureError(this);" data-url="${media.index_url}">`;
+
+	if (media.resolved_url !== undefined) {
+		image = `
+			<source srcset="${media.resolved_url}" type="image/${media.type}">
+			<img 	src="${args.backup}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy"
+					onerror="handlePictureError(this);" data-url="${media.index_url}">`;
+	}
+
+	image = `
 		<picture class="embed-responsive-item ${args.classes_container}">
-			<source srcset="${media.orig_url}" type="image/${media.type}">
-			<source srcset="${media.url}" type="image/${media.type}">
-			<img 	src="${args.backup}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy" 
-					onerror="handlePictureError(this);">
+			${image}
 		</picture>`;
 
 	return image;
@@ -1380,6 +2011,60 @@ function formatVideo( url, type = "video/mp4", args = { "loop": "", "poster": ""
 	return video;
 }
 
+/**
+ * Parse user mentions and format them as links
+ * 
+ * @TODO Add support for popover cards on hover, if user is in the users object
+ * 
+ * @param {string} text - The text to parse
+ * @param {object} mentions - The mentions object
+ * @param {object} args - The arguments
+ * @param {string} args.reply_screen_name - The screen name of the user being replied to (if applicable)
+ * @param {string} args.classes - Additional classes to add to the link
+ * @param {string} args.style - Additional styles to add to the link
+ * 
+ * @returns {string} - The parsed text
+ */
+function parseUserMentions( text, mentions = [], args = { "reply_screen_name": undefined, "classes": "", "style": "" } ) {
+	// Get the reply screen name from the args
+	let reply_screen_name = args.reply_screen_name;
+
+	// Get username aliases from the config
+	let aliases = config.aliases;
+	// Replace any aliases in the aliases[].former array in the tweet with the current username mention
+	aliases.forEach(function(alias) {
+		alias.former.forEach(function(former) {
+			alias_regex = new RegExp(`(?<![ "]>|\w)@${former}`, "ig");
+			text = text.replace(alias_regex, `<a href="https://twitter.com/${alias.current}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover" title="&commat;${former}">@${alias.current}</a>`);
+		});
+	});
+
+	// Replace any mentions in the tweet with the actual mentions from the entities
+	mentions.forEach(function(mention) {
+		mention_regex = new RegExp(`(?<![ "]>|\w)@${mention.screen_name}`, "ig");
+		text = text.replace(mention_regex, `<a href="https://twitter.com/${mention.screen_name}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@${mention.screen_name}</a>`);
+	});
+
+	// Replace any reply mentions in the tweet with the actual mention from the reply_screen_name
+	if (reply_screen_name !== undefined) {
+		mention_regex = new RegExp(`(?<![ "]>|\w)@${reply_screen_name}`, "ig");
+		// check if the mention still matches the reply_screen_name
+		if (text.includes(`@${reply_screen_name}`)) {
+			text = text.replace(mention_regex, `<a href="https://twitter.com/${reply_screen_name}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@${reply_screen_name}</a>`);
+		}
+	}
+
+	// Wrap any mentions not already wrapped in <a> tags in <a> tags with the class "mention-failed"
+	let mark_unresolved = (mentions === undefined || mentions.length === 0) ? false : true;
+	let unformatted_mention_regex 	= /(?<![ "]>|\w)@(\w+)/g;
+	if (mark_unresolved) {
+		text = text.replace(unformatted_mention_regex, `<a href="https://twitter.com/$1" target="_blank" class="mention mention-failed link link-danger link-underline-danger link-underline-opacity-0 link-underline-opacity-100-hover">@$1</a>`);
+	} else {
+		text = text.replace(unformatted_mention_regex, `<a href="https://twitter.com/$1" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@$1</a>`);
+	}
+
+	return text;
+}
 
 /**
  * Register custom JSRender tags
@@ -1433,6 +2118,8 @@ function registerCustomTags() {
 			if (tweets_object['users'][id] === undefined) { // check if the user exists in the users object
 				return formatPicture("https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png", "", args);
 			}
+
+			args.backup = `https://unavatar.io/twitter/${tweets_object['users'][id].screen_name}?fallback=${args.backup}`;
 
 			let url = tweets_object['users'][id].profile_image_url_https;
 
@@ -1504,18 +2191,6 @@ function registerCustomTags() {
 					return;
 				}
 
-				let username = twemoji.parse(
-					user.name,
-					{
-						attributes: function() {
-							return {
-								"loading": "lazy",
-								"style": "height:1.1em;width:1.1em;"
-							}
-						},
-					}
-				);
-
 				let popover = `
 					{{useravatar_img id_str ~classes="mb-2 rounded-circle bg-body" ~style="height:64px;width:64px;max-height:64px;max-width:64px;" /}}
 					<h5 class="name text-body-emphasis">
@@ -1542,44 +2217,120 @@ function registerCustomTags() {
 							Following
 						</span>
 					</div>
+					<style>
+						.popover[data-popper-reference-hidden], .popover[data-popper-escaped] {
+							display: none;
+						}
+					</style>
 				`;
 
 				popover = $.templates( popover );
 
 				// Initialize this popover
+				let pop = {};
 				let elem = this.contents('.user-popover');
-				// On hover, focus or click, add the popover
-				$(document).on("mouseenter focus click", elem, function() {
-					elem = new bootstrap.Popover(elem, {
-						content: popover.render( user, tagCtx ),
-						html: true,
-						trigger: "hover focus",
-						sanitize: false,
-						allowList: Object.assign( bootstrap.Tooltip.Default.allowList, {
-							div: ["class"],
-							h3: ["class"],
-							span: ["class"],
-						}),
-						placement: "bottom",
-						offset: ({ placement, reference, popper }) => { // https://popper.js.org/docs/v2/modifiers/offset/
-							// Align the popper with the left side of the reference element
-							let skid = (reference.width - popper.width) / -2;
-							if (placement === "bottom") {
-								return [
-									skid, 
-									(args.is_user) ? 5 : 30
-								];
-							} else if (placement === "top") {
-								return [skid, 0];
-							} else {
-								return [];
-							}
-						},
-						fallbackPlacements: ["top", "right", "left"],
-					});
 
-					console.log( elem );
+				// Create a new popover
+				pop = new bootstrap.Popover($(elem).find('img'), {
+					// container: $(elem).closest('.card'),
+					content: popover.render( user, tagCtx ),
+					html: true,
+					trigger: "manual",
+					sanitize: false,
+					allowList: Object.assign( bootstrap.Tooltip.Default.allowList, {
+						div: ["class"],
+						h3: ["class"],
+						span: ["class"],
+						style: [],
+					}),
+					placement: "bottom",
+					offset: ({ placement, reference, popper }) => { // https://popper.js.org/docs/v2/modifiers/offset/
+						// Align the popper with the left side of the reference element
+						let skid = (reference.width - popper.width) / -2;
+						if (placement === "bottom") {
+							return [
+								(args.is_user) ? skid + 15 : skid, 
+								(args.is_user) ? 10 : 15
+							];
+						} else if (placement === "top") {
+							return [
+								(args.is_user) ? skid + 15 : skid, 
+								10
+							];
+						} else {
+							return [];
+						}
+					},
+					fallbackPlacements: ["top", "right", "left"],
+					popperConfig: function( bsDefaults ) {
+						let modifiers = [
+							{
+								name: "arrow",
+								options: {
+									element: ".popover-arrow",
+									padding: 30
+								},
+							},
+							{
+								name: 'hide',
+								enabled: true,
+								data: {
+									isReferenceHidden: true,
+									isPopperEscaped: true,
+								},
+							},
+						];
+
+						// Merge the modifiers arrays and override any child objects with matching .name properties
+						modifiers.forEach(function(modifier) {
+							let name = modifier.name;
+							let bsModifiers = bsDefaults.modifiers;
+							let bsModifier = bsModifiers.find( ( name ) => name === modifier.name );
+
+							if (bsModifier !== undefined) {
+								let index = bsModifiers.indexOf(bsModifier);
+								bsModifiers[index] = modifier;
+							} else {
+								bsModifiers.push(modifier);
+							}
+
+							modifiers = bsModifiers;
+						});
+
+						return modifiers;
+					}
 				});
+
+				// On hover, focus or click, add the popover
+				$(elem).on("mouseenter focus click", function(event) {
+					// Show the popover
+					if (pop.tip === undefined || pop.tip === null) {
+						pop.show();
+					}
+
+					// On click outside popover or target, hide this popover. This makes sure the popover is hidden when the user clicks outside of it
+					let hide_on_click = function(event) {
+						if ( !$(event.target).closest('.popover').length && !$(event.target).closest('.user-popover').length ) {
+							pop.hide(); // Hide the popover
+							$(document).off("click", hide_on_click); // Remove the event listener
+						}
+					};
+					$(document).on("click", hide_on_click);
+
+					// When another .user-popover is triggered, hide this popover. This makes sure only one popover is shown at a time
+					let hide_on_other = function(event) {
+						if (event.currentTarget != elem[0]) {
+							pop.hide(); // Hide the popover
+							$(document).off("mouseenter focus click", '.user-popover', hide_on_other); // Remove the event listener
+						}
+					};
+					$(document).on("mouseenter focus click", '.user-popover', hide_on_other);
+				});
+			},
+			onUnbind: function( tagCtx, linkCtx, ctx, ev, eventArgs ) {
+				let elem = this.contents('.user-popover');
+				$(elem).off("mouseenter focus");
+				// $(pop).off("click");
 			},
 		},
 		userstats : function( id ) {
@@ -1650,34 +2401,29 @@ function registerCustomTags() {
 			return date_string;
 		},
 		bio_content : function(text) { // Format the bio content to include links, hashtags, and mentions
-			// Get the tweet's entities
+			// Get the bio's entities
 			let links 						= main_user.entities.description.urls;
 			let hashtags 					= main_user.entities.description.hashtags;
 
 			// Replace newlines with <br> tags
 			text = text.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
-			// Replace any links in the tweet with the actual links from the entities
+			// Replace any links in the bio with the actual links from the entities
 			if ( links !== undefined ) {
 				links.forEach(function(link) {
 					text = text.replace(link.url, `<a href="${link.expanded_url}" target="_blank" class="link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">${link.display_url}</a>`);
 				});
 			}
 
-			// Replace any hashtags in the tweet with the actual hashtags from the entities
+			// Replace any hashtags in the bio with the actual hashtags from the entities
 			if ( hashtags !== undefined ) {
 				hashtags.forEach(function(hashtag) {
 					text = text.replace(`#${hashtag.text}`, `<a href="https://twitter.com/hashtag/${hashtag.text}" target="_blank" class="link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">#${hashtag.text}</a>`);
 				});
 			}
 
-			// Replace any mentions in the tweet with links to the mentioned users' profiles
-			let bio_mentions = text.match(/(?<!\w)@(\w+)/g);
-			if ( bio_mentions !== null ) {
-				bio_mentions.forEach(function(mention) {
-					text = text.replace(mention, `<a href="https://twitter.com/${mention.substring(1)}" target="_blank" class="link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">${mention}</a>`);
-				});
-			}
+			// Replace any mentions in the bio with links to the mentioned users' profiles
+			text = parseUserMentions(text);
 
 			return text;
 		},
@@ -1686,8 +2432,6 @@ function registerCustomTags() {
 			let links 						= this.tagCtx.view.data.entities.urls;
 			let mentions 					= this.tagCtx.view.data.entities.user_mentions;
 			let reply_screen_name 			= this.tagCtx.view.data.in_reply_to_screen_name;
-
-			let unformatted_mention_regex 	= /(?<!>)@(\w+)/g;
 
 			// Replace newlines with <br> tags
 			text = text.replace(/(?:\r\n|\r|\n)/g, '<br>');
@@ -1701,22 +2445,7 @@ function registerCustomTags() {
 			});
 
 			// Replace any mentions in the tweet with the actual mentions from the entities
-			mentions.forEach(function(mention) {
-				mention_regex = new RegExp(`(?<!>)@${mention.screen_name}`, "ig");
-				text = text.replace(mention_regex, `<a href="https://twitter.com/${mention.screen_name}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@${mention.screen_name}</a>`);
-			});
-
-			// Replace any reply mentions in the tweet with the actual mention from the reply_screen_name
-			if (reply_screen_name !== undefined) {
-				mention_regex = new RegExp(`(?<!>)@${reply_screen_name}`, "ig");
-				// check if the mention still matches the reply_screen_name
-				if (text.includes(`@${reply_screen_name}`)) {
-					text = text.replace(mention_regex, `<a href="https://twitter.com/${reply_screen_name}" target="_blank" class="mention link link-underline link-underline-opacity-0 link-underline-opacity-100-hover">@${reply_screen_name}</a>`);
-				}
-			}
-
-			// Wrap any mentions not already wrapped in <a> tags in <a> tags with the class "mention-failed"
-			text = text.replace(unformatted_mention_regex, `<a href="https://twitter.com/$1" target="_blank" class="mention mention-failed link link-danger link-underline-danger link-underline-opacity-0 link-underline-opacity-100-hover">@$1</a>`);
+			text = parseUserMentions(text, mentions, { "reply_screen_name": reply_screen_name });
 
 			// Remove any URLs from the tweet text that match media URLs
 			if (this.tagCtx.view.data.entities.media !== undefined) {
@@ -1732,15 +2461,10 @@ function registerCustomTags() {
 			}
 
 			// Replace any emojis with Twemoji from Twitter
-			text = twemoji.parse(
+			text = parseEmojis(
 				text,
-				{
-					attributes: function() {
-						return {
-							"loading": "lazy",
-							"style": "height:1.2em;width:1.2em;"
-						}
-					},
+				{ 
+				    attr: { "style": "height:1.2em;width:1.2em;vertical-align:-0.2em;margin:0 0.1em;" }
 				}
 			);
 
@@ -1754,16 +2478,8 @@ function registerCustomTags() {
 			return text;
 		},
 		tweet_emoji : function( text ) { // Replace any emojis with Twemoji from Twitter
-			text = twemoji.parse(
-				text,
-				{
-					attributes: function() {
-						return {
-							"loading": "lazy",
-							"style": "height:1.1em;width:1.1em;"
-						}
-					},
-				}
+			text = parseEmojis(
+				text
 			);
 
 			return text;
@@ -1860,7 +2576,7 @@ function registerCustomTags() {
 				return url;
 			}
 
-			return window.location.href + path;
+			return url + path;
 		},
 		orig_url : function( path = "" ) {
 			url = window.location.protocol + '//' + window.location.host + window.location.pathname
@@ -1892,6 +2608,32 @@ function registerCustomTags() {
 }
 
 /**
+ * Discard ads from a tweets array
+ * 
+ * @param {Array} tweets - The tweets array
+ * 
+ * @returns {Array} - The tweets array without ads
+ */
+function discardAds( tweets ) {
+	let filtered_tweets = tweets.filter(function(tweet) {
+		let scopes = tweet.scopes;
+		if (scopes === undefined) {
+			return true;
+		}
+		tweets_object['ads_removed'] = tweets_object['ads_removed'] || [];
+		tweets_object['ads_removed'].push(tweet);
+		return false;
+	});
+
+	// Now we delete the ads from the original tweets object
+	tweets_object['ads_removed'].forEach(function(ad) {
+		delete tweets_object['tweets'][ad.id_str];
+	});
+
+	return filtered_tweets;
+}
+
+/**
  * Search the tweets object with a given query
  * 
  * @param {string} query - The query to search for
@@ -1899,52 +2641,71 @@ function registerCustomTags() {
  * @returns {Array} - The search results
  */
 function searchTweets( query, initial = false ) {
-	let results = [];
+	let query_terms = query.trim();
+	let results = {};
 
-	// Search tweets_array or tweets object?
-	// let search_tweets = tweets_object['tweets_array'];
-	let search_tweets = Object.values(tweets_object['tweets']);
-
-	// Search the tweets_array for the query
-	search_tweets.forEach(function(tweet) {
-		// Check if the tweet text contains the query
-		if (tweet.full_text.toLowerCase().includes(query.toLowerCase())) {
-			if (!results.includes(tweet)) results.push(tweet);
-		}
-
-		// Check if the quoted tweet text contains the query
-		if (tweet.is_quote_status && tweet.quoted_tweet !== undefined && tweet.quoted_tweet.full_text.toLowerCase().includes(query.toLowerCase())) {
-			if (!results.includes(tweet)) results.push(tweet);
-		}
-
-		// If user is undefined, define it
-		if (tweet.user === undefined) {
-			tweet['user'] = tweets_object['users'][tweet.user_id_str];
-
-			if (tweet['user'] === undefined) {
-				return false;
-			}
-		}
-
-		// Check if the tweet's user's name contains the query
-		if (tweet.user.name.toLowerCase().includes(query.toLowerCase())) {
-			// Check if the tweet is not already in the results array
-			if (!results.includes(tweet)) results.push(tweet);
-		}
-
-		// Check if the tweet's user's screen name contains the query
-		if (tweet.user.screen_name.toLowerCase().includes(query.toLowerCase())) {
-			// Check if the tweet is not already in the results array
-			if (!results.includes(tweet)) results.push(tweet);
-		}
+	// Split the query into separate terms, except for quoted terms
+	query_terms = query_terms.match(/"[^"]+"|\S+/g);
+	query_terms = query_terms.map(function(term) {
+		term = term.replace(/"/g, ""); // Remove the quotes from the terms
+		term = term.trim(); // Trim any whitespace from the terms
+		term = term.toLowerCase(); // Convert the terms to lowercase
+		return term;
 	});
 
+	// Create an array of the tweets to search
+	let search_tweets = Object.values(tweets_object['tweets']);
+
+	// // Discard any ads from the search_tweets array
+	// search_tweets = discardAds(search_tweets);
+
+	// For each term in the query, search the tweets array
+	query_terms.forEach(function(term) {
+		// Search the tweets_array for the query
+		search_tweets.forEach(function(tweet, index) {
+			// Check if the tweet text contains the query
+			if (tweet.full_text.toLowerCase().includes(term)) {
+				results[tweet.id_str] = tweet;
+				delete search_tweets[index]; // Remove the tweet from the search_tweets array
+			}
+
+			// Check if the quoted tweet text contains the query
+			if (tweet.is_quote_status && tweet.quoted_tweet !== undefined && tweet.quoted_tweet.full_text.toLowerCase().includes(term)) {
+				results[tweet.id_str] = tweet;
+				delete search_tweets[index]; // Remove the tweet from the search_tweets array
+			}
+
+			// If user is undefined, define it
+			if (tweet.user === undefined) {
+				tweet['user'] = tweets_object['users'][tweet.user_id_str];
+
+				if (tweet['user'] === undefined) {
+					return false;
+				}
+			}
+
+			// Check if the tweet's user's name contains the query
+			if (tweet.user.name.toLowerCase().includes(term)) {
+				results[tweet.id_str] = tweet;
+				delete search_tweets[index]; // Remove the tweet from the search_tweets array
+			}
+
+			// Check if the tweet's user's screen name contains the query
+			if (tweet.user.screen_name.toLowerCase().includes(term)) {
+				results[tweet.id_str] = tweet;
+				delete search_tweets[index]; // Remove the tweet from the search_tweets array
+			}
+		});
+	});
+
+	let results_array = Object.values(results);
+
 	// Add the search results to the tweets_object in a new "search_results" array property
-	$.observable(tweets_object).setProperty("search_results", results);
+	$.observable(tweets_object).setProperty("search_results", results_array);
 
 	// Switch to the search_results loop
 	if ( initial ) {
-		displayTweets(tweets_object, {"loop": "search_results", "offset": 0, "limit": 30});
+		displayTweets({"tweets": tweets_object, "loop": "search_results"});
 	} else {
 		switchTweetLoop("search_results", {"force": true});
 	}
@@ -1954,7 +2715,7 @@ function searchTweets( query, initial = false ) {
 		window.location.hash = `search=${query}`;
 	}
 
-	return results;
+	return results_array;
 }
 
 /**
@@ -1980,6 +2741,66 @@ function handleSearch(event) {
 	}
 
 	return search_results;
+}
+
+/**
+ * Resolve User Object from related data (e.g. username, former username, etc.)
+ * 
+ * @param {object} data - The related data
+ * @param {string} data.screen_name - The username of the user (either current or former)
+ * @param {string} data.username - alias for data.screen_name
+ * @param {string} data.name - The screen name of the user
+ * 
+ * @returns {object} - The user object
+ */
+function resolveUserObject( data = {} ) {
+	let user_data = {
+		"username"	: 	(data.screen_name === undefined) 	? (data.username === undefined) 	? "" : data.username : data.screen_name,
+		"name"		: 	(data.name === undefined) 		? "" : data.name,
+	};
+
+	if ( user_data.username === "" && user_data.name === "" ) {
+		return false;
+	}
+
+	if ( user_data.username !== "" ) {
+		// Check if the username is or has an alias defined in the config
+		let has_alias = (
+			config.aliases.find(alias => alias.current === user_data.username) 		!== undefined
+		);
+		let is_alias = (
+			config.aliases.find(alias => alias.former.includes(user_data.username)) !== undefined
+		);
+		
+		if ( is_alias ) {
+			user_data.former_username = user_data.username;
+			let alias = config.aliases.find(alias => alias.former.includes(user_data.username));
+			user_data.username = alias.current;
+		}
+
+		// Find the user object containing the username
+		let user = Object.values(tweets_object['users']).find(
+			user => user.screen_name.toLowerCase() === user_data.username.toLowerCase()
+		);
+
+		if ( user === undefined ) {
+			return false;
+		}
+
+		return user;
+		
+	} else if ( user_data.name !== "" ) {
+		// Find the user object containing the name
+		let user = Object.values(tweets_object['users']).find(
+			user => user.name.toLowerCase() === user_data.name.toLowerCase()
+		);
+
+		if ( user === undefined ) {
+			return false;
+		}
+
+		return user;
+	}
 }
 
 
@@ -2066,11 +2887,26 @@ function setPageInfo(args = {title: undefined, description: undefined, image: un
 		document.querySelector("meta[property='og:image']").setAttribute("content", image);
 	}
 }
+
+/**
+ * Set Content Title
+ * @TODO Rewrite this to use templates
+ * 
+ * @param {string} title - The title to set
+ * 
+ * @returns {void}
+ */
+function setContentTitle(title) {
+	document.querySelector("h3").innerHTML = title;
+}
+
 	
 /**
  * Sets the theme
  * 
  * @param {string} theme - The theme to set
+ * 
+ * @returns {void}
  */
 function setTheme(theme) {
 	document.documentElement.setAttribute("data-bs-theme", theme);
@@ -2252,6 +3088,101 @@ function importFavorites() {
 		console.error("Error importing favorites: ", e);
 		return false;
 	}
+}
+
+
+/**
+ * Set media URLs in the media_replacements object and save it to localStorage
+ * 
+ * @param {string} index_url 			- The index URL of the media replacement object
+ * @param {object} media_replacement 	- The media replacement object
+ * @param {function} args.callback 		- The callback function
+ * @param {boolean} args.return_full 	- Whether to return the full media replacements object
+ * 
+ * @returns {object} - The media replacement object
+ */
+function setMediaReplacements(index_url, media_replacement, args = { callback: function(){}, return_full: false }) {
+	let callback 			= args.callback 			|| function(){};
+	let return_full 		= args.return_full 			|| false;
+
+	// If index_url or media_replacement is undefined, return
+	if (index_url === undefined || media_replacement === undefined) {
+		return false;
+	}
+
+	media_replacements[index_url] = media_replacement;
+
+	try {
+		localStorage.setItem("media_replacements", JSON.stringify(media_replacements));
+	} catch (e) {
+		console.error("Error storing media replacements in localStorage: ", e);
+	}
+
+	if (callback !== undefined) {
+		callback(media_replacements);
+	}
+
+	if (return_full) {
+		return media_replacements;
+	}
+
+	return media_replacement;
+}
+
+
+/**
+ * Load media URLs from localStorage and merge them with the media_replacements object
+ * 
+ * @returns {object} - The media replacements object
+ */
+function loadMediaReplacements() {
+	try {
+		let media_replacements_stored = JSON.parse( localStorage.getItem("media_replacements") );
+
+		if (media_replacements_stored === null) {
+			return media_replacements;
+		}
+
+		// Merge the stored media replacements with the media_replacements object
+		media_replacements = Object.assign(media_replacements, media_replacements_stored);
+	} catch (e) {
+		console.error("Error loading media replacements from localStorage: ", e);
+	}
+
+	return media_replacements;
+}
+
+
+/**
+ * Purge media replacements from the media_replacements object and localStorage
+ * 
+ * @param {object} args - The arguments
+ * @param {string} args.purge - [index url | 'all'] - The index URL to purge or 'all' to purge all media replacements
+ * @param {function} args.callback - The callback function
+ * 
+ * @returns {object} - The media replacements object from before the purge
+ */
+function purgeMediaReplacements(args = { index_url: "all", callback: function(){} }) {
+	let purge 		= args.purge 		|| "all";
+	let callback 	= args.callback 	|| function(){};
+
+	let media_replacements_before = Object.assign({}, media_replacements);
+
+	if (purge === "all") {
+		media_replacements = {};
+	} else {
+		delete media_replacements[purge];
+	}
+
+	try {
+		localStorage.setItem("media_replacements", JSON.stringify(media_replacements));
+	} catch (e) {
+		console.error("Error storing media replacements in localStorage: ", e);
+	}
+
+	callback(media_replacements_before);
+
+	return media_replacements_before;
 }
 
 
@@ -2442,28 +3373,42 @@ function handlePictureError( picture ) {
 	if (picture.naturalWidth <= 1) {
 		let srcs = picture.parentNode.querySelectorAll('source'); 
 
-		if ( srcs.length === 0 ) {
+		if ( srcs.length === 0 ) { // If no more sources remain, log an error 
 			console.error("No sources found for picture element", picture);
 
-			// Replace the picture element with a Media 404 message
-			let media_404 = `
-				<div class="card media-404 m-3">
-					<div class="card-body">
-						<p class="card-text text-muted">
-							<i class="fa-solid fa-circle-exclamation fa-flip-vertical"></i>
-							This media failed to load, sorry.
-						</p>
-						<p class="card-text text-muted ps-4">
-							You can try viewing this tweet on Twitter or on the Wayback Machine using the links in the tweet's header.
-						</p>
-					</div>
-				</div>`;
+			// // Replace the picture element with a Media 404 message
+			// // TODO: figure out a way to do this only for tweet media.
+			// let media_404 = `
+			// 	<div class="card media-404 m-3">
+			// 		<div class="card-body">
+			// 			<p class="card-text text-muted">
+			// 				<i class="fa-solid fa-circle-exclamation fa-flip-vertical"></i>
+			// 				This media failed to load, sorry.
+			// 			</p>
+			// 			<p class="card-text text-muted ps-4">
+			// 				You can try viewing this tweet on Twitter or on the Wayback Machine using the links in the tweet's header.
+			// 			</p>
+			// 		</div>
+			// 	</div>`;
 
 			return;
 		}
 
-		console.info("Removing failed source", picture, srcs[0]);
+		console.debug(
+			"%cRemoving failed source", 
+			"color: #ff0; font-weight: bold;",
+			media_replacements[picture.dataset.url]
+		);
+
+		let next_src = srcs[1]?.srcset || picture.src;
+		let media_replacement = media_replacements[picture.dataset.url];
+		media_replacement.resolved_url = next_src;
+
+		console.log( picture.dataset.url, media_replacement);
+
+		setMediaReplacements(picture.dataset.url, media_replacement);
 		
+		// Remove the failed source
 		srcs[0].remove();
 	}
 }
@@ -2492,7 +3437,7 @@ function handleNavHashChange( e = null ) {
 	 * 
 	 * @returns {void}
 	 */
-	function navToTweet( hash, initial = false ) { // TODO: Fix this function - it doesn't work on a navchange event anymore, only the sidebar changes while the main content doesn't
+	function navToTweet( hash, initial = false ) {
 		// Get the tweet ID from the hash (formatted as "#username/status/tweet_id")
 		let tweet_id 		= hash.split("/")[2];
 		let linked_tweet 	= tweets_object['tweets'][tweet_id];
@@ -2510,7 +3455,7 @@ function handleNavHashChange( e = null ) {
 
 			// Render the tweet
 			if ( initial ) {
-				displayTweets(tweets_object, {"loop": 'tweet_single', "offset": 0, "limit": 0/*, "tweet_offset": tweet_offset*/});
+				displayTweets({"tweets": tweets_object, "loop": 'tweet_single', "offset": 0, "limit": 0/*, "tweet_offset": tweet_offset*/});
 			} else {
 				switchTweetLoop('tweet_single', {"force": true, "offset": 0, "limit": 0/*, "tweet_offset": tweet_offset*/});
 			}
@@ -2549,7 +3494,7 @@ function handleNavHashChange( e = null ) {
 				// If the conversation is empty, set the loop to "tweet_single"
 				loop = "tweet_thread";
 			}
-		 }
+		}
 
 		// Put the conversation in the tweets_object
 		$.observable(tweets_object).setProperty( loop, conversation);
@@ -2593,9 +3538,12 @@ function handleNavHashChange( e = null ) {
 		// Replace the users_relevant object on the tweets_object.current_loop object
 		$.observable(tweets_object['current_loop']).setProperty("users_relevant", users_relevant);
 
+		// Set the content title
+		tweets_object['current_loop'].title = "Archived Thread";
+
 		// Render the tweet
 		if ( initial ) {
-			displayTweets(tweets_object, {"loop": loop, "offset": 0, "limit": 5/*, "tweet_offset": tweet_offset*/});
+			displayTweets({"tweets": tweets_object, "loop": loop, "offset": 0, "limit": 5/*, "tweet_offset": tweet_offset*/});
 		} else {
 			switchTweetLoop(loop, {"force": true, "offset": 0, "limit": 5/*, "tweet_offset": tweet_offset*/});
 		}
@@ -2614,7 +3562,7 @@ function handleNavHashChange( e = null ) {
 		scrollToHash();
 	}
 
-	// If the function is not called from the hashchange event, it's on a page load, so we need to check if the hash is a tweet ID
+	// If the function is not called from the hashchange event, it's on a page load, so we need to check if the hash is a tweet ID or a search query
 	if (e === null) {
 		// If the hash is a tweet ID, display only that tweet
 		if ( hash.includes("status") ) {
@@ -2717,19 +3665,20 @@ function handleSortChange( e ) {
 	tweets_object['current_loop'].sort = sort;
 
 	// Order the tweets by date if the sort order is "newest"
+	let current_loop = tweets_object['current_loop'].name;
 	switch (sort) {
 		case "newest":
-			tweets_object['tweets_array'] = tweets_object['tweets_array'].sort(function(a, b) {
+			tweets_object[current_loop] = tweets_object[current_loop].sort(function(a, b) {
 				return new Date(b.created_at) - new Date(a.created_at);
 			});
 			break;
 		case "oldest":
-			tweets_object['tweets_array'] = tweets_object['tweets_array'].sort(function(a, b) {
+			tweets_object[current_loop] = tweets_object[current_loop].sort(function(a, b) {
 				return new Date(a.created_at) - new Date(b.created_at);
 			});
 			break;
 		case "random":
-			tweets_object['tweets_array'] = tweets_object['tweets_array'].sort(function(a, b) {
+			tweets_object[current_loop] = tweets_object[current_loop].sort(function(a, b) {
 				return 0.5 - Math.random();
 			});
 			break;
@@ -2900,6 +3849,47 @@ function restArguments(func, startIndex) {
 		args[startIndex] = rest;
 		return func.apply(this, args);
 	};
+}
+
+/**
+ * Parse emojis
+ * @desc A function to simplify Twemoji.parse() usage and fix a CDN issue
+ * 
+ * @param {HTML | text} content - The content to parse emojis in.
+ * @param {object} params - Optional additional parameters if needed.
+ * @param {object} params.prop - Additional properties to pass on to the Twemoji.parse() function.
+ * @param {object} params.attr - Additional attributes to pass on to the Twemoji.parse() function.
+ * 
+ * @return {HTML} parsed_content - The original content with emojis parsed to HTML images of the twemojis.
+ */
+function parseEmojis(content, params = {'prop': {}, 'attr': {}}) {
+    let parsed_content = content;
+    params = ( typeof params == 'object' ) ? params : {'prop': {}, 'attr': {}};
+    let properties = ( typeof params.prop == 'object' ) ? params.prop : {};
+    let attributes = ( typeof params.attr == 'object' ) ? params.attr : {};
+    
+    let default_properties = {
+        base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
+    }
+    properties = Object.assign(properties, default_properties);
+    
+    let default_attributes = {
+        'loading': 'lazy',
+        'style': 'height:1.1em;width:1.1em;vertical-align:-0.2em;margin:0 0.1em;',
+    }
+    attributes = Object.assign(default_attributes, attributes);
+    
+    if( typeof properties.attributes == 'function' ) {
+        attributes = Object.assign(properties.attributes(), attributes);
+    }
+    
+    properties.attributes = function() {
+        return attributes;
+    }
+    
+    parsed_content = twemoji.parse(content, properties);
+
+    return parsed_content;
 }
 
 // Run the init() function when the page loads
