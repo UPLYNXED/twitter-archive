@@ -1,8 +1,21 @@
+/**
+ * @file templates.js
+ * @summary This file contains the JSRender templates used to render the various parts of the web app.
+ * @see {@link https://www.jsviews.com/}
+ */
 
+/**
+ * @function user-banner
+ * @summary The user banner template displayed at the top of the page.
+ */
 $.templates("user-banner", `
 	{{tweet_image profile_banner_url "Banner" ~classes="img-fluid w-100" ~style="min-height:20px;max-height: 500px;transition:max-height 0.5s ease-out;object-fit: cover;object-position: 50% 80%;" /}}
 `);
 
+/**
+ * @function user-head
+ * @summary The user head template displayed at the top of the page.
+ */
 $.templates("user-head", `
 	{{tweet_image profile_image_url_https name + " " + screen_name ~classes="d-none d-sm-block rounded-circle translate-middle-y border border-5 border-dark-subtle bg-body-secondary" ~classes_container="d-none d-sm-inline embed-responsive-item me-3" ~style="height:min(170px, 14vw);aspect-ratio:1/1;transition:height 0.15s ease-in-out;margin-bottom:max(-140px, -14vw);margin-top:clamp(0px, 3vw, 0.6em);" /}}
 	<h1 class="col-3 position-relative fs-2 mb-0 pb-1 overflow-hidden" style="text-overflow: ellipsis;flex: 1;">
@@ -13,6 +26,10 @@ $.templates("user-head", `
 	</h1>
 `);
 
+/**
+ * @function user-bio
+ * @summary The user bio template displayed at the top of the page.
+ */
 $.templates("user-bio", `
 	<!-- Bio Template -->
 	<div class="row">
@@ -57,256 +74,288 @@ $.templates("user-bio", `
 	</div>
 `);
 
+/**
+ * @function content-title
+ * @summary The content title template displayed above the content section.
+ * @warn NOT IN USE
+ */
+$.templates("content-title", `
+	<!-- Content Title Template -->
+	<div class="row pb-3">
+		<button class="btn btn-icon float-start w-auto ms-3 mb-1 d-none" id="back" onclick="if (!window.__cfRLUnblockHandlers) return false; window.history.back();">
+			<i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+		</button>
+		<h3 class="w-auto">
+			{{:title}}
+		</h3>
+	</div>
+`);
+
+/**
+ * @function tweet-list 
+ * @summary The main template loop for rendering tweet content.
+ * 
+ * @uses 404 - The 404 template for when no tweets are found.
+ * @uses tweet-list-end - The end of the tweet list template.
+ * @uses tweet - The tweet template for rendering individual tweets.
+ * 
+ * @todo Break this template into smaller, more manageable parts.
+ */
 $.templates("tweet-list", `
 	<!-- Tweet List Template -->
-	{^{if ~root["current_tweets"]?.length > 0}}
-		<div class="col-lg-4 sidebar order-last">
-			<div class="offcanvas-lg border-0 offcanvas-end h-100" tabindex="-1" id="offcanvasFilters" aria-labelledby="offcanvasFiltersLabel">
-				<div class="offcanvas-header bg-body-tertiary border-bottom shadow" style="height:84px;/*margin-bottom:calc(-8.5em + 1em);*/">
-					<button type="button" class="btn-close h-100 px-4" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFilters" aria-label="Close"></button>
-				</div>
-				<div class="offcanvas-body h-100 pt-3 pt-sm-4 pt-md-5 pt-lg-0 pb-2 pb-lg-0 d-flex d-lg-block flex-column">
-					<div class="sticky-lg-top w-100 d-flex flex-fill flex-column overflow-y-auto" style="top:8.5em;max-height:calc(100vh - var(--v_padding, 200px) - 6rem);grid-auto-rows:auto 1fr;">
-						{^{if ~list_views.includes(~root["current_loop"].name)}}
-							<div class="card mb-3 w-100" style="height:fit-content;min-height:0;">
-								<div class="card-header position-relative">
-									<h5 id="offcanvasFiltersLabel">
-										Filters
-									</h5>
-									<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_filters" aria-expanded="true" aria-controls="collapse_filters" title="Collapse / Open Filters Card"></a>
-								</div>
-								<div class="card-body collapse show" id="collapse_filters" style="max-height:calc(75vh - 180px);overflow-y:auto;">
-									<div class="mb-3">
-										<label for="sort-order" class="form-label">Sort Order</label>
-										<select class="form-select" id="sort-order" data-link="{:~sort_order:}" disabled>
-											<option value="newest">Newest First</option>
-											<option value="oldest">Oldest First</option>
-										</select>
-									</div>
-									{^{if ~root["current_loop"].name != "user_media"}}
-										<div class="mb-3">
-											<label for="filter-media" class="form-label" title="Filter tweets that contain media (images, videos, etc.)">
-												Media
-											</label>
-											<select class="form-select" id="filter-media" data-link="{:~media:}" title="Tweets that contain media (images, videos, etc.)">
-												<option value="all" title="Show all tweets, including media">
-													All Tweets
-												</option>
-												<option value="media" title="Only show tweets that contain media">
-													Only Media
-												</option>
-												<option value="images" title="Only show tweets that contain images" disabled>
-													Only Images
-												</option>
-												<option value="videos" title="Only show tweets that contain videos" disabled>
-													Only Videos
-												</option>
-												<option value="gifs" title="Only show tweets that contain GIFs" disabled>
-													Only GIFs
-												</option>
-												<option value="embeds" title="Only show tweets that contain cards or polls" disabled>
-													Only Cards/Polls
-												</option>
-												<option value="no_media" title="Hide tweets that contain media">
-													No Media
-												</option>
-											</select>
-										</div>
-									{{/if}}
-									<div class="mb-3">
-										<label for="filter-replies" class="form-label" title="Filter tweets that are replies to other tweets">
-											Replies
-										</label>
-										<select class="form-select" id="filter-replies" data-link="{:~replies:}" title="Tweets that are replies to other tweets">
-											<option value="all" title="Show all tweets, including replies">
-												All Tweets
-											</option>
-											<option value="replies" title="Only show tweets that are replies to other tweets">
-												Only Replies
-											</option>
-											<option value="no_replies" title="Hide tweets that are replies to other tweets">
-												No Replies
-											</option>
-										</select>
-									</div>
-									<div class="mb-3">
-										<label for="filter-retweets" class="form-label" title="Filter retweets">
-											Retweets
-										</label>
-										<select class="form-select" id="filter-retweets" data-link="{:~retweets:}">
-											<option value="all" title="Show all tweets, including retweets">
-												All Tweets
-											</option>
-											<option value="retweets" title="Only show retweets">
-												Only Retweets
-											</option>
-											<option value="quotetweets" title="Only show quote tweets" disabled>
-												Only Quote Tweets
-											</option>
-											<option value="retweets_quotetweets" title="Only show retweets and quote tweets" disabled>
-												Only Retweets and Quote Tweets
-											</option>
-											<option value="no_retweets" title="Hide retweets">
-												No Retweets
-											</option>
-										</select>
-									</div>
-									{^{if ~root["current_loop"].name != "favorites"}}
-										<div class="mb-3">
-											<label for="filter-favorites" class="form-label" title="Filter tweets that you have favorited">
-												Favorites
-											</label>
-											<select class="form-select" id="filter-favorites" data-link="{:~favorites:}" title="Tweets that you have favorited">
-												<option value="all" title="Show all tweets, including favorites">
-													All Tweets
-												</option>
-												<option value="favorites" title="Only show tweets that you have favorited">
-													Only Favorites
-												</option>
-											</select>
-										</div>
-									{{/if}}
-									{{if ~root["current_loop"].date_cutoff_toggle_option != false}}
-										<div class="mb-3">
-											<div class="form-check form-switch">
-												<input class="form-check-input" type="checkbox" role="switch" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
-												<label class="form-check-label" for="date-cutoff">
-													{^{if ~date_cutoff_toggle}}
-														Excluding past 
-													{{else}}
-														Including past
-													{{/if}}
-													<span class="d-none d-xl-inline">
-														{{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-													</span>
-													<span class="d-inline d-xl-none">
-														{{format_date ~root["current_loop"].date_cutoff ~format="tiny" /}}
-													</span>
-												</label>
-											</div>
-										</div>
-									{{/if}}
-								</div>
+	<div class="col-lg-4 sidebar order-last">
+		<div class="offcanvas-lg border-0 offcanvas-end h-100" tabindex="-1" id="offcanvasFilters" aria-labelledby="offcanvasFiltersLabel">
+			<div class="offcanvas-header bg-body-tertiary border-bottom shadow" style="height:84px;/*margin-bottom:calc(-8.5em + 1em);*/">
+				<button type="button" class="btn-close h-100 px-4" data-bs-dismiss="offcanvas" data-bs-target="#offcanvasFilters" aria-label="Close"></button>
+			</div>
+			<div class="offcanvas-body h-100 pt-3 pt-sm-4 pt-md-5 pt-lg-0 pb-2 pb-lg-0 d-flex d-lg-block flex-column">
+				<div class="sticky-lg-top w-100 d-flex flex-fill flex-column overflow-y-auto" style="top:8.5em;max-height:calc(100vh - var(--v_padding, 200px) - 6rem);grid-auto-rows:auto 1fr;">
+					{^{if ~list_views.includes(~root["current_loop"].name)}}
+						<div class="card mb-3 w-100" style="height:fit-content;min-height:0;">
+							<div class="card-header position-relative">
+								<h5 id="offcanvasFiltersLabel">
+									Filters
+								</h5>
+								<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_filters" aria-expanded="true" aria-controls="collapse_filters" title="Collapse / Open Filters Card"></a>
 							</div>
-							{^{if ~root["current_loop"].name == "favorites"}}
-								<div class="card mb-3 w-100" style="height:fit-content;">
-									<div class="card-header position-relative">
-										<h5>
+							<div class="card-body collapse show" id="collapse_filters" style="max-height:calc(75vh - 180px);overflow-y:auto;">
+								<div class="mb-3">
+									<label for="sort-order" class="form-label">Sort Order</label>
+									<select class="form-select" id="sort-order" data-link="{:~sort_order:}" onchange="handleSortChange(event);">
+										<option value="newest">Newest First</option>
+										<option value="oldest">Oldest First</option>
+									</select>
+								</div>
+								<div class="mb-3">
+									<label for="filter-media" class="form-label" title="Filter tweets that contain media (images, videos, etc.)">
+										Media
+									</label>
+									<select class="form-select" id="filter-media" name="has_media" data-link="{:~filters.has_media:} class^{: ( ~root['current_loop'].name == 'user_media' && (~filters.has_media == 'polls' || ~filters.has_media == 'no_media')) ? 'form-select bg-danger' : 'form-select '}" title="Tweets that contain media (images, videos, etc.)" onchange="handleFilters(event);">
+										<option value="all" title="Show all tweets, including media">
+											All Tweets
+										</option>
+										<option value="media" title="Only show tweets that contain media">
+											Only Media
+										</option>
+										<option value="images" title="Only show tweets that contain images">
+											Only Images
+										</option>
+										<option value="videos" title="Only show tweets that contain videos">
+											Only Videos
+										</option>
+										<option value="gifs" title="Only show tweets that contain GIFs">
+											Only GIFs
+										</option>
+										<option value="cards" title="Only show tweets that contain cards">
+											Only Cards
+										</option>
+										<option value="polls" title="Only show tweets that contain polls" data-link="disabled{:~root['current_loop'].name == 'user_media'}">
+											Only Polls
+										</option>
+										<option value="no_media" title="Hide tweets that contain media" data-link="disabled{:~root['current_loop'].name == 'user_media'}">
+											No Media
+										</option>
+									</select>
+								</div>
+								<div class="mb-3">
+									<label for="filter-replies" class="form-label" title="Filter tweets that are replies to other tweets">
+										Replies
+									</label>
+									<select class="form-select" id="filter-replies" name="is_reply" data-link="{:~filters.is_reply:}" title="Tweets that are replies to other tweets" onchange="handleFilters(event);">
+										<option value="all" title="Show all tweets, including replies">
+											All Tweets
+										</option>
+										<option value="replies" title="Only show tweets that are replies to other tweets">
+											Only Replies
+										</option>
+										<option value="no_replies" title="Hide tweets that are replies to other tweets">
+											No Replies
+										</option>
+									</select>
+								</div>
+								<div class="mb-3">
+									<label for="filter-retweets" class="form-label" title="Filter retweets">
+										Retweets
+									</label>
+									<select class="form-select" id="filter-retweets" name="is_retweet" data-link="{:~filters.is_retweet:}" onchange="handleFilters(event);">
+										<option value="all" title="Show all tweets, including retweets">
+											All Tweets
+										</option>
+										<option value="retweets" title="Only show retweets">
+											Only Retweets
+										</option>
+										<option value="quotetweets" title="Only show quote tweets">
+											Only Quote Tweets
+										</option>
+										<option value="retweets_quotetweets" title="Only show retweets and quote tweets">
+											Only Retweets and Quote Tweets
+										</option>
+										<option value="no_retweets" title="Hide retweets">
+											No Retweets
+										</option>
+										<option value="no_retweets_quotetweets" title="Hide retweets and quote tweets">
+											No Retweets or Quote Tweets
+										</option>
+									</select>
+								</div>
+								{^{if ~root["current_loop"].name != "favorites"}}
+									<div class="mb-3">
+										<label for="filter-favorites" class="form-label" title="Filter tweets that you have favorited">
 											Favorites
-										</h5>
-										<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_faves" aria-expanded="false" aria-controls="collapse_faves"></a>
+										</label>
+										<select class="form-select" id="filter-favorites" name="is_favorite" data-link="{:~filters.is_favorite:}" title="Tweets that you have favorited" onchange="handleFilters(event);">
+											<option value="all" title="Show all tweets, including favorites">
+												All Tweets
+											</option>
+											<option value="favorites" title="Only show tweets that you have favorited">
+												Only Favorites
+											</option>
+											<option value="no_favorites" title="Hide tweets that you have favorited">
+												No Favorites
+											</option>
+										</select>
 									</div>
-									<div class="card-body collapse" id="collapse_faves">
-										<div class="mb-3">
-											<label for="export-favorites" class="form-label">Export Favorites</label>
-											<button class="btn btn-primary w-100" id="export-favorites" onclick="exportFavorites();">
-												<i class="fa-solid fa-download"></i>
-												Export Favorites
-											</button>
-										</div>
-										<div class="mb-3">
-											<label for="import-favorites" class="form-label">Import Favorites</label>
-											<button class="btn btn-primary w-100" id="import-favorites" onclick="importFavorites();">
-												<i class="fa-solid fa-upload"></i>
-												Import Favorites
-											</button>
-										</div>
-									</div>
-								</div>
-							{{/if}}
-						{{else}}
-							{{if ~root["current_loop"].date_cutoff_toggle_option != false && ~root["current_tweets"][0].created_at <= ~root["current_loop"].date_cutoff}}
-								<div class="card mb-3 w-100" style="height:fit-content;">
-									<div class="card-header position-relative">
-										<h5>
-											Thread Filters
-										</h5>
-										<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_filters" aria-expanded="false" aria-controls="collapse_filters"></a>
-									</div>
-									<div class="card-body collapse" id="collapse_filters">
-										<div class="mb-3">
-											<div class="form-check form-switch">
-												<input class="form-check-input" type="checkbox" role="switch" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
-												<label class="form-check-label" for="date-cutoff">
-													{^{if ~date_cutoff_toggle}}
-														Excluding past 
-													{{else}}
-														Including past
-													{{/if}}
-													<span class="d-none d-xl-inline">
-														{{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
-													</span>
-													<span class="d-inline d-xl-none">
-														{{format_date ~root["current_loop"].date_cutoff ~format="tiny" /}}
-													</span>
-												</label>
-											</div>
+								{{/if}}
+								{{if ~root["current_loop"].date_cutoff_toggle_option != false}}
+									<div class="mb-3">
+										<div class="form-check form-switch">
+											<input class="form-check-input" type="checkbox" role="switch" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
+											<label class="form-check-label" for="date-cutoff">
+												{^{if ~date_cutoff_toggle}}
+													Excluding past 
+												{{else}}
+													Including past
+												{{/if}}
+												<span class="d-none d-xl-inline">
+													{{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+												</span>
+												<span class="d-inline d-xl-none">
+													{{format_date ~root["current_loop"].date_cutoff ~format="tiny" /}}
+												</span>
+											</label>
 										</div>
 									</div>
-								</div>
-							{{/if}}
-							<div class="card mb-3 w-100" style="height:fit-content;min-height:0;">
+								{{/if}}
+							</div>
+						</div>
+						{^{if ~root["current_loop"].name == "favorites"}}
+							<div class="card mb-3 w-100" style="height:fit-content;">
 								<div class="card-header position-relative">
-									<h5 id="offcanvasFiltersLabel">
-										Relevant Users
+									<h5>
+										Favorites
 									</h5>
-									<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_rel_users" aria-expanded="true" aria-controls="collapse_rel_users" title="Collapse / Open Related Users Card"></a>
+									<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_faves" aria-expanded="false" aria-controls="collapse_faves"></a>
 								</div>
-								<div class="card-body collapse show" id="collapse_rel_users" style="max-height:calc(75vh - 180px);overflow-y:auto;">
-									{{if ~root['current_loop'].users_relevant}}
-										{^{for ~root['current_loop'].users_relevant}}
-												
-											{^{user_popover id_str ~tag_name="div" ~classes="mb-3" ~is_user=true}}
-												<a href="{{:url_path}}" target="_blank" class="text-decoration-none">
-													{{useravatar_img id_str ~classes="me-3 rounded-circle bg-body float-start" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
-												</a>
-												<h6 class="fs-5 mb-0 overflow-hidden fw-medium" style="text-overflow:ellipsis;white-space:nowrap;">
-													{{tweet_emoji name /}}
-													<sub class="screen-name d-block lh-1 pb-2 fst-italic fw-normal text-muted">
-														@{{:screen_name}}
-													</sub>
-												</h6>
-											{{/user_popover}}
-										{{/for}}
-									{{/if}}
+								<div class="card-body collapse" id="collapse_faves">
+									<div class="mb-3">
+										<label for="export-favorites" class="form-label">Export Favorites</label>
+										<button class="btn btn-primary w-100" id="export-favorites" onclick="exportFavorites();">
+											<i class="fa-solid fa-download"></i>
+											Export Favorites
+										</button>
+									</div>
+									<div class="mb-3">
+										<label for="import-favorites" class="form-label">Import Favorites</label>
+										<button class="btn btn-primary w-100" id="import-favorites" onclick="importFavorites();">
+											<i class="fa-solid fa-upload"></i>
+											Import Favorites
+										</button>
+									</div>
 								</div>
 							</div>
 						{{/if}}
-						<div class="card w-100" style="height:fit-content;">
+					{{else}}
+						{{if ~root["current_loop"].date_cutoff_toggle_option != false && ~root["loaded_tweets"][0].created_at >= ~root["current_loop"].date_cutoff}}
+							<div class="card mb-3 w-100" style="height:fit-content;">
+								<div class="card-header position-relative">
+									<h5>
+										Thread Filters
+									</h5>
+									<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_filters" aria-expanded="false" aria-controls="collapse_filters"></a>
+								</div>
+								<div class="card-body collapse" id="collapse_filters">
+									<div class="mb-3">
+										<div class="form-check form-switch">
+											<input class="form-check-input" type="checkbox" role="switch" id="date-cutoff" data-link="{:~date_cutoff_toggle:}" title="Filter tweets that were posted before {{format_date ~root["current_loop"].date_cutoff ~format="short" /}}">
+											<label class="form-check-label" for="date-cutoff">
+												{^{if ~date_cutoff_toggle}}
+													Excluding past 
+												{{else}}
+													Including past
+												{{/if}}
+												<span class="d-none d-xl-inline">
+													{{format_date ~root["current_loop"].date_cutoff ~format="short" /}}
+												</span>
+												<span class="d-inline d-xl-none">
+													{{format_date ~root["current_loop"].date_cutoff ~format="tiny" /}}
+												</span>
+											</label>
+										</div>
+									</div>
+								</div>
+							</div>
+						{{/if}}
+						<div class="card mb-3 w-100" style="height:fit-content;min-height:0;">
 							<div class="card-header position-relative">
 								<h5 id="offcanvasFiltersLabel">
-									Options
+									Relevant Users
 								</h5>
-								<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_options" aria-expanded="true" aria-controls="collapse_options" title="Collapse / Open Options Card"></a>
+								<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_rel_users" aria-expanded="true" aria-controls="collapse_rel_users" title="Collapse / Open Related Users Card"></a>
 							</div>
-							<div class="card-body collapse" id="collapse_options">
-								<div class="mb-3">
-									<h6>
-										Theme
-									</h6>
-									<!-- 3 way toggle switch for light, auto, and dark themes -->
-									<div class="form-group d-flex">
-										<label class="form-check-label me-2" for="theme_toggle_light">
-											<i class="fa-solid fa-sun"></i>
-											<!-- <i class="fa-solid fa-sun text-warning" style="text-shadow: 0 0 10px rgba(var(--bs-warning-rgb),var(--bs-text-opacity))!important;"></i> -->
-										</label>
-										{^{if ~config.theme=='auto'}}
-											<input class="form-check-input rounded-start-pill border-end-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_light" value="light" title="Light Theme" data-link="{:~config.theme:}">
-											<input class="form-check-input rounded-0 border-start-0 border-end-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_auto" value="auto" title="Auto Theme" data-link="{:~config.theme:}">
-											<input class="form-check-input rounded-end-pill border-start-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_dark" value="dark" title="Dark Theme" data-link="{:~config.theme:}">
-										{{else}}
-											<input 	class="form-check-input rounded-start-pill border-end-0 bg-dark-subtle border" type="radio" name="theme_toggle" id="theme_toggle_light" value="light" title="Light Theme" data-link="{:~config.theme:}">
-											<input class="form-check-input rounded-0 border-start-0 border-end-0 bg-dark-subtle border" type="radio" name="theme_toggle" id="theme_toggle_auto" value="auto" title="Auto Theme" data-link="{:~config.theme:}">
-											<input class="form-check-input rounded-end-pill border-start-0 bg-dark-subtle border" type="radio" name="theme_toggle" id="theme_toggle_dark" value="dark" title="Dark Theme" data-link="{:~config.theme:}">
-										{{/if}}
-										<label class="form-check-label ms-2" for="theme_toggle_dark">
-											<i class="fa-solid fa-moon"></i>
-											<!-- <i class="fa-moon fa-solid" style="text-shadow: 0 0 10px white;"></i> -->
-										</label>
-										<span class="ms-3">
-											{^{:~config.theme}}
-										</span>
-									</div>
+							<div class="card-body collapse show relevant-users" id="collapse_rel_users" style="max-height:calc(75vh - 180px);overflow-y:auto;">
+								{{if ~root['current_loop'].users_relevant}}
+									{^{for ~root['current_loop'].users_relevant}}
+											
+										{^{user_popover id_str ~tag_name="div" ~classes="mb-3" ~is_user=true}}
+											<a href="{{:url_path}}" target="_blank" class="text-decoration-none">
+												{{useravatar_img id_str ~classes="me-3 rounded-circle bg-body float-start" ~style="height:48px;width:48px;max-height:48px;max-width:48px;" /}}
+											</a>
+											<h6 class="fs-5 mb-0 overflow-hidden fw-medium" style="text-overflow:ellipsis;white-space:nowrap;">
+												{{tweet_emoji name /}}
+												<sub class="screen-name d-block lh-1 pb-2 fst-italic fw-normal text-muted">
+													@{{:screen_name}}
+												</sub>
+											</h6>
+										{{/user_popover}}
+									{{/for}}
+								{{/if}}
+							</div>
+						</div>
+					{{/if}}
+					<div class="card w-100" style="height:fit-content;">
+						<div class="card-header position-relative">
+							<h5 id="offcanvasFiltersLabel">
+								Options
+							</h5>
+							<a class="position-absolute top-0 bottom-0 start-0 end-0 mb-1 mt-1 focus-ring rounded-top stretched-link" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapse_options" aria-expanded="true" aria-controls="collapse_options" title="Collapse / Open Options Card"></a>
+						</div>
+						<div class="card-body collapse" id="collapse_options">
+							<div class="mb-3">
+								<h6>
+									Theme
+								</h6>
+								<!-- 3 way toggle switch for light, auto, and dark themes -->
+								<div class="form-group d-flex">
+									<label class="form-check-label me-2" for="theme_toggle_light">
+										<i class="fa-solid fa-sun"></i>
+										<!-- <i class="fa-solid fa-sun text-warning" style="text-shadow: 0 0 10px rgba(var(--bs-warning-rgb),var(--bs-text-opacity))!important;"></i> -->
+									</label>
+									{^{if ~config.theme=='auto'}}
+										<input class="form-check-input rounded-start-pill border-end-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_light" value="light" title="Light Theme" data-link="{:~config.theme:}">
+										<input class="form-check-input rounded-0 border-start-0 border-end-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_auto" value="auto" title="Auto Theme" data-link="{:~config.theme:}">
+										<input class="form-check-input rounded-end-pill border-start-0 bg-primary border-primary" type="radio" name="theme_toggle" id="theme_toggle_dark" value="dark" title="Dark Theme" data-link="{:~config.theme:}">
+									{{else}}
+										<input 	class="form-check-input rounded-start-pill border-end-0 bg-dark-subtle border" type="radio" name="theme_toggle" id="theme_toggle_light" value="light" title="Light Theme" data-link="{:~config.theme:}">
+										<input class="form-check-input rounded-0 border-start-0 border-end-0 bg-dark-subtle border" type="radio" name="theme_toggle" id="theme_toggle_auto" value="auto" title="Auto Theme" data-link="{:~config.theme:}">
+										<input class="form-check-input rounded-end-pill border-start-0 bg-dark-subtle border" type="radio" name="theme_toggle" id="theme_toggle_dark" value="dark" title="Dark Theme" data-link="{:~config.theme:}">
+									{{/if}}
+									<label class="form-check-label ms-2" for="theme_toggle_dark">
+										<i class="fa-solid fa-moon"></i>
+										<!-- <i class="fa-moon fa-solid" style="text-shadow: 0 0 10px white;"></i> -->
+									</label>
+									<span class="ms-3">
+										{^{:~config.theme}}
+									</span>
 								</div>
 							</div>
 						</div>
@@ -314,26 +363,28 @@ $.templates("tweet-list", `
 				</div>
 			</div>
 		</div>
+	</div>
+	{^{if ~root["loaded_tweets"]?.length > 0}}
 		<div class="col-sm-12 col-lg-8 tweets-list px-0 px-sm-3">
 			<!-- This is where the tweets will be rendered -->
-			{^{for ~root["current_tweets"] ~replies ~retweets}}
+			{^{for ~root["loaded_tweets"] ~filters}}
 				{^{if id_str}}
-					{^{if ~retweets == "all" || (~retweets == "retweets" && retweeting_user != undefined) || (~retweets == "no_retweets" && retweeting_user == undefined) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
-					{^{if ~replies == "all" || (~replies == "replies" && in_reply_to_status_id_str != null) || (~replies == "no_replies" && in_reply_to_status_id_str == null) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
-					{^{if ~media == "all" || (~media == "media" && extended_entities) || (~media == "no_media" && !extended_entities) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
-					{^{if ~favorites == "all" || (~favorites == "favorites" && favorited == true)}}
+					{{!-- {^{if ~filters.is_retweet == "all" || (~filters.is_retweet == "retweets" && retweeting_user != undefined) || (~filters.is_retweet == "no_retweets" && retweeting_user == undefined) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}} --}}
+					{^{if ~filters.is_reply == "all" || (~filters.is_reply == "replies" && in_reply_to_status_id_str != null) || (~filters.is_reply == "no_replies" && in_reply_to_status_id_str == null) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
+					{{!-- {^{if ~filters.has_media == "all" || (~filters.has_media == "media" && extended_entities) || (~filters.has_media == "no_media" && !extended_entities) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}} --}}
+					{^{if ~filters.is_favorite == "all" || (~filters.is_favorite == "favorites" && favorited == true) || (~filters.is_favorite == "no_favorites" && favorited != true) || ~root["current_loop"].name == "tweet_thread" || ~root["current_loop"].name == "tweet_single"}}
 					{^{if ~date_cutoff_toggle == false  || (~date_cutoff_toggle == true && created_at < ~root["current_loop"].date_cutoff)}}
 						{^{if user #data ^tmpl="tweet"}}
 							{^{else #data ^tmpl="404" ~message="Could not load this tweet"}}
 						{{/if}}
 					{{/if}}
 					{{/if}}
+					{{!-- {{/if}} --}}
 					{{/if}}
-					{{/if}}
-					{{/if}}
+					{{!-- {{/if}} --}}
 				{{/if}}
 			{{/for}}
-			{^{if ~root["current_tweets"].length == 0 tmpl="404" }}
+			{^{if ~root["loaded_tweets"].length == 0 tmpl="404" }}
 				{^{else tmpl="tweet-list-end" }}
 			{{/if}}
 		</div>
@@ -344,15 +395,28 @@ $.templates("tweet-list", `
 	{{/if}}
 `);
 
+/**
+ * @function media-gallery-list
+ * @summary The media gallery list template for rendering media content.
+ * 
+ * @uses media-item - The media item template for rendering individual media items.
+ * 
+ * @warn NOT IN USE
+ */
 // $.templates("media-gallery-list", `
 // 	<!-- Media Gallery View Template -->
-// 	{{for ~root["current_tweets"] reverse=true}}
+// 	{{for ~root["loaded_tweets"] reverse=true}}
 // 		{{if !retweeted_status_result}}
 // 			{{include tmpl="media-item" /}}
 // 		{{/if}}
 // 	{{/for}}
 // `);
 
+/**
+ * @function 404
+ * @summary The 404 template for when no tweets are found.
+ * @see tweet-list
+ */
 $.templates("404", `
 	<div class="col-12 mb-3">
 		<div class="card">
@@ -370,15 +434,11 @@ $.templates("404", `
 	</div>
 `);
 
-// $.templates("tweet-list-more", `
-// 	<div class="col-12 mb-3">
-// 		<button class="btn btn-primary w-100" id="load-more" onclick="load_more();">
-// 			<i class="fa-solid fa-circle-arrow-down"></i>
-// 			Load More
-// 		</button>
-// 	</div>
-// `);
-
+/**
+ * @function tweet-list-end
+ * @summary The end of the tweet list template.
+ * @see tweet-list
+ */
 $.templates("tweet-list-end", `
 	<div class="col-12">
 		<div class="card tweet-list-loading">
@@ -408,6 +468,18 @@ $.templates("tweet-list-end", `
 	</div>
 `);
 
+/**
+ * @function tweet
+ * @summary The tweet template for rendering individual tweets.
+ * @see tweet-list
+ * 
+ * @uses tweet-header - The tweet header template for rendering the header section of a tweet with user and tweet information.
+ * @todo @uses tweet-footer - The tweet footer template for rendering the footer section of a tweet with tweet statistics.
+ * @uses tweet-poll - The tweet poll template for rendering polls in tweets.
+ * @uses tweet-media - The tweet media template for rendering media in tweets.
+ * 
+ * @todo Break this template into smaller, more manageable parts.
+ */
 $.templates("tweet", `
 	<!-- Tweet Template -->
 		{{if retweeting_user != undefined}}
@@ -502,9 +574,26 @@ $.templates("tweet", `
 					{{/if}}
 				</div>
 			</div>
+			<!-- Replies -->
+			{^{if replies && replies.length > 0 && ~root["current_loop"].name == "tweet_thread" && conversation_id_str != id_str}}
+				<div class="replies ms-1 mb-4 ps-2 pt-3 border-start border-bottom border-3 border-opacity-10 border-secondary">
+					<div class="replies-list" style="margin-bottom: calc(var(--bs-gutter-x) * -1) !important;">
+						{^{for replies}}
+							{^{if id_str && user #data ^tmpl="tweet"}}
+								{^{else #data ^tmpl="404" ~message="Could not load this tweet"}}
+							{{/if}}
+						{{/for}}
+					</div>
+				</div>
+			{{/if}}
 		</div>
 `);
 
+/**
+ * @function tweet-header
+ * @summary The tweet header template for rendering the header section of a tweet with user and tweet information.
+ * @see tweet
+ */
 $.templates("tweet-header", `
 	<!-- Tweet Header Template -->
 	<div class="card-header tweet-header bg-body-tertiary rounded-top">
@@ -521,7 +610,7 @@ $.templates("tweet-header", `
 				@{{:user.screen_name}}
 			</small>
 		{{/user_popover}}
-		<div class="tweet-profile-timestamp fs-6">
+		<div class="tweet-profile-timestamp fs-6 d-flex justify-content-between">
 			<small class="text-muted">
 				<a href="#{{:user.screen_name}}/status/{{:id_str}}" class="text-decoration-none" target="_blank" title="Link to this tweet in this archive (new tab)">
 					<i class="fa-solid fa-link small me-1"></i>
@@ -539,18 +628,18 @@ $.templates("tweet-header", `
 				</a>
 			</small>
 			
-			<div class="tweet-context-links float-end">
-				{{if in_reply_to_status_id_str != null}}
-					{{if in_reply_to_user_id_str == ~main_user?.id_str}}
-						<a href="{{orig_url /}}#{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" class="d-inline-block py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none" title="Replying to {{:in_reply_to_screen_name}}">
+			<div class="tweet-context-links">
+				{{if in_reply_to_status_id_str != null }}
+					{{if ~root["tweets"][in_reply_to_status_id_str] }}
+						<a href="{{orig_url "#"+in_reply_to_screen_name+"/status/"+in_reply_to_status_id_str /}}" class="py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none" title="Replying to {{:in_reply_to_screen_name}}">
 							<i class="fas fa-reply" style="text-indent:-0.125em;"></i>
 							<span class="d-none d-md-inline ms-1">
 								{{:in_reply_to_screen_name}}
 							</span>
 						</a>
 					{{else}}
-						<a href="https://twitter.com/{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" target="_blank" class="d-inline-block py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none" title="Replying to {{:in_reply_to_screen_name}}">
-							<i class="fas fa-reply" style="text-indent:-0.125em;"></i>
+						<a href="https://twitter.com/{{:in_reply_to_screen_name}}/status/{{:in_reply_to_status_id_str}}" target="_blank" class="py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none" title="Replying to {{:in_reply_to_screen_name}}">
+						<i class="fa-solid fa-share-from-square fa-flip-horizontal" style="text-indent:-0.125em;"></i>
 							<span class="d-none d-md-inline ms-1">
 								{{:in_reply_to_screen_name}}
 							</span>
@@ -561,19 +650,19 @@ $.templates("tweet-header", `
 				{{if is_quote_status == true && quoted_tweet}}
 					{{if quoted_status_permalink}}
 						{{if quoted_tweet.user}}
-							<a href="{{:quoted_tweet.url_path}}" target="_blank" class="d-inline-block py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none" title="Quoting tweet by {{:quoted_tweet.user.screen_name}}">
+							<a href="{{:quoted_tweet.url_path}}" target="_blank" class="py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none" title="Quoting tweet by {{:quoted_tweet.user.screen_name}}">
 								<i class="fa-solid fa-quote-right"></i>
 								<span class="d-none d-md-inline ms-1">
 									{{:quoted_tweet.user.screen_name}}
 								</span>
 							</a>
 						{{else}}
-							<a href="{{:quoted_status_permalink.expanded}}" target="_blank" class="d-inline-block py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none" title="Quoting tweet: {{:quoted_status_permalink.display}}">
+							<a href="{{:quoted_status_permalink.expanded}}" target="_blank" class="py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none" title="Quoting tweet: {{:quoted_status_permalink.display}}">
 								<i class="fa-solid fa-quote-right"></i>
 							</a>
 						{{/if}}
 					{{else}}
-						<a href="https://twitter.com/placeholder/status/{{:quoted_status_id_str}}" target="_blank" class="d-inline-block py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none">
+						<a href="https://twitter.com/placeholder/status/{{:quoted_status_id_str}}" target="_blank" class="py-1 px-2 mx-1 small rounded-pill bg-light-subtle text-decoration-none">
 							<i class="fas fa-retweet me-1"></i>
 							Quoted Tweet
 						</a>
@@ -594,6 +683,43 @@ $.templates("tweet-header", `
 	</div>
 `);
 
+/**
+ * @function tweet-footer
+ * @summary The tweet footer template for rendering the footer section of a tweet with tweet statistics and favorite button.
+ * @see tweet
+ * @warn NOT IN USE
+ * @todo Split this off from the tweet template.
+ * @stub
+ */
+$.templates("tweet-footer", `
+	<!-- STUB -->
+`);
+
+/**
+ * @function tweet-replies
+ * @summary The tweet replies template for rendering replies to a tweet below it within a conversation. This is a recursive template and adds indentation for each level of reply.
+ * @see tweet
+ */
+$.templates("tweet-replies", `
+	<!-- Tweet Replies Template -->
+	{{if ~replies}}
+		<div class="ms-3 ps-3 border-start border-2 border-dark">
+		{{for ~replies}}
+			<!-- Use Tweet Template -->
+			{^{if user #data ^tmpl="tweet"}}
+				{^{else #data ^tmpl="404" ~message="Could not load this tweet"}}
+			{{/if}}
+		{{/for}}
+		</div>
+	{{/if}}
+`);
+
+
+/**
+ * @function tweet-poll
+ * @summary Template for rendering Twitter polls in tweets
+ * @see tweet
+ */
 $.templates("tweet-poll", `
 	<!-- Tweet poll Templates -->
 	{{if card?.name}}
@@ -613,6 +739,11 @@ $.templates("tweet-poll", `
 	{{/if}}
 `);
 
+/**
+ * @function tweet-poll-choice
+ * @summary Template for rendering individual poll choices in Twitter polls
+ * @see {@link tweet-poll}
+ */
 $.templates("tweet-poll-choice", `
 	<!-- Tweet Poll Choice Template -->
 	<div class="d-flex mb-3">
@@ -627,6 +758,11 @@ $.templates("tweet-poll-choice", `
 	</div>
 `);
 
+/**
+ * @function tweet-media
+ * @summary Template for rendering media in tweets
+ * @see tweet
+ */
 $.templates("tweet-media", `
 	<!-- Tweet Media Templates -->
 	{{if extended_entities?.media}}
@@ -750,6 +886,11 @@ $.templates("tweet-media", `
 	{{/if}}
 `);
 
+/**
+ * @function tweet-media-modal
+ * @summary Template for rendering a single tweet image
+ * @see tweet-media
+ */
 $.templates("tweet-media-modal", `
 	<!-- modal open with full image -->
 	<div class="modal fade" id="imageModal-{{:~id}}" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
@@ -790,6 +931,13 @@ $.templates("tweet-media-modal", `
 	<!-- end modal -->
 `);
 
+/**
+ * @function media-item
+ * @summary Template for rendering a single media item in a gallery
+ * @see media-gallery-list
+ * @warn NOT IN USE
+ * @stub
+ */
 $.templates("media-item", `
 	<!-- Media Gallery Item Template -->
 
