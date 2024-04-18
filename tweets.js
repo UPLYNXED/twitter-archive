@@ -1662,6 +1662,123 @@ function embedMedia({ url, type, source, tweet_id, user_id }) {
 	return media;
 }
 
+
+/**
+ * Parse media URL to get the filename, type, and source
+ * 
+ * @param {string} url - The URL of the media
+ * @
+ * 
+ * @returns {object} media - The media object
+ * @returns {string} media.filename 	- The filename of the media
+ * @returns {string} media.type 		- The type of media
+ * @returns {string} media.base_url 	- The base URL of the media
+ * @returns {string} media.clean_url 	- The cleaned URL of the media (without query strings)
+ * @returns {string} media.orig_url 	- The original URL of the media
+ * @returns {string} media.local_url 	- The local URL of the media in case the media has been archived
+ */
+function parseMediaUrl(url) {
+
+	if ( url === undefined || typeof url !== "string" ) {
+		if (window.error_list === undefined) {
+			window.error_list = [];
+		}
+		window.error_list.push(`Error: URL is undefined or not a string: ${url}`, this);
+		return false;
+	}
+
+	// Define the media object
+	let media = {
+		filename	: "",
+		type		: "",
+		base_url	: "",
+		clean_url	: "",
+		orig_url	: url,
+		local_url	: url,
+	};
+
+	// Define the regex patterns
+	let regex = {
+		format				: /format=(\w+)/,
+		file				: /\/(([\w-]+)\.(\w+))$/,
+		last_slash			: /\/([^\/]+)$/,
+		last_slash_query	: /\/([^\/]+)(?=\?)/,
+		file_query			: /\/(([\w-]+)\.(\w+))(?=\?)/,
+		query				: /\?(\w+)=/,
+		before_query		: /(.+)(?=\?)/,
+	}
+
+	// Remove the query string from the URL for consistency
+	if ( url.includes("?") ) {
+		media.clean_url = url.match(regex.before_query)[1];
+	} else {
+		media.clean_url = url;
+	}
+
+	// Check if the URL is from Twitter
+	if ( url.includes("pbs.twimg.com") ) {
+		// Check if the URL is a profile image
+		if ( url.includes("profile_images") ) {
+			let file 		= url.match(regex.file);
+			media.filename 	= file[2];
+			media.type 		= file[3];
+			media.base_url 	= `https://pbs.twimg.com/profile_images/`;
+		} else if ( url.includes("profile_banners") ) { // Check if the URL is a profile banner
+			media.filename 	= url.match(regex.last_slash)[1];
+			media.type 		= "jpg";
+			media.base_url 	= `https://pbs.twimg.com/profile_banners/`;
+		} else if ( url.includes("card_img") ) { // Check if the URL is a card image
+			media.filename 	= url.match(regex.last_slash_query)[1];
+			media.type 		= url.match(regex.format)[1];
+			media.base_url 	= `https://pbs.twimg.com/card_img/`;
+		} else if ( url.includes("media") ) { // Check if the URL is an image
+			if ( url.includes("?") ) {
+				media.filename 	= url.match(regex.last_slash_query)[1];
+				media.type 	= url.match(regex.format)[1];
+			} else {
+				let file 		= url.match(regex.file);
+				media.filename 	= file[2];
+				media.type 	= file[3];
+			}
+			media.base_url 	= `https://pbs.twimg.com/media/`;
+			media.url 		= `${media.base_url}${media.filename}?format=${media.type}&name=orig`; // Rewrite URL to get highest quality
+		} else if ( url.includes("amplify_video_thumb") || url.includes("ext_tw_video_thumb") ) { // Check if the URL is a video thumbnail
+			let file 		= url.match(regex.file);
+			media.filename 	= file[2];
+			media.type 	= file[3];
+
+			let base_url 	= url.split(media.filename + "." + media.type);
+			media.base_url 	= base_url[0];
+		}
+	} else if ( url.includes("video.twimg.com") ) { // Check if the URL is a video
+		if ( url.includes("?") ) {
+			let file 		= url.match(regex.file_query);
+			media.filename 	= file[2];
+			media.type 	= file[3];
+		} else {
+			let file 		= url.match(regex.file);
+			media.filename 	= file[2];
+			media.type 	= file[3];
+		}
+
+		let base_url = url.split(media.filename + "." + media.type);
+		media.base_url = base_url[0];
+	}
+
+	// If type is not defined, set it to jpg as a default
+	if ( media.type === undefined ) {
+		media.type = "jpg";
+	}
+
+	// If the filename is defined, set the local URL
+	if ( media.filename !== "" ) {
+		media.local_url = `media/${media.filename}.${media.type}`;
+	}
+
+	return media;
+}
+
+
 /**
  * Substitutes media URLs with local URLs
  * 
@@ -1672,130 +1789,41 @@ function embedMedia({ url, type, source, tweet_id, user_id }) {
  * @returns {string} - The substituted URL if it exists, otherwise the original URL
  */
 function substituteMediaUrl(params = { url, filename }) {
-	let url 		= params.url;
-	let filename 	= params.filename;
+	let url 		= (params.url === undefined) 		? undefined : params.url;
+	let filename 	= (params.filename === undefined) 	? undefined : params.filename;
+
+	let media = {
+		"filename"	: ( filename === undefined ) ? "" : filename.split(".")[0],
+		"type"		: ( filename === undefined ) ? "" : filename.split(".")[1],
+		"local_url"	: ( filename === undefined ) ? ( url === undefined ) ? "" : url : `media/${filename}`,
+		"orig_url"	: ( url === undefined ) ? "" : url,
+		"clean_url"	: ( url === undefined ) ? "" : url.split("?")[0],
+		"base_url"	: ( url === undefined && filename === undefined ) ? "" : url.split(filename)[0],
+	}
+
 	let wayback_url = `https://web.archive.org/web/${url}`;
 
-	// Check if url is defined and if it's a string
-	if (url === undefined || typeof url !== "string") {
-		if (window.error_list === undefined) {
-			window.error_list = [];
-		}
-		window.error_list.push(`Error: URL is undefined or not a string: ${url}`);
-		return false;
-	}
-	
-	let regex = {
-		"format"				: /format=(\w+)/,
-		"file"					: /\/(([\w-]+)\.(\w+))$/,
-		"last_slash"			: /\/([^\/]+)$/,
-		"last_slash_query"		: /\/([^\/]+)(?=\?)/,
-		"file_query"			: /\/(([\w-]+)\.(\w+))(?=\?)/,
-		"query"					: /\?(\w+)=/,
-		"before_query"			: /(.+)(?=\?)/,
-	}
-
-	orig_url 	= url; // store the original URL for later
-
-	// remove the query string from the URL for consistency
-	if ( url.includes("?") ) {
-		url = url.match(regex.before_query)[1];
-	}
-
-	// check if the already image exists in the media_replacements object, and if it does, return the local URL
-	if ( media_replacements[url] !== undefined ) {
-		return media_replacements[url];
-	}
-
 	// if the filename is undefined, get it from the URL
-	if (filename === undefined) {
-		/* Example URLs:
-		 * profile image: 	https://pbs.twimg.com/profile_images/1634660415241347072/UHbaE_6f_normal.png
-		 * 					https://unavatar.io/twitter/uplynxed
-		 * profile banner: 	https://pbs.twimg.com/profile_banners/309366491/1678568388
-		 * card thumbnail: 	https://pbs.twimg.com/card_img/1655287536250413066/gSu-NHFet?format=jpg&name=280x280
-		 * card image:		https://pbs.twimg.com/card_img/1655800965935529984/Up7mk-C9?format=png&name=orig
-		 * tweet image: 	https://pbs.twimg.com/media/ExQ1Z1mWQAAZ3Za?format=jpg&name=orig
-		 * 					https://pbs.twimg.com/media/EN9fEmNX4AAdmBT.png
-		 * 					https://pbs.twimg.com/media/EN9pnXWXUAA-D8a.png
-		 * video thumb:		https://pbs.twimg.com/amplify_video_thumb/1217952085318295552/img/f6Jg369ENx-XgTuJ.jpg
-		 * 					https://pbs.twimg.com/ext_tw_video_thumb/1652248920397938688/pu/img/OGptD9vbNvlmvUto.jpg
-		 * tweet video:		https://video.twimg.com/amplify_video/1217952085318295552/vid/1280x720/Aa73lWP8HE9vClIq.mp4?tag=13
-		 * 					https://video.twimg.com/amplify_video/1217952085318295552/vid/480x270/ZE8_No3HnTPsDhYG.mp4?tag=13
-		 * 					https://video.twimg.com/ext_tw_video/1652248920397938688/pu/vid/320x400/b71EINGFPyWmKUWi.mp4?tag=12
-		 * 					https://video.twimg.com/ext_tw_video/1440857764285222917/pu/vid/1280x720/4kW6o_s9nGr0PHES.mp4?tag=12
-		 */
-
-		if ( orig_url.includes("pbs.twimg.com/profile_images") ) {
-			file 		= orig_url.match(regex.file);
-			filename 	= file[2];
-			filetype 	= file[3];
-			wayback_url = `https://web.archive.org/web/https://pbs.twimg.com/profile_images/${filename}.${filetype}`;
-		} else if ( orig_url.includes("pbs.twimg.com/profile_banners") ) { // grab the last part of the URL after the last slash
-			filename 	= orig_url.match(regex.last_slash)[1];
-			filetype 	= "jpg";
-		} else if ( orig_url.includes("pbs.twimg.com/card_img") ) { // grab the last part of the URL after the last slash and before the ?
-			filename 	= orig_url.match(regex.last_slash_query)[1];
-			filetype 	= orig_url.match(regex.format)[1];
-		} else if ( orig_url.includes("pbs.twimg.com/media") ) { 
-			// if the URL contains a ?, grab the last part of the URL after the last slash and before the ?
-			if ( orig_url.includes("?") ) {
-				filename = orig_url.match(regex.last_slash_query)[1];
-				filetype = orig_url.match(regex.format)[1];
-			} else { // otherwise, grab the last part of the URL after the last slash
-				file		= orig_url.match(regex.file);
-				filename 	= file[2];
-				filetype 	= file[3];
-			}
-
-			// grab the url for the wayback machine
-			wayback_url = `https://web.archive.org/web/https://pbs.twimg.com/media/${filename}.${filetype}`;
-
-			// grab the original URL for the highest quality version of the image by reforming the URL
-			orig_url = `https://pbs.twimg.com/media/${filename}?format=${filetype}&name=orig`;
-		} else if ( orig_url.includes("pbs.twimg.com/amplify_video_thumb") || orig_url.includes("pbs.twimg.com/ext_tw_video_thumb") ) {
-			file 		= orig_url.match(regex.file);
-			filename 	= file[2];
-			filetype 	= file[3];
-		} else if ( orig_url.includes("video.twimg.com/amplify_video") || orig_url.includes("video.twimg.com/ext_tw_video") ) {
-			// if the URL contains a ?, grab the last part of the URL after the last slash and before the ?
-			if ( orig_url.includes("?") ) {
-				file		= orig_url.match(regex.file_query);
-				filename 	= file[2];
-				filetype 	= file[3];
-			} else { // otherwise, grab the last part of the URL after the last slash
-				file 		= orig_url.match(regex.file);
-				filename 	= file[2];
-				filetype 	= file[3];
-			}
-		}
-
-		// if the filetype is still undefined, set it to "jpg" as a fallback
-		if (filetype === undefined) {
-			filetype = "jpg";
-		}
-
-		// if the filename is still undefined, set it to the URL as a fallback so it points to the original URL
-		if (filename === undefined) {
-			filepath = orig_url;
-		} else {
-			filepath 	= `media/${filename}.${filetype}`;
-		}
-	} else {
-		filepath = `media/${filename}`;
+	if (filename === undefined && url !== undefined) {
+		media 		= parseMediaUrl(url);
+		filename 	= media.filename + "." + media.type;
 	}
 
+	// check if media already exists in the media_replacements object
+	if ( url !== undefined && media_replacements[ filename ] !== undefined ) {
+		return media_replacements[ filename ];
+	}
 
 	// otherwise, add it to the media_replacements object and return the local URL
 	let return_media = setMediaReplacements(
-		url, 
+		filename,
 		{
-			"filename": filename,
-			"type": filetype,
-			"index_url": url,
-			"orig_url": orig_url,
-			"url": filepath,
-			"wayback_url": wayback_url,
+			"filename"		: media.filename,
+			"type"			: media.type,
+			"index_url"		: filename,
+			"orig_url"		: media.orig_url,
+			"url"			: media.local_url,
+			"wayback_url"	: wayback_url,
 		}
 	);
 
@@ -1955,20 +1983,44 @@ function formatPicture( url, alt = "", args = { "classes": "", "classes_containe
 	
 	let image = `
 		<source srcset="${media.orig_url}" type="image/${media.type}">
-		<source srcset="${media.url}" type="image/${media.type}">
-		<img 	src="${args.backup}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy" 
-				onerror="handlePictureError(this);" data-url="${media.index_url}">`;
+		<source srcset="${media.url}" type="image/${media.type}">`;
 
-	if (media.resolved_url !== undefined) {
+	if ( media.resolved_url !== undefined ) {
 		image = `
-			<source srcset="${media.resolved_url}" type="image/${media.type}">
+			<source srcset="${media.resolved_url}" type="image/${media.type}">`;
+	} 
+
+	let backup = '';
+
+	if (Array.isArray(args.backup)) {
+		let backup_arr = Array.from(args.backup).slice(0, args.backup.length - 1); 	// get all but the last backup
+		let last_backup = args.backup[args.backup.length - 1];						// get the last backup
+
+		backup = '';
+		backup_arr.forEach(function(backup_item) {
+			backup += `
+				<source srcset="${backup_item}" type="image/${media.type}">`;
+		});
+		backup += `
+			<img 	src="${last_backup}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy"
+					onerror="handlePictureError(this);" data-url="${media.index_url}">`;
+		
+		if ( media.resolved_url === last_backup ) {
+			image = '';
+		}
+	} else {
+		backup = `
 			<img 	src="${args.backup}" class="${args.classes}" alt="${alt}" style="${args.style}" loading="lazy"
 					onerror="handlePictureError(this);" data-url="${media.index_url}">`;
+		if ( media.resolved_url === args.backup ) {
+			image = '';
+		}
 	}
 
 	image = `
 		<picture class="embed-responsive-item ${args.classes_container}">
 			${image}
+			${backup}
 		</picture>`;
 
 	return image;
@@ -2119,7 +2171,10 @@ function registerCustomTags() {
 				return formatPicture("https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png", "", args);
 			}
 
-			args.backup = `https://unavatar.io/twitter/${tweets_object['users'][id].screen_name}?fallback=${args.backup}`;
+			args.backup = [
+				`https://unavatar.io/twitter/${tweets_object['users'][id].screen_name}?fallback=false&ttl=28dfalse`,
+				args.backup
+			];
 
 			let url = tweets_object['users'][id].profile_image_url_https;
 
@@ -3150,6 +3205,19 @@ function loadMediaReplacements() {
 	}
 
 	return media_replacements;
+}
+
+
+/**
+ * Get a media replacement object from the media_replacements object collection
+ * 
+ * @param {string} index_url - The index URL of the media replacement object
+ * 
+ * @returns {object} - The media replacement object
+ */
+function getMediaReplacement(index_url) {
+	// Stub
+	// TODO: Implement this function, make use of the new parseMediaUrl function
 }
 
 
